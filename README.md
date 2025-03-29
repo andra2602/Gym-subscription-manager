@@ -23,4 +23,5 @@ Java app for managing gym subscriptions, members, trainers and audit system
 ## 🚀 Work in Progress
 
 This is a university project currently under development.
+
 First checkpoint: 14–18 April – Basic structure & core functionality.
