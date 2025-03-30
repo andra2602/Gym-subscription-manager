@@ -1,5 +1,5 @@
 # Gym-subscription-manager 🏋️‍♂️
-Java app for managing gym subscriptions, members, trainers and audit system
+Java app for managing gym subscriptions, members, trainers, and audit system
 
 ## 📌 Features
 
@@ -23,5 +23,7 @@ Java app for managing gym subscriptions, members, trainers and audit system
 ## 🚀 Work in Progress
 
 This is a university project currently under development.
+
+- **Initial Setup**: During the initial setup phase, I focused on creating the essential **classes** with **attributes**, **constructors**, **getters**, and **setters** to lay a solid foundation for the application. These steps ensure a reliable base for the core functionality and future extensions.
 
 First checkpoint: 14–18 April – Basic structure & core functionality.
