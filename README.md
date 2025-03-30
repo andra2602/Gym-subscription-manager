@@ -7,7 +7,7 @@ Java app for managing gym subscriptions, members, trainers and audit system
 - Subscription creation and editing
 - Class scheduling
 - Payment tracking
-- Equipment status monitoring
+- Booking tracking
 - Promotions and discounts
 - Audit system (CSV logs of important actions)
 - Console-based user interface (for now)
