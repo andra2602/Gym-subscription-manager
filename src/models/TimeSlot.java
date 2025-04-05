@@ -1,14 +1,16 @@
 package models;
 
 import java.time.LocalTime;
+import java.time.DayOfWeek;
+
 
 public class TimeSlot {
     private LocalTime startTime;   // Ora de început a sesiunii
     private LocalTime endTime;     // Ora de final a sesiunii
-    private String day;            // Ziua în care se desfășoară (ex: Luni, Marți)
+    private DayOfWeek day;            // Ziua în care se desfășoară (ex: Luni, Marți)
     private Trainer trainer;       // Antrenorul disponibil în acel interval orar (opțional)
 
-    public TimeSlot(LocalTime startTime, LocalTime endTime, String day, Trainer trainer) {
+    public TimeSlot(LocalTime startTime, LocalTime endTime, DayOfWeek day, Trainer trainer) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.day = day;
@@ -24,7 +26,7 @@ public class TimeSlot {
         return endTime;
     }
 
-    public String getDay() {
+    public DayOfWeek getDay() {
         return day;
     }
 
@@ -34,14 +36,20 @@ public class TimeSlot {
 
     /// setters
     public void setStartTime(LocalTime startTime) {
+        if (startTime.isAfter(this.endTime)) {
+            throw new IllegalArgumentException("Ora de început trebuie să fie înaintea orei de sfârșit.");
+        }
         this.startTime = startTime;
     }
 
     public void setEndTime(LocalTime endTime) {
+        if (endTime.isBefore(this.startTime)) {
+            throw new IllegalArgumentException("Ora de sfârșit trebuie să fie după ora de început.");
+        }
         this.endTime = endTime;
     }
 
-    public void setDay(String day) {
+    public void setDay(DayOfWeek day) {
         this.day = day;
     }
 
@@ -51,11 +59,6 @@ public class TimeSlot {
 
     @Override
     public String toString() {
-        return "TimeSlot{" +
-                "startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", day='" + day + '\'' +
-                ", trainer=" + (trainer != null ? trainer.getName() : "N/A") +
-                '}';
+        return startTime + " - " + endTime + " " + day;
     }
 }

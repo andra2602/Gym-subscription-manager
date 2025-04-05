@@ -8,6 +8,7 @@ public class FitnessClass {
     private String name;
     private int duration; // în minute
     private String difficulty;
+    private double price;
     private Trainer trainer;
     private List<Member> participants;
     private LocalDate date;
@@ -15,13 +16,14 @@ public class FitnessClass {
     private int maxParticipants;
 
 
-    public FitnessClass(String name, int duration, String difficulty,
+    public FitnessClass(String name, int duration, String difficulty, double price,
                         Trainer trainer, List<Member> participants,
                         LocalDate date, LocalTime hour, int maxParticipants) {
         validateDifficulty(difficulty);
         this.name = name;
         this.duration = duration;
         this.difficulty = difficulty;
+        this.price = price;
         this.trainer = trainer;
         this.participants = participants;
         this.date = date;
@@ -32,10 +34,10 @@ public class FitnessClass {
     /// validari
     private void validateDifficulty(String difficulty) {
         if (difficulty == null ||
-                !(difficulty.equalsIgnoreCase("incepator") ||
-                        difficulty.equalsIgnoreCase("intermediar") ||
-                        difficulty.equalsIgnoreCase("avansat"))) {
-            throw new IllegalArgumentException("Nivelul de dificultate trebuie să fie: incepator, intermediar sau avansat.");
+                !(difficulty.equalsIgnoreCase("beginner") ||
+                        difficulty.equalsIgnoreCase("intermediate") ||
+                        difficulty.equalsIgnoreCase("advanced"))) {
+            throw new IllegalArgumentException("Difficulty level must be 'beginner','intermediate' or 'advanced'");
         }
     }
 
@@ -50,6 +52,10 @@ public class FitnessClass {
 
 
     /// getters
+    public double getPrice() {
+        return price;
+    }
+
     public String getName() {
         return name;
     }
@@ -78,7 +84,15 @@ public class FitnessClass {
         return hour;
     }
 
+    public int getMaxParticipants() {
+        return maxParticipants;
+    }
+
     /// setters
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -105,5 +119,18 @@ public class FitnessClass {
 
     public void setHour(LocalTime hour) {
         this.hour = hour;
+    }
+
+    @Override
+    public String toString() {
+        return "Fitness Class: " + name + "\n" +
+                "Duration: " + duration + " minutes\n" +
+                "Difficulty: " + difficulty + "\n" +
+                "Price: " + price + "\n" +
+                "Trainer: " + trainer.getName() + "\n" +
+                "Date: " + date + "\n" +
+                "Time: " + hour + "\n" +
+                "Max Participants: " + maxParticipants + "\n" +
+                "Current number of participants: " + participants.size();
     }
 }

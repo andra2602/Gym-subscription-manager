@@ -9,35 +9,34 @@ public class Member extends User{
     private float weight;
     private float height;
     private String experienceLevel;
-    private boolean hasTrainer;
+    private Trainer trainer;
     private Subscription subscription;
     private boolean isStudent;
 
     private List<Payment> payments = new ArrayList<>();
 
-    public Member(String name, String username, String email, String phoneNumber, String cnp,
+    public Member(String name, String username, String email, String phoneNumber,
                   String password, LocalDate registrationDate, float weight, float height,
-                  String experienceLevel, boolean hasTrainer, Subscription subscription,boolean isStudent) {
-        super(name, username, email, phoneNumber, cnp, password);
+                  String experienceLevel, Trainer trainer, Subscription subscription,boolean isStudent) {
+        super(name, username, email, phoneNumber,password);
 
         validateExperienceLevel(experienceLevel);
         // dacă registrationDate e null => punem data curentă
         this.registrationDate = (registrationDate != null) ? registrationDate : LocalDate.now();
-
         this.weight = weight;
         this.height = height;
         this.experienceLevel = experienceLevel.toLowerCase();
-        this.hasTrainer = hasTrainer;
-        this.subscription = subscription;
+        this.trainer = trainer;
+        this.subscription = null;
         this.isStudent = isStudent;
     }
 
-    //validari
+    //validari beginner, intermediate, advanced
     private void validateExperienceLevel(String level) {
-        if (level == null || !(level.equalsIgnoreCase("incepator") ||
-                level.equalsIgnoreCase("intermediar") ||
-                level.equalsIgnoreCase("avansat"))) {
-            throw new IllegalArgumentException("Nivelul de experiență trebuie să fie: incepator, intermediar sau avansat.");
+        if (level == null || !(level.equalsIgnoreCase("beginner") ||
+                level.equalsIgnoreCase("intermediate") ||
+                level.equalsIgnoreCase("advanced"))) {
+            throw new IllegalArgumentException("Experience level must be: beginner, intermediate or advanced.");
         }
     }
 
@@ -54,8 +53,8 @@ public class Member extends User{
     public String getExperienceLevel() {
         return experienceLevel;
     }
-    public boolean getHasTrainer() {
-        return hasTrainer;
+    public Trainer getTrainer() {
+        return trainer;
     }
     public Subscription getSubscription() {
         return subscription;
@@ -66,6 +65,7 @@ public class Member extends User{
     public List<Payment> getPayments() {
         return payments;
     }
+
 
     //setters
     public void setRegistrationDate(LocalDate registrationDate) {
@@ -82,8 +82,8 @@ public class Member extends User{
         this.experienceLevel = experienceLevel.toLowerCase();
     }
 
-    public void setHasTrainer(boolean hasTrainer) {
-        this.hasTrainer = hasTrainer;
+    public void setTrainer(Trainer trainer) {
+        this.trainer = trainer;
     }
     public void setSubscription(Subscription subscription) {
         this.subscription = subscription;
@@ -91,8 +91,20 @@ public class Member extends User{
     public void setStudent(boolean student) {
         this.isStudent = student;
     }
+    public void setPayments(List<Payment> payments) {this.payments = payments;}
     public void addPayment(Payment payment) {
         payments.add(payment);
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "Member Name: " + getName() + "\n" +
+                "Registration Date: " + registrationDate + "\n" +
+                "Level of Experience: " + experienceLevel + "\n" +
+                "Student : " + isStudent + "\n" +
+                "Has trainer: " + (trainer != null ? trainer.getName() : "No trainer assigned") + "\n";
     }
 
 }

@@ -22,9 +22,9 @@ public class Subscription {
     /// metode de gestionare
     public LocalDate getEndDate() {
         return switch (type.toLowerCase()) {
-            case "lunar" -> startDate.plusMonths(1);
-            case "6 luni" -> startDate.plusMonths(6);
-            case "anual" -> startDate.plusYears(1);
+            case "monthly" -> startDate.plusMonths(1);
+            case "6 months" -> startDate.plusMonths(6);
+            case "annual" -> startDate.plusYears(1);
             default -> startDate; // fallback
         };
     }
@@ -77,7 +77,7 @@ public class Subscription {
     }
 
     public void setActive(boolean active) {
-        isActive = active;
+        this.isActive = active;
     }
 
     public Promotion getPromotion() {
@@ -87,5 +87,6 @@ public class Subscription {
     public void setPromotion(Promotion promotion) {
         this.promotion = promotion;
     }
+
 }
 

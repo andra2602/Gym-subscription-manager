@@ -6,6 +6,8 @@ public class Promotion {
     private float discountPercent;
     private LocalDate startDate;
     private LocalDate endDate;
+    private boolean active;
+
 
     public Promotion(String name, String description, float discountPercent, LocalDate startDate, LocalDate endDate) {
         validateDescription(description);
@@ -18,6 +20,7 @@ public class Promotion {
         this.discountPercent = discountPercent;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.active = true;
     }
     ///  validari
 
@@ -43,9 +46,10 @@ public class Promotion {
         }
     }
 
-    public boolean isValidNow(){
+    public boolean isValidNow() {
         LocalDate today = LocalDate.now();
-        return (today.isEqual(startDate) || today.isAfter(startDate)) &&
+        return active &&
+                (today.isEqual(startDate) || today.isAfter(startDate)) &&
                 (today.isBefore(endDate) || today.isEqual(endDate));
     }
 
@@ -65,10 +69,20 @@ public class Promotion {
     public LocalDate getEndDate() {
         return endDate;
     }
+    public boolean isActive() {
+        return active;
+    }
+
+
+
     /// setters
+    public void setActive(boolean active) {
+             this.active = active;
+    }
     public void setName(String name) {
         this.name = name;
     }
+
     public void setDescription(String description) {
         validateDescription(description);
         this.description = description;

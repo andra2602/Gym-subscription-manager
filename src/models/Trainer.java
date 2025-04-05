@@ -1,6 +1,8 @@
 package models;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Trainer extends User {
@@ -12,12 +14,14 @@ public class Trainer extends User {
     private List<TimeSlot> availableSlots;
     private List<Booking> bookings;
     private List<Integer> reviewScores;
+    private Map<String, FitnessClass> coordinatedClasses;
 
-    public Trainer(String name, String username, String email, String phoneNumber, String cnp, String password,
+
+    public Trainer(String name, String username, String email, String phoneNumber,String password,
                    String specialization, double yearsOfExperience, double pricePerHour,
                    Set<Member> trainedMembers, List<TimeSlot> availableSlots, List<Booking> bookings,
                    List<Integer> reviewScores) {
-        super(name, username, email, phoneNumber, cnp, password);
+        super(name, username, email, phoneNumber, password);
         this.specialization = specialization;
         this.yearsOfExperience = yearsOfExperience;
         this.pricePerHour = pricePerHour;
@@ -25,6 +29,7 @@ public class Trainer extends User {
         this.availableSlots = availableSlots;
         this.bookings = bookings;
         this.reviewScores = reviewScores;
+        this.coordinatedClasses = new HashMap<>();
     }
 
     /// getters
@@ -65,6 +70,13 @@ public class Trainer extends User {
         return Math.min(average, 5.0);
     }
 
+
+    public Map<String, FitnessClass> getCoordinatedClasses() {
+        return coordinatedClasses;
+    }
+
+
+
     /// setters
     public void setSpecialization(String specialization) {
         this.specialization = specialization;
@@ -87,6 +99,9 @@ public class Trainer extends User {
     public void setReviewScores(List<Integer> reviewScores) {
         this.reviewScores = reviewScores;
     }
+    public void setCoordinatedClasses(Map<String, FitnessClass> coordinatedClasses) {
+        this.coordinatedClasses = coordinatedClasses;
+    }
 
     ///  functionalitate pentru lasarea de review-uri
     public void addReview(int score) {
@@ -94,5 +109,13 @@ public class Trainer extends User {
             throw new IllegalArgumentException("Scorul trebuie să fie între 0 și 5.");
         }
         this.reviewScores.add(score);
+    }
+
+    @Override
+    public String toString() {
+        return "Trainer Name: " + getName() + "\n" +
+                "Specialization: " + specialization + "\n" +
+                "Years of Experience: " + yearsOfExperience + "\n" +
+                "Price per Hour: " + pricePerHour;
     }
 }

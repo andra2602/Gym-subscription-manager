@@ -7,19 +7,17 @@ public class User {
     private String username;
     private String email;
     private String phoneNumber;
-    private String cnp;
     private String password;
 
 
     public User() {
         this.id = nextId++;
     }
-    public User(String name, String username, String email, String phoneNumber, String cnp, String password) {
+    public User(String name, String username, String email, String phoneNumber, String password) {
         validateName(name);
         validateUsername(username);
         validateEmail(email);
         validatePhone(phoneNumber);
-        validateCNP(cnp);
         validatePassword(password);
 
         this.id = nextId++;
@@ -27,7 +25,6 @@ public class User {
         this.username = username;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.cnp = cnp;
         this.password = password;
     }
 
@@ -53,29 +50,12 @@ public class User {
             throw new IllegalArgumentException("Numărul de telefon nu este valid. Ex: +40722123456 sau 0722123456");
     }
 
-    private void validateCNP(String cnp) {
-        if (cnp == null || !cnp.matches("^[1-8][0-9]{12}$") || !isValidCNP(cnp))
-            throw new IllegalArgumentException("CNP-ul nu este valid (format greșit sau cifră de control incorectă).");
-    }
 
     private void validatePassword(String password) {
         if (password == null || !password.matches("^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^*&+\\-!]).{8,}$"))
             throw new IllegalArgumentException("Parola trebuie să aibă minim 8 caractere, o literă mare, o cifră și un caracter special.");
     }
 
-    private boolean isValidCNP(String cnp) {
-        int[] control = {2, 7, 9, 1, 4, 6, 3, 5, 8, 2, 7, 9};
-        int sum = 0;
-
-        for (int i = 0; i < 12; i++) {
-            sum += Character.getNumericValue(cnp.charAt(i)) * control[i];
-        }
-
-        int checkDigit = sum % 11;
-        if (checkDigit == 10) checkDigit = 1;
-
-        return checkDigit == Character.getNumericValue(cnp.charAt(12));
-    }
 
     /// getters
     public int getId() {
@@ -93,8 +73,8 @@ public class User {
     public String getPhoneNumber() {
         return phoneNumber;
     }
-    public String getCnp() {
-        return cnp;
+    public String getPassword() {
+        return password;
     }
 
 
@@ -119,11 +99,6 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setCnp(String cnp) {
-        validateCNP(cnp);
-        this.cnp = cnp;
-    }
-
     public void setPassword(String password) {
         validatePassword(password);
         this.password = password;
@@ -138,7 +113,6 @@ public class User {
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", cnp='" + cnp + '\'' +
                 '}';
     }
 
