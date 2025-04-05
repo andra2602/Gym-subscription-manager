@@ -1,0 +1,620 @@
+import java.time.LocalDate;
+import java.util.*;
+
+import models.*;
+import services.*;
+import validation.Validator;
+
+
+public class StartUp {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        boolean exit = false;
+
+        /// prompt de start
+        showWelcomePrompt(scanner);
+
+        // Liste pentru Membri, Traineri și Manageri
+        List<Member> membri = new ArrayList<>();
+        List<Trainer> trainers = new ArrayList<>();
+        List<Manager> managers = new ArrayList<>();
+        List<FitnessClass> fitnessClasses = new ArrayList<>();
+        List<Promotion> promotions = new ArrayList<>();
+
+
+        // Crearea serviciilor pentru fiecare tip de utilizator
+        MemberService memberService = new MemberService(membri);
+        TrainerService trainerService = new TrainerService(trainers);
+        ManagerService managerService = new ManagerService();
+        FitnessClassService fitnessClassService = new FitnessClassService(fitnessClasses);
+        PromotionService promotionService = new PromotionService(promotions);
+
+        promotionService.checkPromotionValidityOnStartup();
+
+
+        // Crearea unui trainer predefinit pentru teste
+        Set<Member> trainedMembers = new HashSet<>(); // Set de membri pe care îi antrenează
+        List<TimeSlot> availableSlots = new ArrayList<>(); // Lista de sloturi de timp disponibile
+        List<Booking> bookings = new ArrayList<>(); // Lista de rezervări
+        List<Integer> reviewScores = new ArrayList<>(); // Lista de scoruri de review
+
+        Trainer testTrainer = new Trainer("Test Trainer", "testtrainer", "ttest@example.com", "0721345678", "Parola123!",
+                "fitness", 3, 75, trainedMembers, availableSlots, bookings, reviewScores );
+
+        trainerService.addTrainer(testTrainer);
+        // Crearea unui membru predefinit pentru test
+        Member testMember = new Member("Test Member", "testmember", "test@example.com", "0723123456", "Parola123!",
+                LocalDate.now(), 70.5f, 175f, "beginner",  null, null, true);
+        memberService.addMember(testMember); // Adăugăm membrul în lista de membri
+
+
+        // Membri de test
+        Member member1 = new Member(
+                "Ana Avansata", "Ana123456", "ana@mail.com", "0722000001", "Parola123*",
+                LocalDate.of(2023, 2, 15), 60f, 1.68f, "advanced", testTrainer, null, false);
+
+        Member member2 = new Member(
+                "Paul Incepator", "Paul123B", "paul@mail.com", "0722000002", "Parola456*",
+                LocalDate.of(2024, 1, 10), 75f, 1.80f, "beginner", testTrainer, null, true);
+
+        // Adăugăm membrii în lista generală (dacă ai una)
+        membri.add(member2);
+        membri.add(member1);
+        // Legăm membrii de antrenor
+        testTrainer.getTrainedMembers().add(member1);
+        testTrainer.getTrainedMembers().add(member2);
+
+
+
+        while (!exit) {
+            System.out.println("\n Menu: ");
+            System.out.println("1. Login");
+            System.out.println("2. Register");
+            System.out.println("3. Exit");
+            System.out.print("Enter your choice: ");
+            int option = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (option) {
+                case 1:
+                    login(scanner, memberService, trainerService, managerService, fitnessClassService, promotionService);
+                    break;
+                case 2:
+                    register(scanner, memberService, trainerService, managerService, fitnessClassService, promotionService);
+                    break;
+                case 3:
+                    exit = true;
+                    System.out.print("\nExiting program");
+                    for (int i = 0; i < 3; i++) {
+                        try {
+                            Thread.sleep(500);
+                            System.out.print(".");
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+
+    private static void showWelcomePrompt(Scanner scanner) {
+        System.out.println("====================================================");
+        System.out.println("          Welcome to the Fitness System!           ");
+        System.out.println("  _______________________________________________  ");
+        System.out.println(" |                                               | ");
+        System.out.println(" |    Manage memberships, bookings, payments,    | ");
+        System.out.println(" |              trainers, and more!              | ");
+        System.out.println(" |                                               | ");
+        System.out.println(" |               Let's get started!              | ");
+        System.out.println(" |_______________________________________________| ");
+        System.out.println("====================================================");
+
+        // Add a "loading" effect
+        System.out.print("\nLoading application");
+        for (int i = 0; i < 3; i++) {
+            try {
+                Thread.sleep(500);
+                System.out.print(".");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        System.out.println("\n\nPress Enter to continue...");
+        scanner.nextLine();
+
+        System.out.println("\nStarting the system...");
+    }
+
+    private static void login(Scanner scanner,MemberService memberService , TrainerService trainerService, ManagerService managerService, FitnessClassService fitnessClassService, PromotionService promotionService) {
+        System.out.println("\n LOGIN: ");
+
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+
+
+        Member member = memberService.findByUsernameAndPassword(username, password);
+        if (member != null) {
+            System.out.println("Welcome back member: " + member.getName());
+            memberMenu(scanner, memberService, member, fitnessClassService, trainerService, promotionService);
+            return;
+        }
+
+        Trainer trainer = trainerService.findByUsernameAndPassword(username, password);
+        if (trainer != null) {
+            System.out.println("Welcome back trainer: " + trainer.getName());
+            trainerMenu(scanner, trainer, trainerService, fitnessClassService);
+            return;
+        }
+
+        Manager manager = managerService.findByUsernameAndPassword(username, password);
+        if (manager != null) {
+            System.out.println("Welcome back manager: " + manager.getName());
+            managerMenu(scanner, memberService, trainerService, promotionService);
+            return;
+        }
+
+        System.out.println("Login failed! Please try again.");
+    }
+
+    // Meniu pentru Membru
+    private static void memberMenu(Scanner scanner, MemberService memberService, Member member, FitnessClassService fitnessClassService,
+                                   TrainerService trainerService, PromotionService promotionService) {
+        boolean exit = false;
+        while (!exit) {
+            System.out.println("\n MENU");
+            System.out.println("1. See subscription details");
+            System.out.println("2. Creating a new subscription");
+            System.out.println("3. Editing a subscription");
+            System.out.println("4. Deleting a subscription");
+            System.out.println("5. List of fitness classes");
+            System.out.println("6. Schedule a fitness class");
+            System.out.println("7. List of trainers");
+            System.out.println("8. Book a personal trainer");
+            System.out.println("9. View and manage payments");
+            System.out.println("10. View active promotions");
+            System.out.println("11. Delete my account");
+            System.out.println("12. LOG OUT");
+
+            System.out.print("Enter your choice: ");
+            int option = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (option) {
+                case 1:
+                    memberService.viewSubscriptionDetails(member);
+                    break;
+                case 2:
+                    memberService.addNewSubscription(member);
+                    break;
+                case 3:
+                    memberService.editSubscription(member);
+                    break;
+                case 4:
+                    memberService.deleteSubscription(member);
+                    break;
+                case 5:
+                    fitnessClassService.listFitnessClasses();
+                    break;
+                case 6:
+                    fitnessClassService.scheduleFitnessClass(scanner, member);
+                    break;
+                case 7:
+                    trainerService.listTrainers();
+                    break;
+                case 8:
+                    trainerService.bookPersonalTrainer(scanner, member);
+                    break;
+                case 9:
+                    boolean back = false;
+                    while (!back) {
+                        System.out.println("\n--- Payment History ---");
+                        System.out.println("1. View subscription payments");
+                        System.out.println("2. View class/trainer payments");
+                        System.out.println("3. View total spent");
+                        System.out.println("4. Back");
+
+                        int choice = scanner.nextInt();
+                        scanner.nextLine();
+
+                        switch (choice) {
+                            case 1 -> memberService.viewSubscriptionPayments(member);
+                            case 2 -> memberService.viewClassAndTrainerPayments(member);
+                            case 3 -> memberService.viewTotalPayments(member);
+                            case 4 -> back = true;
+                            default -> System.out.println("Invalid option.");
+                        }
+                    }
+                    break;
+                case 10:
+                    promotionService.listActivePromotions();
+                    break;
+                case 11:
+                    memberService.deleteMemberAccount(member);
+                    if (!memberService.isMemberExists(member)) {
+                        exit = true;
+                    }
+                    break;
+                case 12:
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+
+    // Meniu pentru Antrenor
+    private static void trainerMenu(Scanner scanner,Trainer trainer, TrainerService trainerService, FitnessClassService fitnessClassService) {
+        boolean exit = false;
+        while (!exit) {
+            System.out.println("\n MENU:");
+            System.out.println("1. Members you train");
+            System.out.println("2. Fitness classes you coordinate");
+            System.out.println("3. Your schedule");
+            System.out.println("4. LOG OUT");
+
+            System.out.print("Enter your choice: ");
+            int option = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (option) {
+                case 1:
+                    boolean back = false;
+                    while (!back) {
+                        System.out.println("\nChoose what members to show:");
+                        System.out.println("1. Beginner");
+                        System.out.println("2. Intermediate");
+                        System.out.println("3. Advanced");
+                        System.out.println("4. All");
+                        System.out.println("5. Back to main menu");
+                        System.out.println();
+                        System.out.print("Enter your choice: ");
+                        int filterChoice = scanner.nextInt();
+                        scanner.nextLine();
+
+                        String filterLevel = switch (filterChoice) {
+                            case 1 -> "beginner";
+                            case 2 -> "intermediate";
+                            case 3 -> "advanced";
+                            case 4 -> null;
+                            case 5 -> {
+                                back = true;
+                                yield null;
+                            }
+                            default -> {
+                                System.out.println("Invalid option.");
+                                yield null;
+                            }
+                        };
+
+                        if (!back) {
+                            trainerService.listTrainedMembersFilteredByLevel(trainer, filterLevel);
+                        }
+                    }
+                    break;
+                case 2:
+                    boolean backToMain = false;
+                    while (!backToMain) {
+                        System.out.println("1. Show all my classes");
+                        System.out.println("2. Add a new class");
+                        System.out.println("3. Delete a class");
+                        System.out.println("4. Back to main menu");
+
+                        int choice = scanner.nextInt();
+                        scanner.nextLine();
+
+                        switch (choice) {
+                            case 1:
+                                trainerService.showFitnessClasses(trainer);
+                                break;
+                            case 2:
+                                trainerService.addFitnessClass(scanner, trainer, fitnessClassService);
+                                break;
+                            case 3:
+                                trainerService.deleteFitnessClass(scanner, trainer, fitnessClassService);
+                                break;
+                            case 4:
+                                backToMain = true;
+                                break;
+                            default:
+                                System.out.println("Invalid choice.");
+                        }
+                    }
+                    break;
+                case 3:
+                    System.out.println("Select the date you want to see your schedule:");
+                    System.out.println("1. Today");
+                    System.out.println("2. Another date");
+
+                    int optiune = scanner.nextInt();
+                    scanner.nextLine(); // flush newline
+
+                    if (optiune == 1) {
+                        trainerService.showScheduleForToday(trainer);
+                    } else if (optiune == 2) {
+                        System.out.println("Please enter the date (YYYY-MM-DD): ");
+                        String dataInput = scanner.nextLine();
+                        LocalDate dataAleasa = LocalDate.parse(dataInput);
+
+                        trainerService.showScheduleForDate(trainer, dataAleasa);
+                    }
+                    break;
+                case 4:
+                    // Exit the trainer menu
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("Invalid option.");
+            }
+        }
+    }
+
+    // Meniu pentru Manager
+    private static void managerMenu(Scanner scanner, MemberService memberService, TrainerService trainerService, PromotionService promotionService) {
+        boolean exit = false;
+        while (!exit) {
+            System.out.println("\n MENU");
+            System.out.println("1. List all members");
+            System.out.println("2. List all trainers");
+            System.out.println("3. Manage promotions");
+            System.out.println("4. Calculate revenue");
+            System.out.println("5. Audit important actions in a CSV file");
+            System.out.println("6. LOG OUT");
+
+            System.out.print("Enter your choice: ");
+            int option = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (option) {
+                case 1:
+                    memberService.listMembers();
+                    break;
+                case 2:
+                    trainerService.listTrainers();
+                    break;
+                case 3:
+                    boolean back = false;
+                    while (!back) {
+                        System.out.println("\n--- Manage Promotions ---");
+                        System.out.println("1. View all promotions");
+                        System.out.println("2. Add promotion");
+                        System.out.println("3. Edit promotion");
+                        System.out.println("4. Remove promotion");
+                        System.out.println("5. Deactivate promotion");
+                        System.out.println("6. Reactivate promotion");
+                        System.out.println("7. Back");
+
+                        int choice = scanner.nextInt();
+                        scanner.nextLine();
+
+                        switch (choice) {
+                            case 1 -> promotionService.listAllPromotions();
+                            case 2 -> promotionService.addPromotion(scanner);
+                            case 3 -> promotionService.editPromotion(scanner);
+                            case 4 -> promotionService.removePromotion(scanner);
+                            case 5 -> promotionService.deactivatePromotion(scanner);
+                            case 6 -> promotionService.reactivatePromotion(scanner);
+                            case 7 -> back = true;
+                            default -> System.out.println("Invalid option.");
+                        }
+                    }
+                    break;
+                case 4:
+                    // Calculate revenue generated in a specific period
+
+                    break;
+                case 5:
+                    // Audit important actions (e.g., additions, payments, deletions) in a CSV file
+
+                    break;
+                case 6:
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("Invalid option.");
+            }
+        }
+    }
+
+    private static void register(Scanner scanner, MemberService memberService, TrainerService trainerService, ManagerService managerService, FitnessClassService fitnessClassService, PromotionService promotionService) {
+        System.out.println("\nREGISTER: ");
+
+        // Step 1 - Role selection
+        System.out.println("Please select your role:");
+        System.out.println("1. Member");
+        System.out.println("2. Trainer");
+        System.out.print("Enter your choice: ");
+        int roleChoice = scanner.nextInt();
+        scanner.nextLine();
+
+        String name = "", username = "", email = "", phoneNumber = "", password = "";
+
+        // Step 2 - User input and validation for duplicate usernames
+        boolean validUsername = false;
+        while (!validUsername) {
+            System.out.println("Enter your username: ");
+            username = scanner.nextLine();
+            try {
+                Validator.validateUsername(username);
+                if (memberService.isUsernameTaken(username) || trainerService.isUsernameTaken(username)) {
+                    System.out.println("Username is already taken. Please try again with another one.");
+                } else {
+                    validUsername = true;
+                }
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        boolean validName = false;
+        while (!validName) {
+            System.out.println("Enter your name: ");
+            name = scanner.nextLine();
+            try {
+                Validator.validateName(name);
+                validName = true;
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        boolean validEmail = false;
+        while (!validEmail) {
+            System.out.println("Enter your email: ");
+            email = scanner.nextLine();
+            try {
+                Validator.validateEmail(email);
+                validEmail = true;
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        boolean validPhone = false;
+        while (!validPhone) {
+            System.out.println("Enter your phone number: ");
+            phoneNumber = scanner.nextLine();
+            try {
+                Validator.validatePhone(phoneNumber);
+                validPhone = true;
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        boolean validPassword = false;
+        while (!validPassword) {
+            System.out.println("Enter your password: ");
+            password = scanner.nextLine();
+            try {
+                Validator.validatePassword(password);
+                validPassword = true;
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        if (roleChoice == 1) { /// Member
+            float weight = 0, height = 0;
+            String experienceLevel = "beginner";
+            boolean isStudent = false;
+            Trainer trainer = null;
+            Subscription subscription = null;
+
+            boolean validWeight = false;
+            while (!validWeight) {
+                System.out.println("Enter your weight (kg): ");
+                weight = scanner.nextFloat();
+                try {
+                    Validator.validateWeight(weight);
+                    validWeight = true;
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+
+            boolean validHeight = false;
+            while (!validHeight) {
+                System.out.println("Enter your height (cm): ");
+                height = scanner.nextFloat();
+                try {
+                    Validator.validateHeight(height);
+                    validHeight = true;
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            scanner.nextLine(); // consume the newline character
+
+            boolean validExperienceLevel = false;
+            while (!validExperienceLevel) {
+                System.out.println("Enter your experience level (beginner, intermediate, advanced): ");
+                experienceLevel = scanner.nextLine();
+                try {
+                    Validator.validateExperienceLevel(experienceLevel);
+                    validExperienceLevel = true;
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+
+            boolean validIsStudent = false;
+            while (!validIsStudent) {
+                System.out.println("Are you a student? (true/false): ");
+                isStudent = scanner.nextBoolean();
+                if (isStudent != true && isStudent != false) {
+                    System.out.println("Please enter 'true' or 'false' for student status.");
+                } else {
+                    validIsStudent = true;
+                }
+            }
+
+            // Create a new member and add it to members list
+            Member newMember = new Member(name, username, email, phoneNumber, password,
+                    LocalDate.now(), weight, height, experienceLevel,
+                    trainer, subscription, isStudent);
+            memberService.addMember(newMember); // Adding the member
+            System.out.println("You have been successfully registered as a Member!");
+
+        } else if (roleChoice == 2) { /// Trainer
+            System.out.println("Enter your specialization: ");
+            String specialization = scanner.nextLine();
+
+            boolean validYearsOfExperience = false;
+            double yearsOfExperience = 0;
+            while (!validYearsOfExperience) {
+                System.out.println("Enter your years of experience: ");
+                yearsOfExperience = scanner.nextDouble();
+                try {
+                    Validator.validateYearsOfExperience(yearsOfExperience);
+                    validYearsOfExperience = true;
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+
+            boolean validPricePerHour = false;
+            double pricePerHour = 0;
+            while (!validPricePerHour) {
+                System.out.println("Enter your price per hour: ");
+                pricePerHour = scanner.nextDouble();
+                try {
+                    Validator.validatePricePerHour(pricePerHour);
+                    validPricePerHour = true;
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+
+            // Create a new trainer and add it to trainers list
+            Trainer newTrainer = new Trainer(name, username, email, phoneNumber, password,
+                    specialization, yearsOfExperience, pricePerHour,
+                    new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+            trainerService.addTrainer(newTrainer); // Adding the trainer
+            System.out.println("You have been successfully registered as a Trainer!");
+
+        } else {
+            System.out.println("Invalid selection. Please try again.");
+            return;
+        }
+
+        // Redirect to login
+        System.out.println("\nRedirecting to login...");
+        for (int i = 0; i < 3; i++) {
+            try {
+                Thread.sleep(500);
+                System.out.print(".");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        login(scanner, memberService, trainerService, managerService, fitnessClassService, promotionService);
+    }
+
+}
