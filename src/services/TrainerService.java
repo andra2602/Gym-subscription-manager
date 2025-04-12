@@ -4,7 +4,9 @@ import models.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,6 +44,9 @@ public class TrainerService {
         System.out.println("Trainer successfully added!");
     }
 
+    public List<Trainer> getTrainers() {
+        return trainers;
+    }
     public void listTrainers() {
         if (trainers.isEmpty()) {
             System.out.println("No trainers available.");
@@ -163,12 +168,13 @@ public class TrainerService {
     }
 
 
-    private boolean overlaps(LocalTime bookedTime, LocalTime newTime, int duration) {
-        LocalTime bookedEnd = bookedTime.plusHours(1);
-        LocalTime newEnd = newTime.plusMinutes(duration);
+    private boolean overlaps(LocalTime bookedStart, LocalTime newStart, int duration) {
+        LocalTime bookedEnd = bookedStart.plusHours(1);
+        LocalTime newEnd = newStart.plusMinutes(duration);
 
-        return !(newEnd.isBefore(bookedTime) || newTime.isAfter(bookedEnd));
+        return newStart.isBefore(bookedEnd) && bookedStart.isBefore(newEnd);
     }
+
 
 
     public void showFitnessClasses(Trainer trainer) {
@@ -181,7 +187,6 @@ public class TrainerService {
 
         System.out.println("\n--- Your Coordinated Fitness Classes ---");
         for (Map.Entry<String, FitnessClass> entry : classes.entrySet()) {
-            System.out.println("Class name: " + entry.getKey());
             System.out.println(entry.getValue());
             System.out.println("-------------------------------");
         }
@@ -206,20 +211,68 @@ public class TrainerService {
         double price = scanner.nextDouble();
         scanner.nextLine();
 
-        System.out.println("Enter date (YYYY-MM-DD):");
-        LocalDate date = LocalDate.parse(scanner.nextLine());
+        LocalDate today = LocalDate.now();
+        LocalDate minDate = today.plusWeeks(1);
+        LocalDate maxDate = today.plusMonths(1);
+        LocalDate date;
 
-        System.out.println("Enter start hour (HH:mm):");
-        LocalTime startHour = LocalTime.parse(scanner.nextLine());
+        while (true) {
+            System.out.println("Enter the class date (YYYY-MM-DD):");
+            String input = scanner.nextLine();
+
+            try {
+                date = LocalDate.parse(input);
+
+                if (date.isBefore(minDate)) {
+                    System.out.println("❌ The class must be scheduled at least one week from today (" + minDate + ").");
+                } else if (date.isAfter(maxDate)) {
+                    System.out.println("❌ You can only schedule classes up to one month in advance (" + maxDate + ").");
+                } else {
+                    break; // data validă!
+                }
+
+            } catch (DateTimeParseException e) {
+                System.out.println("❌ Invalid date format. Please use YYYY-MM-DD.");
+            }
+        }
+
+
+        LocalTime startHour;
+        while (true) {
+            System.out.println("Enter start hour (HH:mm): ");
+            String input = scanner.nextLine();
+
+            try {
+                startHour = LocalTime.parse(input);
+
+                LocalTime gymOpen = LocalTime.of(6, 0);
+                LocalTime gymClose = LocalTime.of(23, 0);
+                LocalTime latestStart = gymClose.minusMinutes(duration);
+
+                if (startHour.isBefore(gymOpen)) {
+                    System.out.println("❌ The gym opens at 06:00. Please choose a later time.");
+                } else if (startHour.isAfter(latestStart)) {
+                    System.out.println("❌ Class is too long to start at this time. Latest possible start: " + latestStart);
+                } else {
+                    break; // valid!
+                }
+
+            } catch (DateTimeParseException e) {
+                System.out.println("❌ Invalid time format. Please use HH:mm.");
+            }
+        }
+
 
         System.out.println("Enter max participants:");
         int maxParticipants = scanner.nextInt();
         scanner.nextLine();
 
 
+        LocalDate finalDate = date;
+        LocalTime finalStartHour = startHour;
         boolean hasConflict = trainer.getBookings().stream()
-                .anyMatch(b -> b.getDate().equals(date) &&
-                        overlaps(b.getTimeSlot(), startHour, duration));
+                .anyMatch(b -> b.getDate().equals(finalDate) &&
+                        overlaps(b.getTimeSlot(), finalStartHour, duration));
 
         if (hasConflict) {
             System.out.println("❌ Conflict detected: you already have a booking during that time.");
@@ -234,14 +287,22 @@ public class TrainerService {
         fitnessClassService.addFitnessClass(fitnessClass);
 
         // Adăugăm toate booking-urile pentru intervalul de timp
-        int slotsToBlock = (int) Math.ceil(duration / 60.0);
-        LocalTime slotTime = startHour;
+        // Sloturi reale care trebuie marcate ca ocupate (pe ore fixe)
+        LocalTime classEnd = startHour.plusMinutes(duration);
+        List<TimeSlot> timeSlotsToBlock = trainer.getAvailableSlots().stream()
+                .filter(slot -> slot.getDay().equals(finalDate.getDayOfWeek()))
+                .filter(slot -> {
+                    LocalTime slotStart = slot.getStartTime();
+                    LocalTime slotEnd = slotStart.plusHours(1);
+                    return finalStartHour.isBefore(slotEnd) && classEnd.isAfter(slotStart);
+                })
+                .collect(Collectors.toList());
 
-        for (int i = 0; i < slotsToBlock; i++) {
-            Booking booking = new Booking(fitnessClass, null, date, slotTime);
+        for (TimeSlot slot : timeSlotsToBlock) {
+            Booking booking = new Booking(fitnessClass, null, date, slot.getStartTime());
             trainer.getBookings().add(booking);
-            slotTime = slotTime.plusHours(1);
         }
+
 
         System.out.println("Class added successfully and added to your schedule!");
 
@@ -290,44 +351,104 @@ public class TrainerService {
             return;
         }
 
-        // 1. List all trainers
-        listAllTrainersDetailed();
+        // Pas 0 – Alegere între trainerul tău sau altul
+        System.out.println("Do you want to:");
+        System.out.println("1. Book a session with your current personal trainer");
+        System.out.println("2. Book with a different trainer");
 
-        System.out.print("Enter the number of the trainer you want to book: ");
-        int trainerIndex = scanner.nextInt();
-        scanner.nextLine();
+        int option = scanner.nextInt();
+        scanner.nextLine(); // flush newline
 
-        if (trainerIndex < 1 || trainerIndex > trainers.size()) {
-            System.out.println("Invalid selection.");
+        Trainer selectedTrainer;
+
+        if (option == 1) {
+            selectedTrainer = member.getTrainer();
+            if (selectedTrainer == null) {
+                System.out.println("⚠ You don't have a personal trainer assigned.");
+                return;
+            }
+            System.out.println("Booking with your personal trainer: " + selectedTrainer.getName());
+        } else if (option == 2) {
+            listAllTrainersDetailed();
+
+            System.out.print("Enter the number of the trainer you want to book: ");
+            int trainerIndex = scanner.nextInt();
+            scanner.nextLine();
+
+            if (trainerIndex < 1 || trainerIndex > trainers.size()) {
+                System.out.println("Invalid selection.");
+                return;
+            }
+
+            Trainer tempTrainer = trainers.get(trainerIndex - 1);
+            selectedTrainer = tempTrainer; // Nu modifici `selectedTrainer` din altă parte
+        } else {
+            System.out.println("Invalid option.");
             return;
         }
 
-        Trainer selectedTrainer = trainers.get(trainerIndex - 1);
+        // Data
+        LocalDate date;
+        while (true) {
+            System.out.print("Enter the date you want to book (YYYY-MM-DD): ");
+            String inputDate = scanner.nextLine();
 
-        // 2. Pick a date
-        System.out.print("Enter the date you want to book (YYYY-MM-DD): ");
-        LocalDate date = LocalDate.parse(scanner.nextLine());
+            try {
+                date = LocalDate.parse(inputDate);
+                LocalDate today = LocalDate.now();
+                LocalDate maxDate = today.plusMonths(1);
 
-        // 3. Show trainer's schedule for that day
+                if (date.isBefore(LocalDate.now())) {
+                    System.out.println("❌ You cannot book a session in the past. Please choose a future date.");
+                }else if (date.isAfter(maxDate)) {
+                    System.out.println("❌ You can only book up to 1 month in advance.");
+                } else {
+                    break; // dată validă
+                }
+            } catch (DateTimeParseException e) {
+                System.out.println("❌ Invalid date format or nonexistent date. Please use format YYYY-MM-DD.");
+            }
+        }
+
+
+        // Program
         showScheduleForDate(selectedTrainer, date);
 
-        System.out.print("Enter desired hour (HH:mm): ");
-        LocalTime hour = LocalTime.parse(scanner.nextLine());
+        LocalTime hour;
+        while (true) {
+            System.out.print("Enter desired hour (HH:mm): ");
+            String inputTime = scanner.nextLine();
 
-        // 4. Verify if slot is available and not already booked
+            try {
+                hour = LocalTime.parse(inputTime);
+
+                if (date.equals(LocalDate.now()) && hour.isBefore(LocalTime.now())) {
+                    System.out.println("❌ You can't book a session earlier than the current time.");
+                } else {
+                    break; // oră validă
+                }
+
+            } catch (DateTimeParseException e) {
+                System.out.println("❌ Invalid time format. Please use format HH:mm.");
+            }
+        }
+
+
+        LocalDate finalDate = date;
+        LocalTime finalHour = hour;
         boolean isAvailable = selectedTrainer.getAvailableSlots().stream()
                 .anyMatch(slot ->
-                        slot.getDay().equals(date.getDayOfWeek()) &&
-                                slot.getStartTime().equals(hour) &&
+                        slot.getDay().equals(finalDate.getDayOfWeek()) &&
+                                slot.getStartTime().equals(finalHour) &&
                                 slot.getTrainer().equals(selectedTrainer));
 
         boolean alreadyBooked = selectedTrainer.getBookings().stream()
-                .anyMatch(b -> b.getDate().equals(date) &&
-                        b.getTimeSlot().equals(hour));
+                .anyMatch(b -> b.getDate().equals(finalDate) &&
+                        b.getTimeSlot().equals(finalHour));
 
         boolean memberAlreadyBooked = selectedTrainer.getBookings().stream()
-                .anyMatch(b -> b.getDate().equals(date) &&
-                        b.getTimeSlot().equals(hour) &&
+                .anyMatch(b -> b.getDate().equals(finalDate) &&
+                        b.getTimeSlot().equals(finalHour) &&
                         b.getMember().equals(member));
 
         if (!isAvailable) {
@@ -345,12 +466,10 @@ public class TrainerService {
             return;
         }
 
-        // 5. Create booking
         Booking booking = new Booking(selectedTrainer, member, date, hour, "Personal Training");
 
         selectedTrainer.getBookings().add(booking);
-        selectedTrainer.getTrainedMembers().add(member); // link member to trainer
-
+        selectedTrainer.getTrainedMembers().add(member);
 
         System.out.println("Select payment method (CARD, CASH, ONLINE):");
         PaymentMethod method = PaymentMethod.valueOf(scanner.nextLine().toUpperCase());
@@ -367,6 +486,80 @@ public class TrainerService {
 
         System.out.println("✅ Personal training session booked successfully with " + selectedTrainer.getName() +
                 " on " + date + " at " + hour);
+    }
+
+
+
+    public void addReviewForTrainer(Scanner scanner, Member member) {
+        Set<Trainer> eligibleTrainers = new HashSet<>();
+
+        if(member.getTrainer() != null) {
+            eligibleTrainers.add(member.getTrainer());
+        }
+
+        // Căutăm în toate booking-urile tuturor trainerilor
+        for (Trainer trainer : this.trainers) {
+            for (Booking booking : trainer.getBookings()) {
+                if (booking.getMember().equals(member)) {
+                    LocalDateTime sessionTime = LocalDateTime.of(booking.getDate(), booking.getTimeSlot());
+                    if (sessionTime.isBefore(LocalDateTime.now())) {
+                        eligibleTrainers.add(trainer);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (eligibleTrainers.isEmpty()) {
+            System.out.println("You haven't had any completed sessions with a trainer yet.");
+            return;
+        }
+
+        System.out.println("You can leave a review for the following trainers:");
+
+        List<Trainer> trainerList = new ArrayList<>(eligibleTrainers);
+        for (int i = 0; i < trainerList.size(); i++) {
+            System.out.println((i + 1) + ". " + trainerList.get(i).getName());
+        }
+
+        System.out.print("Select the trainer number to leave a review: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        if (choice < 1 || choice > trainerList.size()) {
+            System.out.println("Invalid selection.");
+            return;
+        }
+
+        Trainer selectedTrainer = trainerList.get(choice - 1);
+
+        System.out.print("Please enter your rating for " + selectedTrainer.getName() + " (1-5): ");
+        int rating = scanner.nextInt();
+        scanner.nextLine();
+
+        if (rating < 1 || rating > 5) {
+            System.out.println("Rating must be between 1 and 5.");
+            return;
+        }
+
+        selectedTrainer.getReviewScores().add(rating);
+        System.out.println("✅ Review submitted successfully for " + selectedTrainer.getName() + "!");
+    }
+    public void showReviewStats(Trainer trainer) {
+        List<Integer> reviews = trainer.getReviewScores();
+
+        if (reviews.isEmpty()) {
+            System.out.println("You have not received any reviews yet.");
+            return;
+        }
+
+        System.out.println("Your Reviews:");
+        for (int i = 0; i < reviews.size(); i++) {
+            System.out.println("Review #" + (i + 1) + ": " + reviews.get(i) + " stars");
+        }
+
+        double average = reviews.stream().mapToInt(Integer::intValue).average().orElse(0);
+        System.out.printf("⭐ Average Rating: %.2f out of 5\n", average);
     }
 
 

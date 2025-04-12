@@ -17,7 +17,6 @@ public class StartUp {
         // Liste pentru Membri, Traineri și Manageri
         List<Member> membri = new ArrayList<>();
         List<Trainer> trainers = new ArrayList<>();
-        List<Manager> managers = new ArrayList<>();
         List<FitnessClass> fitnessClasses = new ArrayList<>();
         List<Promotion> promotions = new ArrayList<>();
 
@@ -72,9 +71,15 @@ public class StartUp {
             System.out.println("2. Register");
             System.out.println("3. Exit");
             System.out.print("Enter your choice: ");
-            int option = scanner.nextInt();
-            scanner.nextLine();
+            String input = scanner.nextLine();
 
+            int option;
+            try{
+                option = Integer.parseInt(input);
+            }catch (NumberFormatException e) {
+                System.out.println("❌ Invalid input. Please enter a number (1–3).");
+                continue;
+            }
             switch (option) {
                 case 1:
                     login(scanner, memberService, trainerService, managerService, fitnessClassService, promotionService);
@@ -175,11 +180,12 @@ public class StartUp {
             System.out.println("5. List of fitness classes");
             System.out.println("6. Schedule a fitness class");
             System.out.println("7. List of trainers");
-            System.out.println("8. Book a personal trainer");
-            System.out.println("9. View and manage payments");
-            System.out.println("10. View active promotions");
-            System.out.println("11. Delete my account");
-            System.out.println("12. LOG OUT");
+            System.out.println("8. Personal trainer menu");
+            System.out.println("9. Add review for trainer");
+            System.out.println("10. View and manage payments");
+            System.out.println("11. View active promotions");
+            System.out.println("12. Delete my account");
+            System.out.println("13. LOG OUT");
 
             System.out.print("Enter your choice: ");
             int option = scanner.nextInt();
@@ -208,9 +214,12 @@ public class StartUp {
                     trainerService.listTrainers();
                     break;
                 case 8:
-                    trainerService.bookPersonalTrainer(scanner, member);
+                    personalTrainerMenu(scanner, member, trainerService, memberService);
                     break;
                 case 9:
+                    trainerService.addReviewForTrainer(scanner, member);
+                    break;
+                case 10:
                     boolean back = false;
                     while (!back) {
                         System.out.println("\n--- Payment History ---");
@@ -231,23 +240,63 @@ public class StartUp {
                         }
                     }
                     break;
-                case 10:
+                case 11:
                     promotionService.listActivePromotions();
                     break;
-                case 11:
+                case 12:
                     memberService.deleteMemberAccount(member);
                     if (!memberService.isMemberExists(member)) {
                         exit = true;
                     }
                     break;
-                case 12:
+                case 13:
                     exit = true;
                     break;
                 default:
                     System.out.println("Invalid choice. Try again.");
             }
         }
+
     }
+
+
+    private static void personalTrainerMenu(Scanner scanner, Member member, TrainerService trainerService, MemberService memberService) {
+        boolean back = false;
+
+        while (!back) {
+            System.out.println("\n--- Personal Trainer Options ---");
+            System.out.println("1. Assign personal trainer");
+            System.out.println("2. View current personal trainer");
+            System.out.println("3. Remove personal trainer");
+            System.out.println("4. Book a personal trainer");
+            System.out.println("5. Back to main menu");
+
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    memberService.assignPersonalTrainer(scanner, member, trainerService.getTrainers());
+                    break;
+                case 2:
+                    memberService.viewCurrentPersonalTrainer(member);
+                    break;
+                case 3:
+                    memberService.removePersonalTrainer(scanner, member);
+                    break;
+                case 4:
+                    trainerService.bookPersonalTrainer(scanner, member);
+                    break;
+                case 5:
+                    back = true;
+                    break;
+                default:
+                    System.out.println("Invalid option.");
+            }
+        }
+    }
+
 
     // Meniu pentru Antrenor
     private static void trainerMenu(Scanner scanner,Trainer trainer, TrainerService trainerService, FitnessClassService fitnessClassService) {
@@ -257,7 +306,8 @@ public class StartUp {
             System.out.println("1. Members you train");
             System.out.println("2. Fitness classes you coordinate");
             System.out.println("3. Your schedule");
-            System.out.println("4. LOG OUT");
+            System.out.println("4. Your rating");
+            System.out.println("5. LOG OUT");
 
             System.out.print("Enter your choice: ");
             int option = scanner.nextInt();
@@ -346,6 +396,9 @@ public class StartUp {
                     }
                     break;
                 case 4:
+                    trainerService.showReviewStats(trainer);
+                    break;
+                case 5:
                     // Exit the trainer menu
                     exit = true;
                     break;
@@ -429,9 +482,23 @@ public class StartUp {
         System.out.println("Please select your role:");
         System.out.println("1. Member");
         System.out.println("2. Trainer");
-        System.out.print("Enter your choice: ");
-        int roleChoice = scanner.nextInt();
-        scanner.nextLine();
+        //System.out.print("Enter your choice: ");
+        int roleChoice;
+        while (true) {
+            System.out.print("Enter your choice: ");
+            String input = scanner.nextLine().trim();
+
+            try {
+                roleChoice = Integer.parseInt(input);
+                if (roleChoice == 1 || roleChoice == 2) {
+                    break;
+                } else {
+                    System.out.println("❌ Please enter 1 for Member or 2 for Trainer.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Invalid input. Please enter a number (1 or 2).");
+            }
+        }
 
         String name = "", username = "", email = "", phoneNumber = "", password = "";
 
@@ -614,6 +681,7 @@ public class StartUp {
                 e.printStackTrace();
             }
         }
+        scanner.nextLine();
         login(scanner, memberService, trainerService, managerService, fitnessClassService, promotionService);
     }
 
