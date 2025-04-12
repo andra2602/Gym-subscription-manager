@@ -52,6 +52,11 @@ public class Promotion {
                 (today.isEqual(startDate) || today.isAfter(startDate)) &&
                 (today.isBefore(endDate) || today.isEqual(endDate));
     }
+    public boolean isUpcoming() {
+        LocalDate today = LocalDate.now();
+        return active && today.isBefore(startDate);
+    }
+
 
     /// getters
     public String getName() {

@@ -21,20 +21,44 @@ public class PromotionService {
     }
 
     public void listActivePromotions() {
-        boolean foundActivePromotion = false;
-        for (Promotion promotion : promotions) {
-            if (promotion.isValidNow()) {
-                System.out.println("Promotion: " + promotion.getName());
-                System.out.println("Description: " + promotion.getDescription());
-                System.out.println("Discount: " + promotion.getDiscountPercent() + "%");
-                System.out.println("Start Date: " + promotion.getStartDate());
-                System.out.println("End Date: " + promotion.getEndDate());
+        LocalDate today = LocalDate.now();
+
+        List<Promotion> activeNow = promotions.stream()
+                .filter(Promotion::isValidNow)
+                .sorted(Comparator.comparing(Promotion::getStartDate))
+                .toList();
+
+        List<Promotion> comingSoon = promotions.stream()
+                .filter(p -> p.isActive() && today.isBefore(p.getStartDate()))
+                .sorted(Comparator.comparing(Promotion::getStartDate))
+                .toList();
+
+        boolean shown = false;
+
+        if (!activeNow.isEmpty()) {
+            System.out.println("=== 🟢 Active Promotions Now ===");
+            for (Promotion p : activeNow) {
+                System.out.printf("Promotion: %s (%.1f%% OFF)\n", p.getName(), p.getDiscountPercent());
+                System.out.println("Description: " + p.getDescription());
+                System.out.println("Valid: " + p.getStartDate() + " → " + p.getEndDate());
                 System.out.println("------------------------------------");
-                foundActivePromotion = true;
             }
+            shown = true;
         }
-        if (!foundActivePromotion) {
-            System.out.println("No active promotions available.");
+
+        if (!comingSoon.isEmpty()) {
+            System.out.println("=== 🕒 Coming Soon Promotions ===");
+            for (Promotion p : comingSoon) {
+                System.out.printf("Promotion: %s (%.1f%% OFF)\n", p.getName(), p.getDiscountPercent());
+                System.out.println("Description: " + p.getDescription());
+                System.out.println("Valid: " + p.getStartDate() + " → " + p.getEndDate());
+                System.out.println("------------------------------------");
+            }
+            shown = true;
+        }
+
+        if (!shown) {
+            System.out.println("No promotions available at the moment.");
         }
     }
     public void listAllPromotions() {
@@ -86,32 +110,65 @@ public class PromotionService {
             System.out.println("Enter promotion name:");
             String name = scanner.nextLine();
 
-            System.out.println("Enter description (10-200 characters):");
-            String description = scanner.nextLine();
+            String description;
+            while (true) {
+                System.out.println("Enter description (10–200 characters):");
+                description = scanner.nextLine();
+                if (description.length() >= 10 && description.length() <= 200) break;
+                System.out.println("❌ Description must be between 10 and 200 characters.");
+            }
 
-            System.out.println("Enter discount percentage (0–100):");
-            float discount = scanner.nextFloat();
-            scanner.nextLine();
+            float discount;
+            while (true) {
+                System.out.println("Enter discount percentage (0–100):");
+                try {
+                    discount = Float.parseFloat(scanner.nextLine());
+                    if (discount >= 0 && discount <= 100) break;
+                    else System.out.println("❌ Discount must be between 0 and 100.");
+                } catch (NumberFormatException e) {
+                    System.out.println("❌ Invalid number. Please enter a valid float.");
+                }
+            }
 
-            System.out.println("Enter start date (YYYY-MM-DD):");
-            LocalDate startDate = LocalDate.parse(scanner.nextLine());
+            LocalDate startDate;
+            while (true) {
+                System.out.println("Enter start date (YYYY-MM-DD):");
+                try {
+                    startDate = LocalDate.parse(scanner.nextLine());
+                    if (!startDate.isBefore(LocalDate.now())) break;
+                    else System.out.println("❌ Start date can't be in the past.");
+                } catch (Exception e) {
+                    System.out.println("❌ Invalid date format or non-existent date. Please try again.");
+                }
+            }
 
-            System.out.println("Enter end date (YYYY-MM-DD):");
-            LocalDate endDate = LocalDate.parse(scanner.nextLine());
+            LocalDate endDate;
+            while (true) {
+                System.out.println("Enter end date (YYYY-MM-DD):");
+                try {
+                    endDate = LocalDate.parse(scanner.nextLine());
+                    if (!endDate.isBefore(startDate)) break;
+                    else System.out.println("❌ End date must be after or equal to the start date.");
+                } catch (Exception e) {
+                    System.out.println("❌ Invalid date format or non-existent date. Please try again.");
+                }
+            }
 
             Promotion promo = new Promotion(name, description, discount, startDate, endDate);
+            promo.setActive(true); // just in case
             promotions.add(promo);
 
-            System.out.println("Promotion added successfully!");
+            System.out.println("✅ Promotion added successfully!");
 
         } catch (Exception e) {
-            System.out.println("Error adding promotion: " + e.getMessage());
+            System.out.println("⚠ Unexpected error while adding promotion: " + e.getMessage());
         }
     }
 
+
     public void editPromotion(Scanner scanner) {
         List<Promotion> activePromotions = promotions.stream()
-                .filter(Promotion::isValidNow)
+                .filter(Promotion::isActive)
                 .toList();
 
         if (activePromotions.isEmpty()) {
@@ -165,19 +222,48 @@ public class PromotionService {
                         System.out.println("✔ Description updated!");
                         break;
                     case 3:
-                        System.out.println("Enter new discount percentage:");
-                        promo.setDiscountPercent(scanner.nextFloat());
-                        scanner.nextLine();
+                        float discount;
+                        while (true) {
+                            System.out.println("Enter new discount percentage (0–100):");
+                            try {
+                                discount = Float.parseFloat(scanner.nextLine());
+                                if (discount >= 0 && discount <= 100) break;
+                                System.out.println("❌ Must be between 0 and 100.");
+                            } catch (NumberFormatException e) {
+                                System.out.println("❌ Invalid input. Please enter a number.");
+                            }
+                        }
+                        promo.setDiscountPercent(discount);
                         System.out.println("✔ Discount updated!");
                         break;
                     case 4:
-                        System.out.println("Enter new start date (YYYY-MM-DD):");
-                        promo.setStartDate(LocalDate.parse(scanner.nextLine()));
+                        LocalDate newStart;
+                        while (true) {
+                            System.out.println("Enter new start date (YYYY-MM-DD):");
+                            try {
+                                newStart = LocalDate.parse(scanner.nextLine());
+                                if (!newStart.isBefore(LocalDate.now())) break;
+                                System.out.println("❌ Start date can't be in the past.");
+                            } catch (Exception e) {
+                                System.out.println("❌ Invalid date format.");
+                            }
+                        }
+                        promo.setStartDate(newStart);
                         System.out.println("✔ Start date updated!");
                         break;
                     case 5:
-                        System.out.println("Enter new end date (YYYY-MM-DD):");
-                        promo.setEndDate(LocalDate.parse(scanner.nextLine()));
+                        LocalDate newEnd;
+                        while (true) {
+                            System.out.println("Enter new end date (YYYY-MM-DD):");
+                            try {
+                                newEnd = LocalDate.parse(scanner.nextLine());
+                                if (!newEnd.isBefore(promo.getStartDate())) break;
+                                System.out.println("❌ End date can't be before start date (" + promo.getStartDate() + ").");
+                            } catch (Exception e) {
+                                System.out.println("❌ Invalid date format.");
+                            }
+                        }
+                        promo.setEndDate(newEnd);
                         System.out.println("✔ End date updated!");
                         break;
                     case 6:
@@ -247,7 +333,7 @@ public class PromotionService {
 
     public void reactivatePromotion(Scanner scanner) {
         List<Promotion> inactivePromos = promotions.stream()
-                .filter(p -> !p.isValidNow())
+                .filter(p -> !p.isActive()) // mai corect decât !p.isValidNow()
                 .toList();
 
         if (inactivePromos.isEmpty()) {
@@ -258,7 +344,8 @@ public class PromotionService {
         System.out.println("\n--- Inactive Promotions ---");
         for (int i = 0; i < inactivePromos.size(); i++) {
             Promotion p = inactivePromos.get(i);
-            System.out.printf("%d. %s (%.1f%% OFF) | Expired on: %s\n", i + 1, p.getName(), p.getDiscountPercent(), p.getEndDate());
+            System.out.printf("%d. %s (%.1f%% OFF) | Last valid until: %s\n",
+                    i + 1, p.getName(), p.getDiscountPercent(), p.getEndDate());
         }
 
         System.out.println("Enter the number of the promotion to reactivate:");
@@ -272,29 +359,36 @@ public class PromotionService {
 
         Promotion selected = inactivePromos.get(choice - 1);
 
-        try {
+        LocalDate newStart;
+        while (true) {
             System.out.println("Enter new start date (YYYY-MM-DD):");
-            LocalDate newStart = LocalDate.parse(scanner.nextLine());
-
-            System.out.println("Enter new end date (YYYY-MM-DD):");
-            LocalDate newEnd = LocalDate.parse(scanner.nextLine());
-
-            selected.setStartDate(newStart);
-            selected.setEndDate(newEnd);
-            selected.setActive(true);
-
-            System.out.println("✅ Promotion \"" + selected.getName() + "\" has been reactivated!");
-        } catch (Exception e) {
-            System.out.println("⚠ Error while updating dates: " + e.getMessage());
+            try {
+                newStart = LocalDate.parse(scanner.nextLine());
+                if (!newStart.isBefore(LocalDate.now())) break;
+                else System.out.println("❌ Start date can't be in the past.");
+            } catch (Exception e) {
+                System.out.println("❌ Invalid date format or nonexistent date.");
+            }
         }
+
+        LocalDate newEnd;
+        while (true) {
+            System.out.println("Enter new end date (YYYY-MM-DD):");
+            try {
+                newEnd = LocalDate.parse(scanner.nextLine());
+                if (!newEnd.isBefore(newStart)) break;
+                else System.out.println("❌ End date must be after or equal to the start date.");
+            } catch (Exception e) {
+                System.out.println("❌ Invalid date format or nonexistent date.");
+            }
+        }
+
+        selected.setStartDate(newStart);
+        selected.setEndDate(newEnd);
+        selected.setActive(true);
+
+        System.out.println("✅ Promotion \"" + selected.getName() + "\" has been reactivated!");
     }
-
-
-
-
-
-
-
 
 
 }

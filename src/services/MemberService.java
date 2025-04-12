@@ -114,6 +114,87 @@ public class MemberService {
         }
     }
 
+    public void assignPersonalTrainer(Scanner scanner, Member member, List<Trainer> trainers) {
+        if (member.getTrainer() != null) {
+            System.out.println("⚠ You already have a personal trainer assigned: " + member.getTrainer().getName());
+            System.out.println("❗ Please remove your current trainer before assigning a new one.");
+            return;
+        }
+
+        if (trainers.isEmpty()) {
+            System.out.println("No trainers available to assign.");
+            return;
+        }
+
+        // Afișăm trainerii
+        for (int i = 0; i < trainers.size(); i++) {
+            Trainer t = trainers.get(i);
+            System.out.println((i + 1) + ". " + t.getName() + " - " + t.getSpecialization());
+        }
+
+        System.out.print("Enter the number of the trainer you want to assign: ");
+        int trainerIndex = scanner.nextInt();
+        scanner.nextLine();
+
+        if (trainerIndex < 1 || trainerIndex > trainers.size()) {
+            System.out.println("Invalid trainer selected.");
+            return;
+        }
+
+        Trainer selectedTrainer = trainers.get(trainerIndex - 1);
+
+        System.out.print("Are you sure you want to assign " + selectedTrainer.getName() + " as your personal trainer? (yes/no): ");
+        String confirm = scanner.nextLine();
+
+        if (confirm.equalsIgnoreCase("yes")) {
+            member.setTrainer(selectedTrainer);
+            selectedTrainer.getTrainedMembers().add(member);
+            System.out.println("✅ " + selectedTrainer.getName() + " is now your personal trainer!");
+        } else {
+            System.out.println("❌ Assignment cancelled.");
+        }
+    }
+    public void viewCurrentPersonalTrainer(Member member){
+        Trainer trainer = member.getTrainer();
+
+        if (trainer == null) {
+            System.out.println("⚠ You currently do not have a personal trainer assigned.");
+        } else {
+            System.out.println("👤 Your current trainer is: " + trainer.getName());
+            System.out.println("   Specialization: " + trainer.getSpecialization());
+            System.out.println("   Experience: " + trainer.getYearsOfExperience() + " years");
+            System.out.println("   Price/hour: " + trainer.getPricePerHour() + " RON");
+            List<Integer> reviews = trainer.getReviewScores();
+            if (reviews.isEmpty()) {
+                System.out.println("   ⭐ Rating: No reviews yet");
+            } else {
+                double average = reviews.stream()
+                        .mapToInt(Integer::intValue)
+                        .average()
+                        .orElse(0);
+                System.out.printf("   ⭐ Average Rating: %.2f / 5 (%d reviews)\n", average, reviews.size());
+            }
+        }
+    }
+    public void removePersonalTrainer(Scanner scanner, Member member){
+        Trainer trainer = member.getTrainer();
+
+        if (trainer == null) {
+            System.out.println("⚠ You have no personal trainer to remove.");
+            return;
+        }
+
+        System.out.print("Are you sure you want to remove " + trainer.getName() + " as your personal trainer? (yes/no): ");
+        String confirm = scanner.nextLine();
+
+        if (confirm.equalsIgnoreCase("yes")) {
+            member.setTrainer(null);
+            trainer.getTrainedMembers().remove(member);
+            System.out.println("✅ Your trainer has been removed.");
+        } else {
+            System.out.println("❌ Removal cancelled.");
+        }
+    }
 
     ///  Subscription
     public void viewSubscriptionDetails(Member member) {
