@@ -2,6 +2,7 @@ package services;
 import models.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
@@ -290,19 +291,29 @@ public class PromotionService {
             return;
         }
 
-        listAllPromotions();
+        List<Promotion> displayList = new ArrayList<>(promotions);
+
+        System.out.println("\n--- All Promotions ---");
+        for (int i = 0; i < displayList.size(); i++) {
+            Promotion p = displayList.get(i);
+            System.out.printf("%d. %s (%.1f%% OFF) [%s → %s]\n",
+                    i + 1, p.getName(), p.getDiscountPercent(), p.getStartDate(), p.getEndDate());
+        }
+
         System.out.println("Enter the number of the promotion to remove:");
         int index = scanner.nextInt();
         scanner.nextLine();
 
-        if (index < 1 || index > promotions.size()) {
-            System.out.println("Invalid index.");
+        if (index < 1 || index > displayList.size()) {
+            System.out.println("❌ Invalid selection.");
             return;
         }
 
-        Promotion removed = promotions.remove(index - 1);
-        System.out.println("Removed promotion: " + removed.getName());
+        Promotion selected = displayList.get(index - 1);
+        promotions.remove(selected); // eliminăm din lista reală
+        System.out.println("✅ Removed promotion: " + selected.getName());
     }
+
 
 
     public void deactivatePromotion(Scanner scanner) {
