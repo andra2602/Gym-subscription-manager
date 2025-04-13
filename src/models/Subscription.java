@@ -8,6 +8,7 @@ public class Subscription {
     public float price;
     public boolean isActive;
     private Promotion promotion;
+    private int extendedMonths = 0;
 
     private static final float STUDENT_DISCOUNT = 0.30f;
 
@@ -21,12 +22,14 @@ public class Subscription {
 
     /// metode de gestionare
     public LocalDate getEndDate() {
-        return switch (type.toLowerCase()) {
-            case "monthly" -> startDate.plusMonths(1);
-            case "6 months" -> startDate.plusMonths(6);
-            case "annual" -> startDate.plusYears(1);
-            default -> startDate; // fallback
+        int baseMonths = switch (type.toLowerCase()) {
+            case "monthly" -> 1;
+            case "6 months" -> 6;
+            case "annual" -> 12;
+            default -> 0;
         };
+
+        return startDate.plusMonths(baseMonths + extendedMonths);
     }
 
     public boolean isCurrentlyActive() {
@@ -45,6 +48,13 @@ public class Subscription {
         }
 
         return finalPrice;
+    }
+    public void addMonths(int months) {
+        this.extendedMonths += months;
+    }
+
+    public int getExtendedMonths() {
+        return extendedMonths;
     }
 
     ///  getters & setters

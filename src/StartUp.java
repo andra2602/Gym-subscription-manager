@@ -11,60 +11,32 @@ public class StartUp {
         Scanner scanner = new Scanner(System.in);
         boolean exit = false;
 
-        /// prompt de start
+        // Start prompt
         showWelcomePrompt(scanner);
 
-        // Liste pentru Membri, Traineri și Manageri
+        // Initialize lists
         List<Member> membri = new ArrayList<>();
         List<Trainer> trainers = new ArrayList<>();
         List<FitnessClass> fitnessClasses = new ArrayList<>();
         List<Promotion> promotions = new ArrayList<>();
 
-
-        // Crearea serviciilor pentru fiecare tip de utilizator
-        MemberService memberService = new MemberService(membri);
+        // Create services
+        MemberService memberService = new MemberService(membri,trainers);
         TrainerService trainerService = new TrainerService(trainers);
         ManagerService managerService = new ManagerService();
         FitnessClassService fitnessClassService = new FitnessClassService(fitnessClasses);
         PromotionService promotionService = new PromotionService(promotions);
 
+
+        // Load test users (members + trainers)
+        loadTestUsers(memberService, trainerService);
+        // Load test promotions
+        loadTestPromotions(promotionService);
+        // Check promotion expiration
         promotionService.checkPromotionValidityOnStartup();
 
 
-        // Crearea unui trainer predefinit pentru teste
-        Set<Member> trainedMembers = new HashSet<>(); // Set de membri pe care îi antrenează
-        List<TimeSlot> availableSlots = new ArrayList<>(); // Lista de sloturi de timp disponibile
-        List<Booking> bookings = new ArrayList<>(); // Lista de rezervări
-        List<Integer> reviewScores = new ArrayList<>(); // Lista de scoruri de review
-
-        Trainer testTrainer = new Trainer("Test Trainer", "testtrainer", "ttest@example.com", "0721345678", "Parola123!",
-                "fitness", 3, 75, trainedMembers, availableSlots, bookings, reviewScores );
-
-        trainerService.addTrainer(testTrainer);
-        // Crearea unui membru predefinit pentru test
-        Member testMember = new Member("Test Member", "testmember", "test@example.com", "0723123456", "Parola123!",
-                LocalDate.now(), 70.5f, 175f, "beginner",  null, null, true);
-        memberService.addMember(testMember); // Adăugăm membrul în lista de membri
-
-
-        // Membri de test
-        Member member1 = new Member(
-                "Ana Avansata", "Ana123456", "ana@mail.com", "0722000001", "Parola123*",
-                LocalDate.of(2023, 2, 15), 60f, 1.68f, "advanced", testTrainer, null, false);
-
-        Member member2 = new Member(
-                "Paul Incepator", "Paul123B", "paul@mail.com", "0722000002", "Parola456*",
-                LocalDate.of(2024, 1, 10), 75f, 1.80f, "beginner", testTrainer, null, true);
-
-        // Adăugăm membrii în lista generală (dacă ai una)
-        membri.add(member2);
-        membri.add(member1);
-        // Legăm membrii de antrenor
-        testTrainer.getTrainedMembers().add(member1);
-        testTrainer.getTrainedMembers().add(member2);
-
-
-
+        // Main menu loop
         while (!exit) {
             System.out.println("\n Menu: ");
             System.out.println("1. Login");
@@ -74,12 +46,13 @@ public class StartUp {
             String input = scanner.nextLine();
 
             int option;
-            try{
+            try {
                 option = Integer.parseInt(input);
-            }catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 System.out.println("❌ Invalid input. Please enter a number (1–3).");
                 continue;
             }
+
             switch (option) {
                 case 1:
                     login(scanner, memberService, trainerService, managerService, fitnessClassService, promotionService);
@@ -133,6 +106,92 @@ public class StartUp {
 
         System.out.println("\nStarting the system...");
     }
+
+    private static void loadTestUsers(MemberService memberService, TrainerService trainerService) {
+        // === Traineri de test ===
+        Trainer t1 = new Trainer("Maria Fit Trainer", "mariaFit", "maria@fit.com", "0711111111", "Parola123!",
+                "zumba", 4, 100, new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+
+        Trainer t2 = new Trainer("Andrei Strong", "astrong", "andrei@power.com", "0722222222", "Parola123!",
+                "cardio", 6, 120, new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+
+        Trainer t3 = new Trainer("Test Trainer", "testtrainer", "ttest@example.com", "0721345678", "Parola123!",
+                "fitness", 3, 75, new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+
+        trainerService.addTrainer(t1);
+        trainerService.addTrainer(t2);
+        trainerService.addTrainer(t3);
+
+        // === Membri de test ===
+        Member m1 = new Member("Ana Avansata", "Ana123456", "ana@mail.com", "0722000001", "Parola123!",
+                LocalDate.of(2023, 2, 15), 60f, 1.68f, "advanced", t1, null, false);
+
+        Member m2 = new Member("Paul Incepator", "Paul123B", "paul@mail.com", "0722000002", "Parola123!",
+                LocalDate.of(2024, 1, 10), 75f, 1.80f, "beginner", t2, null, true);
+
+        Member m3 = new Member("Test Member", "testmember", "test@example.com", "0723123456", "Parola123!",
+                LocalDate.now(), 70.5f, 175f, "beginner", null, null, true);
+
+
+        // Subscription care expiră în 3 zile pentru Ana
+        LocalDate startDateAna = LocalDate.now().minusDays(27); // începe acum 27 de zile
+        Subscription anaSubscription = new Subscription(
+                "monthly",
+                startDateAna,
+                100f,
+                true,
+                null // fără promoție
+        );
+        m1.setSubscription(anaSubscription);
+
+
+        memberService.addMember(m1);
+        memberService.addMember(m2);
+        memberService.addMember(m3);
+
+        // ii atribuim trainerilor
+        t1.getTrainedMembers().add(m1);
+        t2.getTrainedMembers().add(m2);
+    }
+
+    private static void loadTestPromotions(PromotionService promotionService) {
+        LocalDate today = LocalDate.now();
+
+        // 1. Active now
+        Promotion activeNow = new Promotion(
+                "Spring Fit Blast",
+                "Get 20% off on all fitness classes this week!",
+                20,
+                today.minusDays(2),
+                today.plusDays(5),
+                true
+        );
+
+        // 2. Coming soon
+        Promotion comingSoon = new Promotion(
+                "Summer Starter Pack",
+                "Prepare for summer with 15% off subscriptions!",
+                15,
+                today.plusDays(3),
+                today.plusDays(10)
+        );
+
+        // 3. Expired
+        Promotion expired = new Promotion(
+                "New Year Resolution",
+                "Start strong: 25% off if you joined in January!",
+                25,
+                today.minusMonths(2),
+                today.minusMonths(1),
+                true
+        );
+
+        promotionService.getPromotions().add(activeNow);
+        promotionService.getPromotions().add(comingSoon);
+        promotionService.getPromotions().add(expired);
+    }
+
+
 
     private static void login(Scanner scanner,MemberService memberService , TrainerService trainerService, ManagerService managerService, FitnessClassService fitnessClassService, PromotionService promotionService) {
         System.out.println("\n LOGIN: ");
@@ -196,7 +255,7 @@ public class StartUp {
                     memberService.viewSubscriptionDetails(member);
                     break;
                 case 2:
-                    memberService.addNewSubscription(member);
+                    memberService.addNewSubscription(member,promotionService);
                     break;
                 case 3:
                     memberService.editSubscription(member);
@@ -208,7 +267,7 @@ public class StartUp {
                     fitnessClassService.listFitnessClasses();
                     break;
                 case 6:
-                    fitnessClassService.scheduleFitnessClass(scanner, member);
+                    fitnessClassService.scheduleFitnessClass(scanner, member, promotionService);
                     break;
                 case 7:
                     trainerService.listTrainers();

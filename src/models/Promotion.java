@@ -22,6 +22,23 @@ public class Promotion {
         this.endDate = endDate;
         this.active = true;
     }
+
+    ///  constructor pentru a putea construi promotii de test
+    public Promotion(String name, String description, float discountPercent, LocalDate startDate, LocalDate endDate, boolean skipValidation) {
+        if (!skipValidation) {
+            validateDescription(description);
+            validateDiscount(discountPercent);
+            validateStartDate(startDate);
+            validateEndDate(startDate, endDate);
+        }
+        this.name = name;
+        this.description = description;
+        this.discountPercent = discountPercent;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.active = true;
+    }
+
     ///  validari
 
     private void validateDescription(String description) {

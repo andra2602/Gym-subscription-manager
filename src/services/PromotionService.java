@@ -20,6 +20,10 @@ public class PromotionService {
         }
     }
 
+    public List<Promotion> getPromotions() {
+        return promotions;
+    }
+
     public void listActivePromotions() {
         LocalDate today = LocalDate.now();
 
