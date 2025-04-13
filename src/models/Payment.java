@@ -9,8 +9,6 @@ public class Payment {
     private String purpose; /// ex: "Abonament lunar", "Clase yoga"
 
     public Payment(float amount, LocalDate paymentDate, PaymentMethod paymentMethod, Member member, String purpose) {
-        validateAmount(amount);
-
         this.amount = amount;
         this.paymentDate = (paymentDate != null) ? paymentDate : LocalDate.now();
         this.paymentMethod = paymentMethod;
@@ -18,11 +16,6 @@ public class Payment {
         this.purpose = purpose;
     }
 
-    private void validateAmount(float amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("Suma trebuie să fie mai mare decât 0.");
-        }
-    }
 
     /// getters
     public float getAmount() {
@@ -53,10 +46,10 @@ public class Payment {
     //toString (pentru afișare în istoric)
     @Override
     public String toString() {
-        return "Plată :" +
-                "Suma = " + amount + " RON, " +
-                "Data = " + paymentDate +
-                ", Metodă = " + paymentMethod +
-                ", Scop = '" + purpose + '\'';
+        return "Payment :" +
+                "Amount = " + amount + " RON, " +
+                "Date = " + paymentDate +
+                ", Method = " + paymentMethod +
+                ", Purpose = '" + purpose + '\'';
     }
 }

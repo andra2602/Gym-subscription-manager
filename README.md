@@ -21,12 +21,17 @@ The app allows:
 ### 👤 Member
 
 1. **Subscriptions**
-    - View subscription details
-    - Create, update, or cancel a subscription
+    - View, create, extend, or cancel a subscription
+    - Extend is allowed only when the subscription is close to expiry (≤5 days)
+    - Optionally apply promotion codes
+    - Students benefit from a built-in 30% discount
 
+   
 2. **Fitness Classes**
-    - View available fitness classes
-    - Schedule participation in a class
+   - View available fitness classes
+   - Book a class if spots are available
+   - Apply active promotions when booking
+   - Refund is issued if class is cancelled
 
 3. **Trainers**
     - Browse all active trainers
@@ -44,12 +49,18 @@ The app allows:
 5. **Payments**
     - View all payments (subscriptions, classes, personal training)
     - See total money spent
+    - Refunds appear in payment history
 
 6. **Promotions**
-    - View active and upcoming promotions
+   - View **active** and **upcoming** promotions
+   - Apply them when creating subscriptions or joining classes
 
-7. **Account**
-    - Permanently delete your member account
+7. **Account Deletion**
+   - Fully deletes:
+      - Your subscription
+      - Payments
+      - Class bookings
+      - Personal trainer & trainer slots
 
 ---
 
@@ -61,7 +72,7 @@ The app allows:
 
 2. **Manage Fitness Classes**
     - Add new fitness classes (between 7 and 30 days in advance)
-    - Delete existing classes
+    - Delete existing classes — participants get refunds
     - View all classes you coordinate
 
 3. **Your Schedule**
@@ -101,12 +112,15 @@ The app allows:
 
 ---
 
-## 🧪 Predefined Users
+## 🧪 Test Data Loaded on Startup
 
-The app starts with:
-- 1 predefined trainer (with empty schedule and reviews)
-- 1 predefined test member
-- 2 additional members assigned to the trainer
+- [x] 3 Trainers
+- [x] 3 Members (assigned to trainers)
+- [x] 3 Promotions:
+   - 1 Active
+   - 1 Upcoming
+   - 1 Expired
+- [x] One member has a subscription expiring in 3 days
 
 ---
 
@@ -129,7 +143,7 @@ The app starts with:
 
 ---
 
-## 💡 For Future Work
+## 💡 Future Improvements
 
 - Add data persistence (file storage, JSON, or database integration)
 - Implement full audit logging

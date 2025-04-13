@@ -12,10 +12,13 @@ public class MemberService {
 
     private List<Member> members;
     List<FitnessClass> fitnessClasses = new ArrayList<>();
+    private List<Trainer> trainers;
 
 
-    public MemberService(List<Member> membri) {
+
+    public MemberService(List<Member> membri,List<Trainer> trainers) {
         this.members = membri;
+        this.trainers = trainers;
     }
 
     public Member findByUsernameAndPassword(String username, String password) {
@@ -62,44 +65,68 @@ public class MemberService {
         System.out.println("Type 'yes' to confirm or 'no' to cancel.");
         String confirmation = scanner.nextLine();
 
-        if (confirmation.equalsIgnoreCase("yes")) {
-            // Ștergerea abonamentului
-            if (member.getSubscription() != null) {
-                member.setSubscription(null); // Ștergem abonamentul
-                System.out.println("Your subscription has been deleted.");
-            }
-
-            // Ștergerea plăților - presupunând că există o listă de plăți asociate membrului
-            if (member.getPayments() != null) {
-                member.setPayments(new ArrayList<>()); // Golește lista de plăți
-                System.out.println("Your payments have been deleted.");
-            }
-
-            /***
-            // Ștergerea rezervărilor la clase de fitness - presupunând că există o listă de rezervări la clase
-            if (member.getFitnessClassReservations() != null) {
-                member.setFitnessClassReservations(new ArrayList<>()); // Golește lista de rezervări la clase de fitness
-                System.out.println("Your fitness class reservations have been deleted.");
-            }
-
-            // Ștergerea rezervărilor la antrenori - presupunând că există o listă de rezervări la antrenori
-            if (member.getTrainerReservations() != null) {
-                member.setTrainerReservations(new ArrayList<>()); // Golește lista de rezervări la antrenori
-                System.out.println("Your trainer reservations have been deleted.");
-            }
-            ***/
-
-            // Ștergerea membrului din lista de membri
-            if (members.contains(member)) {
-                members.remove(member); // Ștergem membrul din lista de membri
-                System.out.println("Your account has been deleted successfully.");
-            } else {
-                System.out.println("Member not found.");
-            }
-        } else {
+        if (!confirmation.equalsIgnoreCase("yes")) {
             System.out.println("Account deletion has been canceled.");
+            return;
+        }
+
+        // 1. Subscription
+        if (member.getSubscription() != null) {
+            member.setSubscription(null);
+            System.out.println("✔ Your subscription has been deleted.");
+        }
+
+        // 2. Payments
+        if (member.getPayments() != null) {
+            member.setPayments(new ArrayList<>());
+            System.out.println("✔ Your payments have been deleted.");
+        }
+
+        // 3. Bookings (trainer + fitness class)
+        for (Trainer trainer : trainers) {
+            // eliminăm toate bookingurile membrului din lista trainerului
+            List<Booking> toRemove = new ArrayList<>();
+
+            for (Booking b : trainer.getBookings()) {
+                if (member.equals(b.getMember())) {
+                    toRemove.add(b);
+
+                    // Dacă era pentru o clasă – scădem participanții
+                    if (b.getFitnessClass() != null) {
+                        FitnessClass fc = b.getFitnessClass();
+                        fc.getParticipants().remove(member);
+                        System.out.println("✔ Removed from class: " + fc.getName());
+                    }
+
+                    // Dacă era personal training – slotul devine din nou liber
+                    if (b.getTrainer() != null && b.getFitnessClass() == null) {
+                        TimeSlot freedSlot = new TimeSlot(
+                                b.getTimeSlot(),
+                                b.getTimeSlot().plusHours(1),
+                                b.getDate().getDayOfWeek(),
+                                b.getTrainer()
+                        );
+                        b.getTrainer().getAvailableSlots().add(freedSlot);
+                        System.out.println("✔ Freed slot at " + b.getTimeSlot() + " for " + b.getTrainer().getName());
+                    }
+                }
+            }
+
+            trainer.getBookings().removeAll(toRemove);
+
+            // 4. Scoatem membrul de la trainerul lui (dacă e cazul)
+            trainer.getTrainedMembers().remove(member);
+        }
+
+        // 5. Scoatem din lista de membri
+        if (members.contains(member)) {
+            members.remove(member);
+            System.out.println("✅ Your account has been deleted successfully.");
+        } else {
+            System.out.println("❌ Member not found.");
         }
     }
+
     public void listMembers() {
         if (members.isEmpty()) {
             System.out.println("No members available.");
@@ -214,7 +241,7 @@ public class MemberService {
             System.out.println("Promotion: " + subscription.getPromotion().getName() + " - " + subscription.getPromotion().getDiscountPercent() + "% off");
         }
     }
-    public void addNewSubscription(Member member) {
+    public void addNewSubscription(Member member, PromotionService promotionService) {
         if (member.getSubscription() != null && member.getSubscription().isCurrentlyActive()) {
             System.out.println("You already have an active subscription.");
             return; // Dacă membrul are deja un abonament activ, nu îi se va crea unul nou
@@ -272,20 +299,35 @@ public class MemberService {
                 return;
         }
 
-        System.out.println("Do you have a promotion code? (yes/no)");
-        String hasPromotion = scanner.nextLine();
+        List<Promotion> promotions = promotionService.getPromotions();
         Promotion promotion = null;
+        List<Promotion> activePromos = promotions.stream()
+                .filter(Promotion::isValidNow)
+                .toList();
 
-        if (hasPromotion.equalsIgnoreCase("yes")) {
-            System.out.print("Enter your promotion code: ");
-            String promoCode = scanner.nextLine();
-            // Exemplu de verificare promoție (poți să implementezi mai multe logici pentru promoții)
-            if (promoCode.equals("DISCOUNT10")) {
-                promotion = new Promotion("DISCOUNT10", "10% discount at any subscription",10.0f, LocalDate.now(), LocalDate.now().plusMonths(1));
-            } else {
-                System.out.println("Invalid promotion code.");
+        if (!activePromos.isEmpty()) {
+            System.out.println("Available promotions:");
+            for (int i = 0; i < activePromos.size(); i++) {
+                Promotion p = activePromos.get(i);
+                System.out.printf("%d. %s - %.1f%% off (%s → %s)\n",
+                        i + 1, p.getName(), p.getDiscountPercent(), p.getStartDate(), p.getEndDate());
             }
+
+            System.out.println("Enter the number of the promotion you want to apply (or 0 for none):");
+            int promoChoice = scanner.nextInt();
+            scanner.nextLine();
+
+            if (promoChoice > 0 && promoChoice <= activePromos.size()) {
+                promotion = activePromos.get(promoChoice - 1);
+                System.out.println("Promotion applied: " + promotion.getName());
+            } else if (promoChoice != 0) {
+                System.out.println("❌ Invalid choice. No promotion applied.");
+            }
+        } else {
+            System.out.println("No active promotions available at the moment.");
         }
+
+
 
         System.out.println("Select payment method (CARD, CASH, ONLINE):");
         PaymentMethod method = PaymentMethod.valueOf(scanner.nextLine().toUpperCase());
@@ -345,57 +387,153 @@ public class MemberService {
 
         switch (choice) {
             case 1:
-                System.out.println("Enter new subscription type (monthly, 6 months, yearly): ");
+                System.out.println("Enter new subscription type (monthly, 6 months, annual): ");
                 String newType = scanner.nextLine();
-                member.getSubscription().setType(newType);
-                System.out.println("Subscription type updated to: " + newType);
 
-                System.out.println("Select payment method (CARD, CASH, ONLINE):");
-                PaymentMethod method = PaymentMethod.valueOf(scanner.nextLine().toUpperCase());
+                Subscription currentSub = member.getSubscription();
+                String oldType = currentSub.getType().toLowerCase();
 
-                Payment payment1 = new Payment(
-                        member.getSubscription().getPrice(),
-                        LocalDate.now(),
-                        method,
-                        member,
-                        "Changed subscription type to: " + newType
-                );
-                member.addPayment(payment1);
+                float newPrice;
+                switch (newType.toLowerCase()) {
+                    case "monthly" -> newPrice = 50f;
+                    case "6 months" -> newPrice = 270f;
+                    case "annual" -> newPrice = 480f;
+                    default -> {
+                        System.out.println("❌ Invalid type. No changes made.");
+                        return;
+                    }
+                }
+
+                float oldPrice = currentSub.getPrice();
+                float difference = newPrice - oldPrice;
+
+                if (currentSub.getPromotion() != null && currentSub.getPromotion().isValidNow()) {
+                    float discount = currentSub.getPromotion().getDiscountPercent();
+                    newPrice -= newPrice * (discount / 100);
+                    difference = newPrice - oldPrice;
+                    System.out.println("A promotion has been applied: " + discount + "% off.");
+                }
+
+                currentSub.setType(newType);
+                currentSub.setStartDate(LocalDate.now());
+                currentSub.setPrice(newPrice);
+
+                System.out.println("✔ Subscription type changed to: " + newType);
+                System.out.println("New total price: " + newPrice);
+
+                String purpose = "Changed subscription type to: " + newType;
+                float amountToCharge = Math.abs(difference);
+
+                PaymentMethod method;
+                if (difference != 0) {
+                    method = null;
+                    while (method == null) {
+                        System.out.print("Select payment method (CARD, CASH, ONLINE): ");
+                        String input = scanner.nextLine().trim().toUpperCase();
+                        try {
+                            method = PaymentMethod.valueOf(input);
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("❌ Invalid input. Please enter CARD, CASH or ONLINE.");
+                        }
+                    }
+
+                    if (difference > 0) {
+                        System.out.println("You need to pay an extra: " + amountToCharge + " RON.");
+                        member.addPayment(new Payment(
+                                amountToCharge,
+                                LocalDate.now(),
+                                method,
+                                member,
+                                purpose + " (Upgrade)"
+                        ));
+                    } else {
+                        System.out.println("Refund recorded: " + amountToCharge + " RON.");
+                        member.addPayment(new Payment(
+                                -amountToCharge, // refund = valoare negativă
+                                LocalDate.now(),
+                                method,
+                                member,
+                                purpose + " (Downgrade Refund)"
+                        ));
+                    }
+                } else {
+                    System.out.println("No price change required.");
+                }
                 break;
+
             case 2:
-                System.out.println("Enter the number of months to extend: ");
-                int months = scanner.nextInt();
+                LocalDate today = LocalDate.now();
+                LocalDate endDate = member.getSubscription().getEndDate();
+                long daysUntilEnd = ChronoUnit.DAYS.between(today, endDate);
+
+                if (daysUntilEnd > 5) {
+                    System.out.println("⏳ You can only extend your subscription if it is within 5 days of expiring.");
+                    return;
+                }
+
+
+                int months;
+                while (true) {
+                    try {
+                        System.out.print("Enter the number of months to extend: ");
+                        months = Integer.parseInt(scanner.nextLine());
+                        if (months <= 0) {
+                            System.out.println("❌ Number of months must be greater than 0.");
+                        } else {
+                            break;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("❌ Invalid number. Please enter a valid number of months.");
+                    }
+                }
+
                 Subscription currentSubscription = member.getSubscription();
 
+                long currentDuration = ChronoUnit.MONTHS.between(
+                        currentSubscription.getStartDate(),
+                        currentSubscription.getEndDate()
+                );
 
-                float monthlyPrice = currentSubscription.getPrice() / ChronoUnit.MONTHS.between(currentSubscription.getStartDate(), currentSubscription.getEndDate());
+                float monthlyPrice = currentSubscription.getPrice() / currentDuration;
                 float additionalCost = months * monthlyPrice;
 
                 if (currentSubscription.getPromotion() != null && currentSubscription.getPromotion().isValidNow()) {
                     float discount = currentSubscription.getPromotion().getDiscountPercent();
                     additionalCost -= additionalCost * (discount / 100);
-                    System.out.println("A promo code has been applied: " + discount + "% off.");
+                    System.out.println("🎁 Promo code applied: " + discount + "% off.");
                 }
 
                 float newTotalPrice = currentSubscription.getPrice() + additionalCost;
 
-                currentSubscription.setStartDate(currentSubscription.getStartDate().plusMonths(months));
+                // Mutăm startDate mai devreme cu durata inițială + extinderea
+                currentSubscription.addMonths(months);
+                currentSubscription.setStartDate(currentSubscription.getStartDate()); // nu schimbăm, dar poți loga dacă vrei
                 currentSubscription.setPrice(newTotalPrice);
 
-                System.out.println("Subscription extended for " + months + " months.");
+                System.out.println("✅ Subscription extended by " + months + " months.");
+                System.out.println("New total price: " + newTotalPrice);
 
+                // Metoda de plată
+                method = null;
+                while (method == null) {
+                    System.out.print("Select payment method (CARD, CASH, ONLINE): ");
+                    String input = scanner.nextLine().trim().toUpperCase();
+                    try {
+                        method = PaymentMethod.valueOf(input);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("❌ Invalid input. Please enter CARD, CASH or ONLINE.");
+                    }
+                }
 
-                System.out.println("Select payment method (CARD, CASH, ONLINE):");
-                PaymentMethod method1 = PaymentMethod.valueOf(scanner.nextLine().toUpperCase());
-
-                Payment payment2 = new Payment(
+                Payment payment = new Payment(
                         additionalCost,
                         LocalDate.now(),
-                        method1,
+                        method,
                         member,
                         "Extended subscription by " + months + " months"
                 );
-                member.addPayment(payment2);
+                member.addPayment(payment);
+                System.out.println("✔ Payment of " + additionalCost + " processed via " + method + ".");
                 break;
             case 3:
                 System.out.println("Your current subscription status is: " + (member.getSubscription().isActive() ? "Active" : "Inactive"));

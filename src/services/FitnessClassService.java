@@ -34,7 +34,7 @@ public class FitnessClassService {
     }
 
 
-    public void scheduleFitnessClass(Scanner scanner, Member member) {
+    public void scheduleFitnessClass(Scanner scanner, Member member, PromotionService promotionService) {
         List<FitnessClass> availableClasses = fitnessClasses.stream()
                 .filter(fc -> fc.getParticipants().size() < fc.getMaxParticipants())
                 .collect(Collectors.toList());
@@ -69,6 +69,39 @@ public class FitnessClassService {
             return;
         }
 
+        float basePrice = (float) selectedClass.getPrice();
+        float finalPrice = basePrice;
+        Promotion promotion = null;
+
+        List<Promotion> promotions = promotionService.getPromotions();
+        List<Promotion> activePromos = promotions.stream()
+                .filter(Promotion::isValidNow)
+                .toList();
+
+        if (!activePromos.isEmpty()) {
+            System.out.println("Available promotions:");
+            for (int i = 0; i < activePromos.size(); i++) {
+                Promotion p = activePromos.get(i);
+                System.out.printf("%d. %s - %.1f%% off (%s → %s)\n",
+                        i + 1, p.getName(), p.getDiscountPercent(), p.getStartDate(), p.getEndDate());
+            }
+
+            System.out.println("Enter the number of the promotion you want to apply (or 0 for none):");
+            int promoChoice = scanner.nextInt();
+            scanner.nextLine();
+
+            if (promoChoice > 0 && promoChoice <= activePromos.size()) {
+                promotion = activePromos.get(promoChoice - 1);
+                float discount = promotion.getDiscountPercent();
+                finalPrice -= basePrice * (discount / 100);
+                System.out.println("Promotion applied: " + promotion.getName() + " (" + discount + "% off)");
+            } else if (promoChoice != 0) {
+                System.out.println("❌ Invalid choice. No promotion applied.");
+            }
+        } else {
+            System.out.println("No active promotions available at the moment.");
+        }
+
         boolean added = selectedClass.addParticipant(member);
         if (added) {
             // Optional: Creăm un Booking și îl adăugăm în lista trainerului
@@ -80,7 +113,7 @@ public class FitnessClassService {
             PaymentMethod method = PaymentMethod.valueOf(scanner.nextLine().toUpperCase());
 
             Payment payment = new Payment(
-                    (float) selectedClass.getPrice(),
+                    finalPrice,
                     LocalDate.now(),
                     method,
                     member,
@@ -90,6 +123,7 @@ public class FitnessClassService {
             member.getPayments().add(payment);
 
             System.out.println("✅ You have successfully joined the class: " + selectedClass.getName());
+            System.out.println("Final price paid: " + finalPrice + " RON");
         } else {
             System.out.println("❌ Sorry, this class is now full.");
         }

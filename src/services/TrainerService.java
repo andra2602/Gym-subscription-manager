@@ -333,6 +333,36 @@ public class TrainerService {
         String classNameToRemove = classNames.get(index - 1);
         FitnessClass toDelete = classes.get(classNameToRemove);
 
+        List<Member> participants = toDelete.getParticipants();
+        if (!participants.isEmpty()) {
+            for (Member m : participants) {
+                Optional<Payment> originalPaymentOpt = m.getPayments().stream()
+                        .filter(p -> p.getPurpose().equals("Fitness class: " + toDelete.getName()))
+                        .findFirst();
+
+                if (originalPaymentOpt.isPresent()) {
+                    Payment original = originalPaymentOpt.get();
+                    float amount = original.getAmount();
+
+                    String purpose;
+                    if (original.getPaymentMethod() == PaymentMethod.CASH) {
+                        purpose = "Class was canceled – Manual refund required (CASH)";
+                    } else {
+                        purpose = "Refund for cancelled fitness class: " + toDelete.getName();
+                    }
+
+                    Payment refund = new Payment(
+                            -amount,
+                            LocalDate.now(),
+                            original.getPaymentMethod(),
+                            m,
+                            purpose
+                    );
+                    m.getPayments().add(refund);
+                }
+            }
+        }
+
         trainer.getBookings().removeIf(b -> {
             return b.getFitnessClass() != null &&
                     b.getFitnessClass().equals(toDelete);
@@ -500,7 +530,7 @@ public class TrainerService {
         // Căutăm în toate booking-urile tuturor trainerilor
         for (Trainer trainer : this.trainers) {
             for (Booking booking : trainer.getBookings()) {
-                if (booking.getMember().equals(member)) {
+                if (booking.getMember() != null && booking.getMember().equals(member)) {
                     LocalDateTime sessionTime = LocalDateTime.of(booking.getDate(), booking.getTimeSlot());
                     if (sessionTime.isBefore(LocalDateTime.now())) {
                         eligibleTrainers.add(trainer);
