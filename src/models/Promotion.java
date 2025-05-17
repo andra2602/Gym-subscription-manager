@@ -1,6 +1,7 @@
 package models;
 import java.time.LocalDate;
 public class Promotion {
+    private int id;
     private String name;
     private String description;
     private float discountPercent;
@@ -38,6 +39,28 @@ public class Promotion {
         this.endDate = endDate;
         this.active = true;
     }
+    public Promotion(int id, String name, String description, float discountPercent, LocalDate startDate, LocalDate endDate, boolean active) {
+        validateDescription(description);
+        validateStartDate(startDate);
+        validateEndDate(startDate, endDate);
+        validateDiscount(discountPercent);
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.discountPercent = discountPercent;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.active = active;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
 
     ///  validari
 

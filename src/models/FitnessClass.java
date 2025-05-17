@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 public class FitnessClass {
+    private int id;
     private String name;
     private int duration; // în minute
     private String difficulty;
@@ -30,6 +31,7 @@ public class FitnessClass {
         this.hour = hour;
         this.maxParticipants = maxParticipants;
     }
+    public FitnessClass(){}
 
     /// validari
     private void validateDifficulty(String difficulty) {
@@ -52,6 +54,7 @@ public class FitnessClass {
 
 
     /// getters
+    public int getId(){return id;}
     public double getPrice() {
         return price;
     }
@@ -120,6 +123,8 @@ public class FitnessClass {
     public void setHour(LocalTime hour) {
         this.hour = hour;
     }
+
+    public void setMaxParticipants(int maxParticipants) {this.maxParticipants = maxParticipants;}
 
     @Override
     public String toString() {

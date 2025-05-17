@@ -32,6 +32,10 @@ public class Trainer extends User {
         this.coordinatedClasses = new HashMap<>();
     }
 
+    public Trainer(){
+
+    }
+
     /// getters
     public String getSpecialization() {
         return specialization;
