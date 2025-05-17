@@ -4,32 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="99df6786-c36c-47c5-9466-dc4120821e6c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/dao/ClassParticipantsDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/dao/FitnessClassDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/dao/MemberDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/dao/PaymentDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/dao/ReviewDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/dao/TrainerDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/dao/UserDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/database/DBConnection.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/database/DatabaseSetup.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/tests/TestMemberDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/tests/TestTrainerDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/tests/TestUserDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Gym-subscription-manager.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Gym-subscription-manager.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/FitnessClass.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/FitnessClass.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/Member.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/Member.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/Promotion.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/Promotion.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/Trainer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/Trainer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/User.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/FitnessClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/FitnessClass.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/Member.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Member.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/Promotion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Promotion.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/Trainer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Trainer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/User.java" afterDir="false" />
-    </list>
+    <list default="true" id="99df6786-c36c-47c5-9466-dc4120821e6c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -122,7 +97,7 @@
       <workItem from="1744612836363" duration="5434000" />
       <workItem from="1745824536493" duration="59000" />
       <workItem from="1747481014939" duration="1641000" />
-      <workItem from="1747482684871" duration="12252000" />
+      <workItem from="1747482684871" duration="12495000" />
     </task>
     <servers />
   </component>
