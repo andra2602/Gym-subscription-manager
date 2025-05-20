@@ -120,16 +120,35 @@ public class UserDAO {
 
     public boolean isUsernameTaken(String username) {
         String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
                 return rs.getInt(1) > 0;
             }
+
         } catch (SQLException e) {
-            System.out.println("Eroare la verificarea username-ului: " + e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }
+
+    public void deleteUserById(int userId) {
+        String sql = "DELETE FROM users WHERE id = ?";
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 }

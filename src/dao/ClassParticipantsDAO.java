@@ -16,87 +16,96 @@ public class ClassParticipantsDAO {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    public boolean addParticipant(int fitnessClassId, int memberId) {
-        String sql = "INSERT INTO class_participants (fitness_class_id, member_id) VALUES (?, ?)";
+    public void removeParticipantsForClass(int classId) {
+        String sql = "DELETE FROM class_participants WHERE fitness_class_id = ?";
+
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, fitnessClassId);
-            stmt.setInt(2, memberId);
-            int rows = stmt.executeUpdate();
-            return rows > 0;
+            stmt.setInt(1, classId);
+            stmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Eroare la adăugarea participantului: " + e.getMessage());
-            return false;
+            e.printStackTrace();
         }
     }
 
-    public boolean removeParticipant(int fitnessClassId, int memberId) {
-        String sql = "DELETE FROM class_participants WHERE fitness_class_id = ? AND member_id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, fitnessClassId);
-            stmt.setInt(2, memberId);
-            int rows = stmt.executeUpdate();
-            return rows > 0;
-        } catch (SQLException e) {
-            System.out.println("Eroare la eliminarea participantului: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public List<Member> getParticipantsForClass(int fitnessClassId) {
+    public List<Member> getParticipantsForClass(int classId) {
         List<Member> participants = new ArrayList<>();
-        String sql = "SELECT u.id, u.name, u.username, u.email, u.phone, u.password " +
-                "FROM class_participants cp " +
+        String sql = "SELECT u.* FROM class_participants cp " +
                 "JOIN members m ON cp.member_id = m.user_id " +
                 "JOIN users u ON m.user_id = u.id " +
                 "WHERE cp.fitness_class_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, fitnessClassId);
+            stmt.setInt(1, classId);
             ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
-                Member member = new Member();
-                member.setId(rs.getInt("id"));
-                member.setName(rs.getString("name"));
-                member.setUsername(rs.getString("username"));
-                member.setEmail(rs.getString("email"));
-                member.setPhoneNumber(rs.getString("phone"));
-                member.setPassword(rs.getString("password"));
-                // Poți completa și alte atribute dacă vrei
-                participants.add(member);
+                Member m = new Member(
+                        rs.getString("name"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        rs.getString("password"),
+                        null, 0f, 0f, "beginner", null, null, false
+                );
+                m.setId(rs.getInt("id"));
+                participants.add(m);
             }
+
         } catch (SQLException e) {
-            System.out.println("Eroare la citirea participanților: " + e.getMessage());
+            e.printStackTrace();
         }
+
         return participants;
     }
 
-    public List<FitnessClass> getClassesForMember(int memberId) {
-        List<FitnessClass> classes = new ArrayList<>();
-        String sql = "SELECT * FROM fitness_classes WHERE id IN (SELECT fitness_class_id FROM class_participants WHERE member_id = ?)";
+    public int countParticipantsForClass(int classId) {
+        String sql = "SELECT COUNT(*) FROM class_participants WHERE fitness_class_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, classId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("Eroare la numărarea participanților: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public boolean isMemberAlreadyEnrolled(int memberId, int classId) {
+        String sql = "SELECT COUNT(*) FROM class_participants WHERE member_id = ? AND class_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, memberId);
+            stmt.setInt(2, classId);
+
             ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                FitnessClass fitnessClass = new FitnessClass();
-                fitnessClass.setName(rs.getString("name"));
-                fitnessClass.setDuration(rs.getInt("duration"));
-                fitnessClass.setDifficulty(rs.getString("difficulty"));
-                fitnessClass.setPrice(rs.getDouble("price"));
-                fitnessClass.setDate(rs.getDate("date").toLocalDate());
-                fitnessClass.setHour(rs.getTime("hour").toLocalTime());
-                fitnessClass.setMaxParticipants(rs.getInt("max_participants"));
-
-                // aici apelezi DAO-ul pentru participanti pt fiecare clasa
-                ClassParticipantsDAO participantsDAO = new ClassParticipantsDAO();
-                fitnessClass.setParticipants(participantsDAO.getParticipantsForClass(rs.getInt("id")));
-
-                classes.add(fitnessClass);
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
             }
+
         } catch (SQLException e) {
-            System.out.println("Eroare la citirea claselor pentru membru: " + e.getMessage());
+            System.out.println("Eroare la verificarea participării la clasă: " + e.getMessage());
         }
-        return classes;
+
+        return false;
+    }
+
+    public boolean addParticipantToClass(int memberId, int classId) {
+        String sql = "INSERT INTO class_participants (member_id, class_id) VALUES (?, ?)";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, memberId);
+            stmt.setInt(2, classId);
+
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Eroare la adăugarea participantului la clasă: " + e.getMessage());
+        }
+
+        return false;
     }
 
 }

@@ -9,9 +9,11 @@ import java.time.LocalDate;
 
 public class SubscriptionDAO {
     private final Connection connection;
+    private PromotionDAO promotionDAO;
 
-    public SubscriptionDAO() {
+    public SubscriptionDAO(PromotionDAO promotionDAO) {
         this.connection = DBConnection.getInstance().getConnection();
+        this.promotionDAO = promotionDAO;
     }
 
     // Creează un abonament nou pentru un membru
@@ -46,6 +48,33 @@ public class SubscriptionDAO {
 
         } catch (SQLException e) {
             System.out.println("Error creating subscription: " + e.getMessage());
+        }
+    }
+
+    public void addSubscription(Subscription sub, int memberId) {
+        String sql = "INSERT INTO subscriptions (member_id, type, start_date, price, is_active, promotion_id, extended_months) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, memberId);
+            stmt.setString(2, sub.getType());
+            stmt.setString(3, sub.getStartDate().toString());
+            stmt.setFloat(4, sub.getPrice());
+            stmt.setBoolean(5, sub.isActive());
+
+            if (sub.getPromotion() != null) {
+                stmt.setInt(6, sub.getPromotion().getId());
+            } else {
+                stmt.setNull(6, java.sql.Types.INTEGER);
+            }
+
+            stmt.setInt(7, sub.getExtendedMonths());
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -141,5 +170,96 @@ public class SubscriptionDAO {
             return false;
         }
     }
+
+    public Subscription findActiveByMemberId(int memberId) {
+        String sql = "SELECT * FROM subscriptions WHERE member_id = ? AND is_active = 1";
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, memberId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new Subscription(
+                        rs.getString("type"),
+                        LocalDate.parse(rs.getString("start_date")),
+                        rs.getFloat("price"),
+                        true,
+                        null // promotion — îl poți încărca separat, dacă vrei
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Subscription findMostRecentByMemberId(int memberId) {
+        String sql = "SELECT * FROM subscriptions WHERE member_id = ? ORDER BY start_date DESC LIMIT 1";
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, memberId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Promotion promo = null;
+                int promoId = rs.getInt("promotion_id");
+                if (!rs.wasNull()) {
+                    promo = promotionDAO.findById(promoId);
+                }
+
+                return new Subscription(
+                        rs.getInt("id"),
+                        rs.getString("type"),
+                        LocalDate.parse(rs.getString("start_date")),
+                        rs.getFloat("price"),
+                        rs.getBoolean("is_active"),
+                        promo,
+                        rs.getInt("extended_months")
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public void deleteSubscription(int subscriptionId) {
+        String sql = "DELETE FROM subscriptions WHERE id = ?";
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, subscriptionId);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateSubscription(Subscription subscription) {
+        String sql = "UPDATE subscriptions SET type = ?, start_date = ?, price = ?, is_active = ?, extended_months = ? WHERE id = ?";
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, subscription.getType());
+            stmt.setString(2, subscription.getStartDate().toString());
+            stmt.setFloat(3, subscription.getPrice());
+            stmt.setBoolean(4, subscription.isActive());
+            stmt.setInt(5, subscription.getExtendedMonths());
+            stmt.setInt(6, subscription.getId());
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

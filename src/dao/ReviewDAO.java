@@ -28,6 +28,21 @@ public class ReviewDAO {
             return false;
         }
     }
+    public void addReview(int memberId, int trainerId, int rating, LocalDate date) {
+        String sql = "INSERT INTO reviews (member_id, trainer_id, rating, review_date) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, memberId);
+            stmt.setInt(2, trainerId);
+            stmt.setInt(3, rating);
+            stmt.setString(4, date.toString());
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("❌ Error inserting review: " + e.getMessage());
+        }
+    }
+
 
     // Ia toate scorurile review pentru un trainer (anonim, doar rating-uri)
     public List<Integer> readRatingsByTrainerId(int trainerId) {

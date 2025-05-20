@@ -9,6 +9,7 @@ public class Subscription {
     public boolean isActive;
     private Promotion promotion;
     private int extendedMonths = 0;
+    private int id;
 
     private static final float STUDENT_DISCOUNT = 0.30f;
 
@@ -19,6 +20,21 @@ public class Subscription {
         this.isActive = isActive;
         this.promotion = promotion;
     }
+    public Subscription(int id, String type, LocalDate startDate, float price,
+                        boolean isActive, Promotion promotion, int extendedMonths) {
+        this(type, startDate, price, isActive, promotion); // apelează constructorul tău actual
+        this.extendedMonths = extendedMonths;
+        this.id = id;
+    }
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
 
     /// metode de gestionare
     public LocalDate getEndDate() {

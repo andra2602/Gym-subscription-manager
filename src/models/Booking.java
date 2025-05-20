@@ -28,6 +28,7 @@ public class Booking {
         this.purpose = fitnessClass.getName(); // Scopul rezervării este numele clasei
         this.trainer = fitnessClass.getTrainer(); // Trainerul clasei de fitness
     }
+    public Booking(){}
 
     /// getters
     public Trainer getTrainer() {

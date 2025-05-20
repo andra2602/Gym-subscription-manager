@@ -1,6 +1,7 @@
 import java.time.LocalDate;
 import java.util.*;
-
+import dao.*;
+import database.DatabaseSeeder;
 import models.*;
 import services.*;
 import validation.Validator;
@@ -13,7 +14,7 @@ public class StartUp {
 
         // Start prompt
         showWelcomePrompt(scanner);
-
+/**
         // Initialize lists
         List<Member> membri = new ArrayList<>();
         List<Trainer> trainers = new ArrayList<>();
@@ -26,12 +27,37 @@ public class StartUp {
         ManagerService managerService = new ManagerService();
         FitnessClassService fitnessClassService = new FitnessClassService(fitnessClasses);
         PromotionService promotionService = new PromotionService(promotions);
+**/
+        // DAO-uri
+        MemberDAO memberDAO = new MemberDAO();
+        SubscriptionDAO subscriptionDAO = new SubscriptionDAO();
+        PaymentDAO paymentDAO = new PaymentDAO();
+        TrainerDAO trainerDAO = new TrainerDAO();
+        FitnessClassDAO fitnessClassDAO = new FitnessClassDAO();
+        PromotionDAO promotionDAO = new PromotionDAO();
+        ReviewDAO reviewDAO = new ReviewDAO(); // dacă folosești și review-uri
+
+// Listă inițială încărcată din DB (pentru afișare locală etc.)
+        List<Trainer> trainers = trainerDAO.readAll();
+        List<Promotion> promotions = promotionDAO.readAll();
+        List<FitnessClass> fitnessClasses = fitnessClassDAO.readAllAvailable(); // dacă ai nevoie
+
+// Service-uri conectate la DAO-uri
+        MemberService memberService = new MemberService(memberDAO, subscriptionDAO, paymentDAO, trainers);
+        TrainerService trainerService = new TrainerService(trainers, trainerDAO, reviewDAO);
+        ManagerService managerService = new ManagerService();
+        FitnessClassService fitnessClassService = new FitnessClassService(fitnessClasses, fitnessClassDAO);
+        PromotionService promotionService = new PromotionService(promotions, promotionDAO);
 
 
+
+        DatabaseSeeder.seed();
+/*** asa aveam inainte
         // Load test users (members + trainers)
         loadTestUsers(memberService, trainerService);
         // Load test promotions
         loadTestPromotions(promotionService);
+ ***/
         // Check promotion expiration
         promotionService.checkPromotionValidityOnStartup();
 

@@ -88,6 +88,41 @@ public class DatabaseSetup {
                 "FOREIGN KEY(member_id) REFERENCES members(user_id) ON DELETE CASCADE" +
                 ");";
 
+        String sqlPromotions = "CREATE TABLE IF NOT EXISTS promotions (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "name TEXT NOT NULL," +
+                "description TEXT," +
+                "discount_percent REAL NOT NULL CHECK (discount_percent >= 0 AND discount_percent <= 100)," +
+                "start_date TEXT NOT NULL," +
+                "end_date TEXT NOT NULL," +
+                "active INTEGER NOT NULL DEFAULT 1" +
+                ");";
+
+        String sqlBookings = "CREATE TABLE IF NOT EXISTS bookings (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "member_id INTEGER NOT NULL," +
+                "trainer_id INTEGER," +
+                "fitness_class_id INTEGER," +
+                "date TEXT NOT NULL," +
+                "time TEXT NOT NULL," +
+                "purpose TEXT," +
+                "FOREIGN KEY(member_id) REFERENCES members(user_id) ON DELETE CASCADE," +
+                "FOREIGN KEY(trainer_id) REFERENCES trainers(user_id) ON DELETE SET NULL," +
+                "FOREIGN KEY(fitness_class_id) REFERENCES fitness_classes(id) ON DELETE SET NULL" +
+                ");";
+
+        String sqlTimeSlots = "CREATE TABLE IF NOT EXISTS time_slots (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "start_time TEXT NOT NULL," +
+                "end_time TEXT NOT NULL," +
+                "day TEXT NOT NULL," +
+                "trainer_id INTEGER NOT NULL," +
+                "FOREIGN KEY(trainer_id) REFERENCES trainers(user_id) ON DELETE CASCADE" +
+                ");";
+
+
+
+
         try (Connection conn = DBConnection.getInstance().getConnection();
              Statement stmt = conn.createStatement()) {
 
@@ -116,6 +151,14 @@ public class DatabaseSetup {
             stmt.execute(sqlClassParticipants);
             System.out.println("'ClassParticipants' table created successfully!");
 
+            stmt.execute(sqlPromotions);
+            System.out.println("'promotions' table created successfully!");
+
+            stmt.execute(sqlBookings);
+            System.out.println("'bookings' table created successfully!");
+
+            stmt.execute(sqlTimeSlots);
+            System.out.println("'timeSlots' table created successfully!");
 
         } catch (Exception e) {
             e.printStackTrace();
