@@ -10,12 +10,16 @@ import java.util.*;
 public class TrainerDAO {
 
     private final Connection connection;
-    private final MemberDAO memberDAO;
+    private MemberDAO memberDAO;
     private final ReviewDAO reviewDAO;
+
+
+    public void setMemberDAO(MemberDAO memberDAO) {
+        this.memberDAO = memberDAO;
+    }
 
     public TrainerDAO() {
         this.connection = DBConnection.getInstance().getConnection();
-        this.memberDAO = new MemberDAO();
         this.reviewDAO = new ReviewDAO();
     }
 
@@ -120,11 +124,14 @@ public class TrainerDAO {
 
     public List<Trainer> readAll() {
         List<Trainer> trainers = new ArrayList<>();
+        Map<Trainer, Integer> trainerIdMap = new HashMap<>();
+
         String sql = "SELECT u.id, u.name, u.username, u.email, u.phone, u.password, " +
                 "t.specialization, t.years_of_experience, t.price_per_hour " +
                 "FROM users u JOIN trainers t ON u.id = t.user_id";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql);
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
@@ -137,31 +144,34 @@ public class TrainerDAO {
                         rs.getString("specialization"),
                         rs.getDouble("years_of_experience"),
                         rs.getDouble("price_per_hour"),
-                        new HashSet<>(),       // trainedMembers
-                        new ArrayList<>(),     // availableSlots
-                        new ArrayList<>(),     // bookings
-                        new ArrayList<>()      // reviewScores temporar
+                        new HashSet<>(),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        new ArrayList<>()
                 );
+
                 int trainerId = rs.getInt("id");
                 trainer.setId(trainerId);
                 trainer.setCoordinatedClasses(new HashMap<>());
-
-                // Populăm membrii
-                trainer.setTrainedMembers(new HashSet<>(memberDAO.getMembersByTrainerId(trainerId)));
-
-                // Populăm review-urile
-                List<Integer> ratings = reviewDAO.readRatingsByTrainerId(trainerId);
-                trainer.setReviewScores(ratings);
-
                 trainers.add(trainer);
+                trainerIdMap.put(trainer, trainerId);
             }
 
         } catch (SQLException e) {
-            System.out.println("Eroare la citirea trainerilor: " + e.getMessage());
+            System.out.println("❌ Eroare la citirea trainerilor: " + e.getMessage());
+        }
+
+        // PAS 2: completăm detalii extra acum, cu stmt închis
+        for (Trainer trainer : trainers) {
+            int trainerId = trainerIdMap.get(trainer);
+            trainer.setTrainedMembers(new HashSet<>(memberDAO.getMembersByTrainerId(trainerId)));
+            trainer.setReviewScores(reviewDAO.readRatingsByTrainerId(trainerId));
         }
 
         return trainers;
     }
+
+
 
 
     public Trainer readById(int id) {

@@ -70,8 +70,8 @@ public class Promotion {
         }
     }
     private void validateStartDate(LocalDate startDate) {
-        if (startDate == null || startDate.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Data de început trebuie să fie cel puțin data curentă.");
+        if (startDate == null) {
+            throw new IllegalArgumentException("Data de început nu poate fi null.");
         }
     }
     private void validateEndDate(LocalDate startDate, LocalDate endDate) {

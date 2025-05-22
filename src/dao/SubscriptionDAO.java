@@ -126,51 +126,6 @@ public class SubscriptionDAO {
         return null;
     }
 
-    // Actualizează abonamentul
-    public boolean update(Subscription subscription, int memberId) {
-        String sql = "UPDATE subscriptions SET type = ?, start_date = ?, price = ?, is_active = ?, promotion_id = ?, extended_months = ? " +
-                "WHERE member_id = ?";
-
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, subscription.getType());
-            stmt.setString(2, subscription.getStartDate().toString());
-            stmt.setFloat(3, subscription.getPrice());
-            stmt.setInt(4, subscription.isActive() ? 1 : 0);
-
-            if (subscription.getPromotion() != null) {
-                stmt.setInt(5, subscription.getPromotion().getId());
-            } else {
-                stmt.setNull(5, Types.INTEGER);
-            }
-
-            stmt.setInt(6, subscription.getExtendedMonths());
-
-            stmt.setInt(7, memberId);
-
-            int rowsUpdated = stmt.executeUpdate();
-            return rowsUpdated > 0;
-
-        } catch (SQLException e) {
-            System.out.println("Error updating subscription: " + e.getMessage());
-            return false;
-        }
-    }
-
-    // Șterge abonamentul după memberId
-    public boolean deleteByMemberId(int memberId) {
-        String sql = "DELETE FROM subscriptions WHERE member_id = ?";
-
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, memberId);
-            int rowsDeleted = stmt.executeUpdate();
-            return rowsDeleted > 0;
-
-        } catch (SQLException e) {
-            System.out.println("Error deleting subscription: " + e.getMessage());
-            return false;
-        }
-    }
-
     public Subscription findActiveByMemberId(int memberId) {
         String sql = "SELECT * FROM subscriptions WHERE member_id = ? AND is_active = 1";
         try (Connection conn = DBConnection.getInstance().getConnection();
@@ -180,13 +135,17 @@ public class SubscriptionDAO {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return new Subscription(
+                Subscription subscription = new Subscription(
                         rs.getString("type"),
                         LocalDate.parse(rs.getString("start_date")),
                         rs.getFloat("price"),
-                        true,
-                        null // promotion — îl poți încărca separat, dacă vrei
-                );
+                        rs.getBoolean("is_active"),
+                        null );// promotion — poți seta ulterior dacă e cazul
+
+                subscription.setId(rs.getInt("id")); // ⚠️ FOARTE IMPORTANT
+                subscription.setExtendedMonths(rs.getInt("extended_months"));
+
+                return subscription;
             }
 
         } catch (SQLException e) {

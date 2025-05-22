@@ -95,7 +95,8 @@ public class DatabaseSetup {
                 "discount_percent REAL NOT NULL CHECK (discount_percent >= 0 AND discount_percent <= 100)," +
                 "start_date TEXT NOT NULL," +
                 "end_date TEXT NOT NULL," +
-                "active INTEGER NOT NULL DEFAULT 1" +
+                "active INTEGER NOT NULL DEFAULT 1," +
+                "UNIQUE(name, start_date)"+
                 ");";
 
         String sqlBookings = "CREATE TABLE IF NOT EXISTS bookings (" +

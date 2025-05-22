@@ -6,16 +6,21 @@ import models.*;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MemberDAO {
 
     private final Connection connection;
     private final PromotionDAO promotionDAO = new PromotionDAO();
     private final SubscriptionDAO subscriptionDAO = new SubscriptionDAO(promotionDAO);
-    private final TrainerDAO trainerDAO = new TrainerDAO();
+    private TrainerDAO trainerDAO ;
 
+
+    public void setTrainerDAO(TrainerDAO trainerDAO) {
+        this.trainerDAO = trainerDAO;
+    }
     public MemberDAO() {
         this.connection = DBConnection.getInstance().getConnection();
     }
@@ -93,26 +98,18 @@ public class MemberDAO {
 
     public List<Member> readAll() {
         List<Member> members = new ArrayList<>();
+        Map<Member, Integer> trainerMap = new HashMap<>();  // pentru a lega trainerId-ul fără să-l punem în model
+
         String sql = "SELECT * FROM users u JOIN members m ON u.id = m.user_id";
 
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
+            // PAS 1: construim membrii fără a apela alte DAO-uri în timp ce rs e deschis
             while (rs.next()) {
-                LocalDate registrationDate = LocalDate.parse(rs.getString("registration_date"));
-
-                // Inițializăm cu null — completăm imediat
-                Trainer trainer = null;
-                Subscription subscription = null;
-
                 int memberId = rs.getInt("user_id");
                 int trainerId = rs.getInt("trainer_id");
-                if (!rs.wasNull()) {
-                    trainer = trainerDAO.findById(trainerId); // presupunem că ai metoda asta
-                }
-
-                subscription = subscriptionDAO.findActiveByMemberId(memberId); // sau una adaptată
 
                 Member member = new Member(
                         rs.getString("name"),
@@ -120,15 +117,20 @@ public class MemberDAO {
                         rs.getString("email"),
                         rs.getString("phone"),
                         rs.getString("password"),
-                        registrationDate,
+                        LocalDate.parse(rs.getString("registration_date")),
                         rs.getFloat("weight"),
                         rs.getFloat("height"),
                         rs.getString("experience_level"),
-                        trainer,
-                        subscription,
+                        null, // trainer
+                        null, // subscription
                         rs.getBoolean("is_student")
                 );
                 member.setId(memberId);
+
+                if (!rs.wasNull()) {
+                    trainerMap.put(member, trainerId);
+                }
+
                 members.add(member);
             }
 
@@ -136,8 +138,77 @@ public class MemberDAO {
             e.printStackTrace();
         }
 
+        // PAS 2: apelăm alte DAO-uri după ce rs și stmt sunt închise
+        for (Member member : members) {
+            try {
+                // setăm trainerul dacă există
+                Integer trainerId = trainerMap.get(member);
+                if (trainerId != null) {
+                    Trainer trainer = trainerDAO.findById(trainerId);
+                    member.setTrainer(trainer);
+                }
+
+                // setăm abonamentul activ, dacă există
+                Subscription subscription = subscriptionDAO.findActiveByMemberId(member.getId());
+                member.setSubscription(subscription);
+
+            } catch (Exception e) {
+                System.out.println("⚠️ Eroare la completarea trainerului/subscriptiei pentru membrul: " + member.getUsername());
+            }
+        }
+
         return members;
     }
+
+
+
+//    public List<Member> readAll() {
+//        List<Member> members = new ArrayList<>();
+//        String sql = "SELECT * FROM users u JOIN members m ON u.id = m.user_id";
+//
+//        try (Connection conn = DBConnection.getInstance().getConnection();
+//             PreparedStatement stmt = conn.prepareStatement(sql);
+//             ResultSet rs = stmt.executeQuery()) {
+//
+//            while (rs.next()) {
+//                LocalDate registrationDate = LocalDate.parse(rs.getString("registration_date"));
+//
+//                // Inițializăm cu null — completăm imediat
+//                Trainer trainer = null;
+//                Subscription subscription = null;
+//
+//                int memberId = rs.getInt("user_id");
+//                int trainerId = rs.getInt("trainer_id");
+//                if (!rs.wasNull()) {
+//                    trainer = trainerDAO.findById(trainerId); // presupunem că ai metoda asta
+//                }
+//
+//                subscription = subscriptionDAO.findActiveByMemberId(memberId); // sau una adaptată
+//
+//                Member member = new Member(
+//                        rs.getString("name"),
+//                        rs.getString("username"),
+//                        rs.getString("email"),
+//                        rs.getString("phone"),
+//                        rs.getString("password"),
+//                        registrationDate,
+//                        rs.getFloat("weight"),
+//                        rs.getFloat("height"),
+//                        rs.getString("experience_level"),
+//                        trainer,
+//                        subscription,
+//                        rs.getBoolean("is_student")
+//                );
+//                member.setId(memberId);
+//                members.add(member);
+//            }
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return members;
+//    }
 
 
 
@@ -209,6 +280,44 @@ public class MemberDAO {
         return false;
     }
 
+//    public List<Member> getMembersByTrainerId(int trainerId) {
+//        List<Member> members = new ArrayList<>();
+//        String sql = "SELECT u.id, u.name, u.username, u.email, u.phone, u.password, " +
+//                "m.registration_date, m.weight, m.height, m.experience_level, m.is_student " +
+//                "FROM users u JOIN members m ON u.id = m.user_id " +
+//                "WHERE m.trainer_id = ?";
+//
+//        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+//            stmt.setInt(1, trainerId);
+//            ResultSet rs = stmt.executeQuery();
+//
+//            while (rs.next()) {
+//                Member member = new Member(
+//                        rs.getString("name"),
+//                        rs.getString("username"),
+//                        rs.getString("email"),
+//                        rs.getString("phone"),
+//                        rs.getString("password"),
+//                        LocalDate.parse(rs.getString("registration_date")),
+//                        rs.getFloat("weight"),
+//                        rs.getFloat("height"),
+//                        rs.getString("experience_level"),
+//                        null,
+//                        null,
+//                        rs.getInt("is_student") == 1
+//                );
+//                member.setId(rs.getInt("id"));
+//                member.setPayments(new ArrayList<>());
+//                members.add(member);
+//            }
+//
+//        } catch (SQLException e) {
+//            System.out.println("Eroare la citirea membrilor antrenați: " + e.getMessage());
+//        }
+//
+//        return members;
+//    }
+
     public List<Member> getMembersByTrainerId(int trainerId) {
         List<Member> members = new ArrayList<>();
         String sql = "SELECT u.id, u.name, u.username, u.email, u.phone, u.password, " +
@@ -216,7 +325,9 @@ public class MemberDAO {
                 "FROM users u JOIN members m ON u.id = m.user_id " +
                 "WHERE m.trainer_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, trainerId);
             ResultSet rs = stmt.executeQuery();
 
@@ -246,6 +357,7 @@ public class MemberDAO {
 
         return members;
     }
+
 
     public Member findByUsernameAndPassword(String username, String password) {
         String sql = "SELECT * FROM users u JOIN members m ON u.id = m.user_id WHERE u.username = ? AND u.password = ?";

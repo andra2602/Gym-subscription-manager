@@ -45,18 +45,39 @@ public class ReviewDAO {
 
 
     // Ia toate scorurile review pentru un trainer (anonim, doar rating-uri)
+//    public List<Integer> readRatingsByTrainerId(int trainerId) {
+//        List<Integer> ratings = new ArrayList<>();
+//        String sql = "SELECT rating FROM reviews WHERE trainer_id = ?";
+//        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+//            stmt.setInt(1, trainerId);
+//            ResultSet rs = stmt.executeQuery();
+//            while (rs.next()) {
+//                ratings.add(rs.getInt("rating"));
+//            }
+//        } catch (SQLException e) {
+//            System.out.println("Error reading reviews: " + e.getMessage());
+//        }
+//        return ratings;
+//    }
     public List<Integer> readRatingsByTrainerId(int trainerId) {
         List<Integer> ratings = new ArrayList<>();
         String sql = "SELECT rating FROM reviews WHERE trainer_id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, trainerId);
             ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
                 ratings.add(rs.getInt("rating"));
             }
+
         } catch (SQLException e) {
             System.out.println("Error reading reviews: " + e.getMessage());
         }
+
         return ratings;
     }
+
 }

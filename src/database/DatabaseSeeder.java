@@ -12,8 +12,13 @@ public class DatabaseSeeder {
     public static void seed() {
         TrainerDAO trainerDAO = new TrainerDAO();
         MemberDAO memberDAO = new MemberDAO();
-        SubscriptionDAO subscriptionDAO = new SubscriptionDAO();
         PromotionDAO promotionDAO = new PromotionDAO();
+        SubscriptionDAO subscriptionDAO = new SubscriptionDAO(promotionDAO);
+
+        // Setezi dependențele după ce le-ai creat
+        trainerDAO.setMemberDAO(memberDAO);
+        memberDAO.setTrainerDAO(trainerDAO);
+
 
         // === Traineri ===
         Trainer t1 = new Trainer("Maria Fit Trainer", "mariaFit", "maria@fit.com", "0711111111", "Parola123!",
@@ -57,7 +62,7 @@ public class DatabaseSeeder {
                 "Spring Fit Blast",
                 "Get 20% off on all fitness classes this week!",
                 20,
-                today.minusDays(2),
+                today,
                 today.plusDays(5),
                 true
         );
@@ -70,18 +75,13 @@ public class DatabaseSeeder {
                 today.plusDays(10)
         );
 
-        Promotion expired = new Promotion(
-                "New Year Resolution",
-                "Start strong: 25% off if you joined in January!",
-                25,
-                today.minusMonths(2),
-                today.minusMonths(1),
-                true
-        );
+        if (!promotionDAO.existsByNameAndStartDate(activeNow.getName(), activeNow.getStartDate())) {
+            promotionDAO.create(activeNow);
+        }
+        if (!promotionDAO.existsByNameAndStartDate(comingSoon.getName(), comingSoon.getStartDate())) {
+            promotionDAO.create(comingSoon);
+        }
 
-        promotionDAO.create(activeNow);
-        promotionDAO.create(comingSoon);
-        promotionDAO.create(expired);
 
         System.out.println("Baza de date a fost populată cu date de test.");
     }

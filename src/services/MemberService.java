@@ -687,7 +687,7 @@ public class MemberService {
     }
 
 
-    public void deleteMemberAccount(Member member) {
+    public boolean deleteMemberAccount(Member member) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Are you sure you want to delete your account?");
         System.out.println("This action is permanent and cannot be undone.");
@@ -696,15 +696,16 @@ public class MemberService {
 
         if (!confirmation.trim().equalsIgnoreCase("yes")) {
             System.out.println("Account deletion has been canceled.");
-            return;
+            return false;
         }
 
-        int userId = member.getId(); // trebuie să fie setat deja la login
-
-        userDAO.deleteUserById(userId); // declanșează ștergerea în cascadă în toate tabelele
+        int userId = member.getId();
+        userDAO.deleteUserById(userId);
 
         System.out.println("✅ Your account and all related data have been deleted successfully.");
+        return true;
     }
+
 
     public void listMembers() {
         List<Member> members = memberDAO.readAll();
@@ -844,6 +845,7 @@ public class MemberService {
         System.out.println("End Date: " + subscription.getEndDate());
         System.out.println("Status: " + (subscription.isActive() ? "Active" : "Inactive"));
         System.out.println("Final Price: " + subscription.getFinalPriceForMember(member));
+        System.out.println("Remaining days: " + ChronoUnit.DAYS.between(LocalDate.now(), subscription.getEndDate()));
 
         if (subscription.getPromotion() != null) {
             System.out.println("Promotion: " + subscription.getPromotion().getName() +
@@ -929,28 +931,53 @@ public class MemberService {
         System.out.printf("📅 Type: %s | Start: %s | Price: %.2f RON\n", type, newSub.getStartDate(), finalPrice);
     }
 
-
     public void editSubscription(Member member, Scanner scanner) {
-        Subscription subscription = subscriptionDAO.findActiveByMemberId(member.getId());
+        Subscription subscription = subscriptionDAO.findMostRecentByMemberId(member.getId());
 
         if (subscription == null) {
             System.out.println("You don't have a subscription to edit.");
             return;
         }
 
-        System.out.println("Edit your subscription:");
-        System.out.println("1. Change subscription type");
-        System.out.println("2. Extend subscription");
-        System.out.println("3. Change subscription status (active/inactive)");
-        System.out.print("Enter your choice (1/2/3): ");
-        int choice = scanner.nextInt(); scanner.nextLine();
+        if (!subscription.isActive()) {
+            System.out.println("⚠ Your subscription is currently inactive.");
+            System.out.println("What would you like to do?");
+            System.out.println("1. Change subscription type");
+            System.out.println("2. Reactivate subscription");
+            System.out.println("3. Cancel");
 
-        switch (choice) {
-            case 1 -> changeSubscriptionType(member, subscription, scanner);
-            case 2 -> extendSubscription(member, subscription, scanner);
-            case 3 -> toggleSubscriptionStatus(subscription);
-            default -> System.out.println("Invalid choice.");
+            int choice = scanner.nextInt(); scanner.nextLine();
+
+            switch (choice) {
+                case 1 -> changeSubscriptionType(member, subscription, scanner);
+                case 2 -> {
+                    subscription.setActive(true);
+                    subscriptionDAO.updateSubscription(subscription);
+                    System.out.println("✅ Subscription reactivated!");
+                }
+                case 3 -> System.out.println("Returning to menu...");
+                default -> System.out.println("Invalid choice.");
+            }
+
+        } else {
+            System.out.println("Edit your subscription:");
+            System.out.println("1. Change subscription type");
+            System.out.println("2. Extend subscription");
+            System.out.println("3. Deactivate subscription");
+
+            System.out.print("Enter your choice (1/2/3): ");
+            int choice = scanner.nextInt(); scanner.nextLine();
+
+            switch (choice) {
+                case 1 -> changeSubscriptionType(member, subscription, scanner);
+                case 2 -> extendSubscription(member, subscription, scanner);
+                case 3 -> toggleSubscriptionStatus(subscription);
+                default -> System.out.println("Invalid choice.");
+            }
         }
+
+        // actualizează referința din obiectul Member
+        member.setSubscription(subscriptionDAO.findMostRecentByMemberId(member.getId()));
     }
 
     private void changeSubscriptionType(Member member, Subscription subscription, Scanner scanner) {
@@ -992,6 +1019,9 @@ public class MemberService {
 
         System.out.printf("✔ Subscription changed to %s. New price: %.2f\n", newType, newPrice);
 
+        Subscription updated = subscriptionDAO.findActiveByMemberId(member.getId());
+        member.setSubscription(updated);
+
         if (difference != 0) {
             System.out.print("Select payment method (CARD, CASH, ONLINE): ");
             PaymentMethod method = PaymentMethod.valueOf(scanner.nextLine().trim().toUpperCase());
@@ -1029,19 +1059,29 @@ public class MemberService {
         System.out.print("Enter number of months to extend: ");
         int months = Integer.parseInt(scanner.nextLine());
 
-        float monthlyPrice = subscription.getPrice() / ChronoUnit.MONTHS.between(
-                subscription.getStartDate(), subscription.getEndDate());
+        // Calculează prețul lunar pe baza tipului de abonament
+        float monthlyBasePrice;
+        switch (subscription.getType().toLowerCase()) {
+            case "monthly" -> monthlyBasePrice = 50f;
+            case "6 months" -> monthlyBasePrice = 270f / 6;
+            case "annual" -> monthlyBasePrice = 480f / 12;
+            default -> {
+                System.out.println("⚠ Subscription type unknown. Cannot extend.");
+                return;
+            }
+        }
 
-        float additionalCost = months * monthlyPrice;
+        float additionalCost = months * monthlyBasePrice;
 
         if (subscription.getPromotion() != null && subscription.getPromotion().isValidNow()) {
             float discount = subscription.getPromotion().getDiscountPercent();
             additionalCost -= additionalCost * (discount / 100);
         }
 
+        // ✅ Update extended months
         subscription.addMonths(months);
         subscription.setPrice(subscription.getPrice() + additionalCost);
-        subscriptionDAO.updateSubscription(subscription); // UPDATE în DB
+        subscriptionDAO.updateSubscription(subscription);
 
         System.out.println("✅ Subscription extended by " + months + " months.");
 
@@ -1065,8 +1105,6 @@ public class MemberService {
 
         System.out.println("Subscription status updated: " + (newStatus ? "Active" : "Inactive"));
     }
-
-
 
     public void deleteSubscription(Member member, Scanner scanner) {
         Subscription subscription = subscriptionDAO.findMostRecentByMemberId(member.getId());

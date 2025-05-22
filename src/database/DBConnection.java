@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    private static final String URL = "jdbc:sqlite:GYM.db"; // The path to the database file
+    private static final String URL = "jdbc:sqlite:GYMTest.db"; // The path to the database file
     private static DBConnection instance; // singleton
     private Connection connection; // The actual connection to the database
 
@@ -32,6 +32,14 @@ public class DBConnection {
 
     // Public method to access the connection
     public Connection getConnection() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                connection = DriverManager.getConnection(URL); // Reîncarcă conexiunea dacă e închisă
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return connection;
     }
+
 }

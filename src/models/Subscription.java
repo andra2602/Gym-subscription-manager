@@ -73,6 +73,10 @@ public class Subscription {
         return extendedMonths;
     }
 
+    public void setExtendedMonths(int extendedMonths) {
+        this.extendedMonths = extendedMonths;
+    }
+
     ///  getters & setters
     public String getType() {
         return type;
