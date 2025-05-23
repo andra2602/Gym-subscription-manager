@@ -8,11 +8,11 @@ import java.sql.*;
 import java.time.LocalDate;
 
 public class SubscriptionDAO {
-    private final Connection connection;
+    //private final Connection connection;
     private PromotionDAO promotionDAO;
 
     public SubscriptionDAO(PromotionDAO promotionDAO) {
-        this.connection = DBConnection.getInstance().getConnection();
+        //this.connection = DBConnection.getInstance().getConnection();
         this.promotionDAO = promotionDAO;
     }
 
@@ -21,7 +21,8 @@ public class SubscriptionDAO {
         String sql = "INSERT INTO subscriptions (member_id, type, start_date, price, is_active, promotion_id, extended_months) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, memberId);
             stmt.setString(2, subscription.getType());
             stmt.setString(3, subscription.getStartDate().toString());
@@ -85,7 +86,8 @@ public class SubscriptionDAO {
                 "LEFT JOIN promotions p ON s.promotion_id = p.id " +
                 "WHERE s.member_id = ? AND s.is_active = 1";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, memberId);
             ResultSet rs = stmt.executeQuery();
 

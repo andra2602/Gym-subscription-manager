@@ -171,9 +171,6 @@ public class TrainerDAO {
         return trainers;
     }
 
-
-
-
     public Trainer readById(int id) {
         String sql = "SELECT u.id, u.name, u.username, u.email, u.phone, u.password, " +
                 "t.specialization, t.years_of_experience, t.price_per_hour " +
@@ -233,14 +230,23 @@ public class TrainerDAO {
                         rs.getString("password"),
                         rs.getString("specialization"),
                         rs.getFloat("years_of_experience"),
-                        rs.getFloat("price_per_hour")
+                        rs.getFloat("price_per_hour"),
+                        new HashSet<>(),        // trainedMembers
+                        new ArrayList<>(),      // availableSlots
+                        new ArrayList<>(),      // bookings
+                        new ArrayList<>()       // reviewScores
                 );
                 trainer.setId(id);
+
+                // 💡 Completează review-urile!
+                List<Integer> reviews = reviewDAO.readRatingsByTrainerId(id);
+                trainer.setReviewScores(reviews);
+
                 return trainer;
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("❌ Eroare la citirea trainerului: " + e.getMessage());
         }
         return null;
     }
@@ -257,7 +263,7 @@ public class TrainerDAO {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return new Trainer(
+                Trainer trainer = new Trainer(
                         rs.getInt("user_id"),
                         rs.getString("name"),
                         rs.getString("username"),
@@ -267,8 +273,27 @@ public class TrainerDAO {
                         rs.getString("specialization"),
                         rs.getDouble("years_of_experience"),
                         rs.getDouble("price_per_hour"),
-                        new HashSet<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()
+                        new HashSet<>(),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        new ArrayList<>()
                 );
+
+                // 🟢 Setăm ID-ul în mod explicit (deși deja îl trimiți prin constructor, îl las aici ca redundanță safe)
+                trainer.setId(rs.getInt("user_id"));
+
+                // ✅ Aducem review-urile
+                trainer.setReviewScores(reviewDAO.readRatingsByTrainerId(trainer.getId()));
+
+                // ✅ Dacă vrei, și membrii antrenați
+                if (memberDAO != null) {
+                    trainer.setTrainedMembers(new HashSet<>(memberDAO.getMembersByTrainerId(trainer.getId())));
+                }
+
+                // ✅ Inițializăm alte câmpuri ca să nu fie null
+                trainer.setCoordinatedClasses(new HashMap<>());
+
+                return trainer;
             }
 
         } catch (SQLException e) {
@@ -277,5 +302,6 @@ public class TrainerDAO {
 
         return null;
     }
+
 
 }

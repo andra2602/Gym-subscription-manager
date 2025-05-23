@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class MemberDAO {
 
-    private final Connection connection;
+    //private final Connection connection;
     private final PromotionDAO promotionDAO = new PromotionDAO();
     private final SubscriptionDAO subscriptionDAO = new SubscriptionDAO(promotionDAO);
     private TrainerDAO trainerDAO ;
@@ -22,14 +22,16 @@ public class MemberDAO {
         this.trainerDAO = trainerDAO;
     }
     public MemberDAO() {
-        this.connection = DBConnection.getInstance().getConnection();
+        //this.connection = DBConnection.getInstance().getConnection();
     }
 
     public void create(Member member) {
         // 1. Inserare în users
         String userSql = "INSERT INTO users (name, username, email, phone, password) VALUES (?, ?, ?, ?, ?)";
 
-        try (PreparedStatement userStmt = connection.prepareStatement(userSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement userStmt = conn.prepareStatement(userSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+
             userStmt.setString(1, member.getName());
             userStmt.setString(2, member.getUsername());
             userStmt.setString(3, member.getEmail());
@@ -54,7 +56,8 @@ public class MemberDAO {
         String memberSql = "INSERT INTO members (user_id, registration_date, weight, height, experience_level, trainer_id, is_student) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement memberStmt = connection.prepareStatement(memberSql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement memberStmt = conn.prepareStatement(memberSql)) {
             memberStmt.setInt(1, member.getId());
             memberStmt.setString(2, member.getRegistrationDate().toString());
             memberStmt.setFloat(3, member.getWeight());
@@ -80,7 +83,8 @@ public class MemberDAO {
     public boolean updateTrainer(int memberId, Integer trainerId) {
         String sql = "UPDATE members SET trainer_id = ? WHERE user_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             if (trainerId != null) {
                 stmt.setInt(1, trainerId);
             } else {
@@ -221,7 +225,9 @@ public class MemberDAO {
                 "LEFT JOIN users t ON m.trainer_id = t.id " +
                 "WHERE u.id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 
@@ -236,23 +242,21 @@ public class MemberDAO {
                         rs.getFloat("weight"),
                         rs.getFloat("height"),
                         rs.getString("experience_level"),
-                        null, // trainer setat imediat mai jos
-                        null, // subscription - poți seta separat
+                        null,
+                        null,
                         rs.getInt("is_student") == 1
                 );
                 member.setId(rs.getInt("id"));
                 member.setPayments(new ArrayList<>());
 
                 int trainerId = rs.getInt("trainer_id");
-                if (!rs.wasNull()) {
-                    Trainer trainer = new Trainer();
-                    trainer.setId(trainerId);
-                    trainer.setName(rs.getString("trainer_name"));
+                if (!rs.wasNull() && trainerDAO != null) {
+                    Trainer trainer = trainerDAO.findById(trainerId);
                     member.setTrainer(trainer);
                 }
+
                 Subscription subscription = subscriptionDAO.readByMemberId(member.getId());
                 member.setSubscription(subscription);
-
 
                 return member;
             }
@@ -261,14 +265,16 @@ public class MemberDAO {
             System.out.println("Eroare la citirea membrului: " + e.getMessage());
         }
 
-        return null; // dacă nu găsește
+        return null;
     }
+
 
 
     public boolean delete(int id) {
         String sql = "DELETE FROM users WHERE id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             int rows = stmt.executeUpdate();
             return rows > 0;
@@ -361,6 +367,7 @@ public class MemberDAO {
 
     public Member findByUsernameAndPassword(String username, String password) {
         String sql = "SELECT * FROM users u JOIN members m ON u.id = m.user_id WHERE u.username = ? AND u.password = ?";
+
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -369,7 +376,6 @@ public class MemberDAO {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // Convertim registrationDate din String în LocalDate
                 LocalDate registrationDate = LocalDate.parse(rs.getString("registration_date"));
 
                 Member member = new Member(
@@ -382,10 +388,23 @@ public class MemberDAO {
                         rs.getFloat("weight"),
                         rs.getFloat("height"),
                         rs.getString("experience_level"),
-                        null, // trainer îl putem seta separat după JOIN dacă vrei
-                        null, // subscription îl putem încărca din SubscriptionDAO separat
+                        null,
+                        null,
                         rs.getBoolean("is_student")
                 );
+
+                member.setId(rs.getInt("id"));
+
+                // Trainer
+                int trainerId = rs.getInt("trainer_id");
+                if (!rs.wasNull() && trainerDAO != null) {
+                    Trainer trainer = trainerDAO.findById(trainerId);
+                    member.setTrainer(trainer);
+                }
+
+                // Subscription
+                Subscription subscription = subscriptionDAO.findActiveByMemberId(member.getId());
+                member.setSubscription(subscription);
 
                 return member;
             }
@@ -393,8 +412,10 @@ public class MemberDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return null;
     }
+
 
     public void addMember(Member member) {
         String userSql = "INSERT INTO users (name, username, email, phone, password) VALUES (?, ?, ?, ?, ?)";
@@ -452,6 +473,20 @@ public class MemberDAO {
             }
         }
     }
+//    public void assignTrainer(int memberId, int trainerId) {
+//        String sql = "UPDATE members SET trainer_id = ? WHERE user_id = ?";
+//        try (Connection conn = DBConnection.getInstance().getConnection();
+//             PreparedStatement stmt = conn.prepareStatement(sql)) {
+//
+//            stmt.setInt(1, trainerId);
+//            stmt.setInt(2, memberId);
+//            stmt.executeUpdate();
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     public void assignTrainer(int memberId, int trainerId) {
         String sql = "UPDATE members SET trainer_id = ? WHERE user_id = ?";
         try (Connection conn = DBConnection.getInstance().getConnection();
@@ -459,12 +494,18 @@ public class MemberDAO {
 
             stmt.setInt(1, trainerId);
             stmt.setInt(2, memberId);
-            stmt.executeUpdate();
+            int updated = stmt.executeUpdate();
+
+            if (updated == 0) {
+                System.out.println("❌ No rows updated. Member ID might not exist.");
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+
 
     public Integer getTrainerIdForMember(int memberId) {
         String sql = "SELECT trainer_id FROM members WHERE user_id = ?";
@@ -500,7 +541,8 @@ public class MemberDAO {
     public void updateTrainerForMember(int memberId, int trainerId) {
         String sql = "UPDATE members SET trainer_id = ? WHERE user_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, trainerId);
             stmt.setInt(2, memberId);
             stmt.executeUpdate();

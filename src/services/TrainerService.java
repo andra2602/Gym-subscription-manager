@@ -707,7 +707,6 @@ public class TrainerService {
     }
 
 
-
     public List<TimeSlot> generateWeeklyTimeSlotsForTrainer(Trainer trainer) {
         List<TimeSlot> slots = new ArrayList<>();
 
@@ -776,7 +775,6 @@ public class TrainerService {
     public Booking getBookingForSlot(TimeSlot slot, Trainer trainer, LocalDate date) {
         return bookingDAO.getBookingForSlot(trainer.getId(), slot.getStartTime(), date);
     }
-
 
     public void listTrainedMembersFilteredByLevel(Trainer trainer, String experienceLevel) {
         List<Member> trainedMembers = memberDAO.getMembersByTrainerId(trainer.getId());
@@ -1237,5 +1235,6 @@ public class TrainerService {
         double average = reviews.stream().mapToInt(Integer::intValue).average().orElse(0);
         System.out.printf("⭐ Average Rating: %.2f out of 5\n", average);
     }
+
 
 }

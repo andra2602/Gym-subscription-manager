@@ -259,10 +259,11 @@ public class BookingDAO {
 
     public List<Booking> getBookingsForTrainerByMember(int trainerId, int memberId) {
         List<Booking> bookings = new ArrayList<>();
-
         String sql = "SELECT * FROM bookings WHERE trainer_id = ? AND member_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, trainerId);
             stmt.setInt(2, memberId);
 
@@ -270,10 +271,7 @@ public class BookingDAO {
             while (rs.next()) {
                 LocalDate date = LocalDate.parse(rs.getString("date"));
                 LocalTime time = LocalTime.parse(rs.getString("time"));
-
-                // Pentru review ne interesează doar data și ora
-                Booking booking = new Booking(null, null, date, time);
-                bookings.add(booking);
+                bookings.add(new Booking(null, null, date, time));
             }
 
         } catch (SQLException e) {
@@ -282,6 +280,7 @@ public class BookingDAO {
 
         return bookings;
     }
+
 
 
     public void deleteBookingsForClass(int classId) {

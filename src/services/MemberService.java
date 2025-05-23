@@ -760,8 +760,14 @@ public class MemberService {
             // actualizăm în DB: membrul primește trainerul
             memberDAO.assignTrainer(member.getId(), selectedTrainer.getId());
 
-            // și în obiectul local (pentru sesiunea curentă)
-            member.setTrainer(selectedTrainer);
+            // Refreshează datele membrului, dacă folosești un meniu persistent
+            Member updated = memberDAO.readById(member.getId());
+            if (updated == null) {
+                System.out.println("⚠ Unable to reload updated member from database.");
+            } else {
+                System.out.println("✔ Reloaded member successfully: Trainer = " +
+                        (updated.getTrainer() != null ? updated.getTrainer().getName() : "null"));
+            }
 
             System.out.println("✅ " + selectedTrainer.getName() + " is now your personal trainer!");
         } else {
