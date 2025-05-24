@@ -59,6 +59,7 @@ public class TimeSlot {
 
     @Override
     public String toString() {
-        return startTime + " - " + endTime + " " + day;
+        return String.format("%s - %s %s", startTime, endTime, day);
     }
+
 }

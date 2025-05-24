@@ -21,7 +21,8 @@ public class BookingDAO {
         String sql = "INSERT INTO bookings (member_id, trainer_id, fitness_class_id, date, time, purpose) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, booking.getMember().getId());
 
             if (booking.getTrainer() != null) {
@@ -52,7 +53,8 @@ public class BookingDAO {
         String sql = "INSERT INTO bookings (member_id, trainer_id, fitness_class_id, date, time, purpose) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             // member_id (poate fi null)
             if (booking.getMember() != null) {
@@ -87,7 +89,6 @@ public class BookingDAO {
         }
     }
 
-
     public List<Booking> readAll() {
         List<Booking> bookings = new ArrayList<>();
         String sql = "SELECT * FROM bookings";
@@ -111,7 +112,8 @@ public class BookingDAO {
         List<Booking> bookings = new ArrayList<>();
         String sql = "SELECT * FROM bookings WHERE member_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, memberId);
             ResultSet rs = stmt.executeQuery();
 
@@ -129,7 +131,8 @@ public class BookingDAO {
     public boolean deleteById(int bookingId) {
         String sql = "DELETE FROM bookings WHERE id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, bookingId);
             int rows = stmt.executeUpdate();
             return rows > 0;
@@ -172,7 +175,8 @@ public class BookingDAO {
     public boolean isSlotBooked(int trainerId, LocalTime startTime, LocalDate date) {
         String sql = "SELECT 1 FROM bookings WHERE trainer_id = ? AND time = ? AND date = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, trainerId);
             stmt.setString(2, startTime.toString());
             stmt.setString(3, date.toString());
@@ -190,7 +194,8 @@ public class BookingDAO {
     public Booking getBookingForSlot(int trainerId, LocalTime time, LocalDate date) {
         String sql = "SELECT * FROM bookings WHERE trainer_id = ? AND time = ? AND date = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, trainerId);
             stmt.setString(2, time.toString());
             stmt.setString(3, date.toString());
@@ -237,7 +242,8 @@ public class BookingDAO {
         List<Booking> bookings = new ArrayList<>();
         String sql = "SELECT * FROM bookings WHERE trainer_id = ? AND date = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, trainerId);
             stmt.setString(2, date.toString());
 
@@ -282,11 +288,11 @@ public class BookingDAO {
     }
 
 
-
     public void deleteBookingsForClass(int classId) {
         String sql = "DELETE FROM bookings WHERE fitness_class_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, classId);
             stmt.executeUpdate();
         } catch (SQLException e) {

@@ -748,6 +748,7 @@
 
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 import dao.*;
@@ -780,6 +781,8 @@ public class StartUp {
 
         memberDAO.setTrainerDAO(trainerDAO);
         trainerDAO.setMemberDAO(memberDAO);
+        fitnessClassDAO.setTrainerDAO(trainerDAO);
+
 
         // === Service Initialization ===
         MemberService memberService = new MemberService(memberDAO, trainerDAO, bookingDAO, subscriptionDAO, paymentDAO, userDAO);
@@ -1124,9 +1127,15 @@ public class StartUp {
                     } else if (optiune == 2) {
                         System.out.println("Please enter the date (YYYY-MM-DD): ");
                         String dataInput = scanner.nextLine();
-                        LocalDate dataAleasa = LocalDate.parse(dataInput);
 
-                        trainerService.showScheduleForDate(trainer, dataAleasa);
+                        try {
+                            LocalDate dataAleasa = LocalDate.parse(dataInput);
+                            trainerService.showScheduleForDate(trainer, dataAleasa);
+                        } catch (DateTimeParseException e) {
+                            System.out.println("❌ Invalid date format! Try again with format YYYY-MM-DD.");
+                        }
+                    } else {
+                        System.out.println("❌ Invalid option.");
                     }
                     break;
                 case 4:

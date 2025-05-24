@@ -20,7 +20,8 @@ public class PaymentDAO {
     public void create(Payment payment) {
         String sql = "INSERT INTO payments (amount, payment_date, payment_method, member_id, purpose) VALUES (?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setFloat(1, payment.getAmount());
             stmt.setString(2, payment.getPaymentDate().toString());
             stmt.setString(3, payment.getPaymentMethod().name());
@@ -38,7 +39,8 @@ public class PaymentDAO {
         List<Payment> payments = new ArrayList<>();
         String sql = "SELECT * FROM payments WHERE member_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, memberId);
             ResultSet rs = stmt.executeQuery();
 
@@ -111,7 +113,8 @@ public class PaymentDAO {
         List<Payment> payments = new ArrayList<>();
         String sql = "SELECT * FROM payments WHERE member_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, memberId);
             ResultSet rs = stmt.executeQuery();
 

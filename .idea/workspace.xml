@@ -7,12 +7,15 @@
     <list default="true" id="99df6786-c36c-47c5-9466-dc4120821e6c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GYMTest.db" beforeDir="false" afterPath="$PROJECT_DIR$/GYMTest.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/StartUp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/StartUp.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/dao/BookingDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/BookingDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/MemberDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/MemberDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/ReviewDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/ReviewDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/SubscriptionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/SubscriptionDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/ClassParticipantsDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/ClassParticipantsDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/FitnessClassDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/FitnessClassDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/PaymentDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/PaymentDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/TimeSlotDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/TimeSlotDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/dao/TrainerDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/TrainerDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/MemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/MemberService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/FitnessClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/FitnessClass.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/TimeSlot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/TimeSlot.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/services/TrainerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/TrainerService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -119,7 +122,8 @@
       <workItem from="1747833996608" duration="681000" />
       <workItem from="1747896632529" duration="8216000" />
       <workItem from="1747912583888" duration="136000" />
-      <workItem from="1747985610103" duration="6488000" />
+      <workItem from="1747985610103" duration="6658000" />
+      <workItem from="1748076526727" duration="8100000" />
     </task>
     <servers />
   </component>

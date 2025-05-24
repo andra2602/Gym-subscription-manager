@@ -728,49 +728,106 @@ public class TrainerService {
         DayOfWeek today = LocalDate.now().getDayOfWeek();
         LocalDate date = LocalDate.now();
 
-        List<TimeSlot> todaySlots = timeSlotDAO.getTimeSlotsForTrainerByDay(trainer.getId(), today);
-
         System.out.println("Schedule for Trainer: " + trainer.getName());
-        todaySlots.sort(Comparator.comparing(TimeSlot::getStartTime));
 
-        for (TimeSlot slot : todaySlots) {
-            boolean isBooked = bookingDAO.isSlotBooked(trainer.getId(), slot.getStartTime(), date);
+        // Generează sloturile 06:00 - 23:00
+        List<TimeSlot> slots = new ArrayList<>();
+        LocalTime start = LocalTime.of(6, 0);
+        LocalTime end = LocalTime.of(23, 0);
 
-            if (!isBooked) {
-                System.out.println(slot + " - FREE");
-            } else {
-                Booking booking = bookingDAO.getBookingForSlot(trainer.getId(), slot.getStartTime(), date);
-                if (booking.getFitnessClass() != null) {
-                    System.out.println(slot + " - CLASS: " + booking.getFitnessClass().getName());
-                } else {
-                    System.out.println(slot + " - BOOKED BY: " + booking.getMember().getName());
-                }
+        while (start.isBefore(end)) {
+            LocalTime next = start.plusHours(1);
+            TimeSlot slot = new TimeSlot(start, next, today, trainer);
+
+            // Adaugă în baza de date dacă nu există deja
+            if (!timeSlotDAO.exists(trainer.getId(), start, today)) {
+                timeSlotDAO.create(slot);  // vezi mai jos funcția `create`
             }
+
+            slots.add(slot);
+            start = next;
         }
-    }
 
-    public void showScheduleForDate(Trainer trainer, LocalDate date) {
-        DayOfWeek day = date.getDayOfWeek();
-        List<TimeSlot> slots = timeSlotDAO.getTimeSlotsForTrainerByDay(trainer.getId(), day);
-
-        System.out.println("--- YOUR SCHEDULE FOR " + date + " (" + day + ") ---");
+        // Sortează doar ca să fim siguri
         slots.sort(Comparator.comparing(TimeSlot::getStartTime));
 
         for (TimeSlot slot : slots) {
             boolean isBooked = bookingDAO.isSlotBooked(trainer.getId(), slot.getStartTime(), date);
 
-            if (!isBooked) {
-                System.out.println(slot + " - FREE");
-            } else {
+            if (isBooked) {
                 Booking booking = bookingDAO.getBookingForSlot(trainer.getId(), slot.getStartTime(), date);
                 if (booking.getFitnessClass() != null) {
                     System.out.println(slot + " - CLASS: " + booking.getFitnessClass().getName());
                 } else {
                     System.out.println(slot + " - BOOKED BY: " + booking.getMember().getName());
                 }
+            } else {
+                System.out.println(slot + " - FREE");
             }
         }
     }
+
+
+    public void showScheduleForDate(Trainer trainer, LocalDate date) {
+        DayOfWeek day = date.getDayOfWeek();
+
+        System.out.println("Schedule for Trainer: " + trainer.getName() + " on " + day + " (" + date + ")");
+
+        List<TimeSlot> slots = new ArrayList<>();
+        LocalTime start = LocalTime.of(6, 0);
+        LocalTime end = LocalTime.of(23, 0);
+
+        // 1. Generează sloturi orare de la 6:00 la 23:00
+        while (start.isBefore(end)) {
+            LocalTime next = start.plusHours(1);
+            TimeSlot slot = new TimeSlot(start, next, day, trainer);
+
+            if (!timeSlotDAO.exists(trainer.getId(), start, day)) {
+                timeSlotDAO.create(slot); // dacă vrei să fie salvat și în DB
+            }
+
+            slots.add(slot);
+            start = next;
+        }
+
+        // 2. Obține clasele și rezervările existente pentru acea zi
+        List<FitnessClass> classes = fitnessClassDAO.getClassesForTrainerByDate(trainer.getId(), date);
+        List<Booking> bookings = bookingDAO.getBookingsForTrainerByDate(trainer.getId(), date);
+
+        // 3. Sortează și afișează
+        slots.sort(Comparator.comparing(TimeSlot::getStartTime));
+
+        for (TimeSlot slot : slots) {
+            LocalTime slotTime = slot.getStartTime();
+
+            // Dacă e clasă planificată la acel moment
+            Optional<FitnessClass> classAtThisSlot = classes.stream()
+                    .filter(c -> c.getHour().equals(slotTime))
+                    .findFirst();
+
+            if (classAtThisSlot.isPresent()) {
+                System.out.println(slot + " - CLASS: " + classAtThisSlot.get().getName());
+                continue;
+            }
+
+            // Dacă e rezervare la acel moment
+            Optional<Booking> bookingAtThisSlot = bookings.stream()
+                    .filter(b -> b.getTimeSlot().equals(slotTime))
+                    .findFirst();
+
+            if (bookingAtThisSlot.isPresent()) {
+                Booking booking = bookingAtThisSlot.get();
+                if (booking.getMember() != null) {
+                    System.out.println(slot + " - BOOKED BY: " + booking.getMember().getName());
+                } else {
+                    System.out.println(slot + " - BOOKED");
+                }
+            } else {
+                System.out.println(slot + " - FREE");
+            }
+        }
+    }
+
 
     public Booking getBookingForSlot(TimeSlot slot, Trainer trainer, LocalDate date) {
         return bookingDAO.getBookingForSlot(trainer.getId(), slot.getStartTime(), date);
@@ -923,20 +980,6 @@ public class TrainerService {
                 new ArrayList<>(), date, startHour, maxParticipants);
 
         fitnessClassDAO.addFitnessClass(fitnessClass);
-
-        // Adăugăm toate booking-urile pentru intervalul de timp
-        // Sloturi reale care trebuie marcate ca ocupate (pe ore fixe)
-        LocalTime classEnd = startHour.plusMinutes(duration);
-        List<TimeSlot> allSlots = timeSlotDAO.getTimeSlotsForTrainerByDay(trainer.getId(), date.getDayOfWeek());
-
-        List<TimeSlot> slotsToBook = allSlots.stream()
-                .filter(slot -> overlaps(slot.getStartTime(), finalStartHour, duration))
-                .toList();
-
-        for (TimeSlot slot : slotsToBook) {
-            Booking booking = new Booking(fitnessClass, null, date, slot.getStartTime());
-            bookingDAO.addBooking(booking); // salvezi fiecare booking în DB
-        }
 
         System.out.println("✅ Class created and schedule updated.");
     }

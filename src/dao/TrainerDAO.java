@@ -177,7 +177,8 @@ public class TrainerDAO {
                 "FROM users u JOIN trainers t ON u.id = t.user_id " +
                 "WHERE u.id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 

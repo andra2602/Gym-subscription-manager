@@ -16,7 +16,6 @@ public class FitnessClass {
     private LocalTime hour;
     private int maxParticipants;
 
-
     public FitnessClass(String name, int duration, String difficulty, double price,
                         Trainer trainer, List<Member> participants,
                         LocalDate date, LocalTime hour, int maxParticipants) {
@@ -133,10 +132,9 @@ public class FitnessClass {
                 "Duration: " + duration + " minutes\n" +
                 "Difficulty: " + difficulty + "\n" +
                 "Price: " + price + "\n" +
-                "Trainer: " + trainer.getName() + "\n" +
+                "Trainer: " + (trainer != null ? trainer.getName() : "Not assigned") + "\n" +
                 "Date: " + date + "\n" +
                 "Time: " + hour + "\n" +
-                "Max Participants: " + maxParticipants + "\n" +
-                "Current number of participants: " + participants.size();
+                "Max Participants: " + maxParticipants + "\n" ;
     }
 }

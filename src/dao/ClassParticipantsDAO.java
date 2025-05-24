@@ -19,7 +19,8 @@ public class ClassParticipantsDAO {
     public void removeParticipantsForClass(int classId) {
         String sql = "DELETE FROM class_participants WHERE fitness_class_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, classId);
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -34,7 +35,8 @@ public class ClassParticipantsDAO {
                 "JOIN users u ON m.user_id = u.id " +
                 "WHERE cp.fitness_class_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, classId);
             ResultSet rs = stmt.executeQuery();
 
@@ -60,7 +62,8 @@ public class ClassParticipantsDAO {
 
     public int countParticipantsForClass(int classId) {
         String sql = "SELECT COUNT(*) FROM class_participants WHERE fitness_class_id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, classId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -73,9 +76,10 @@ public class ClassParticipantsDAO {
     }
 
     public boolean isMemberAlreadyEnrolled(int memberId, int classId) {
-        String sql = "SELECT COUNT(*) FROM class_participants WHERE member_id = ? AND class_id = ?";
+        String sql = "SELECT COUNT(*) FROM class_participants WHERE member_id = ? AND fitness_class_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, memberId);
             stmt.setInt(2, classId);
 
@@ -92,9 +96,10 @@ public class ClassParticipantsDAO {
     }
 
     public boolean addParticipantToClass(int memberId, int classId) {
-        String sql = "INSERT INTO class_participants (member_id, class_id) VALUES (?, ?)";
+        String sql = "INSERT INTO class_participants (member_id, fitness_class_id) VALUES (?, ?)";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, memberId);
             stmt.setInt(2, classId);
 
