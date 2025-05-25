@@ -1137,6 +1137,7 @@ public class StartUp {
                     } else {
                         System.out.println("❌ Invalid option.");
                     }
+
                     break;
                 case 4:
                     trainerService.showReviewStats(trainer);

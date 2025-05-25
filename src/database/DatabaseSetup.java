@@ -101,15 +101,15 @@ public class DatabaseSetup {
 
         String sqlBookings = "CREATE TABLE IF NOT EXISTS bookings (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "member_id INTEGER NOT NULL," +
+                "member_id INTEGER," +
                 "trainer_id INTEGER," +
                 "fitness_class_id INTEGER," +
                 "date TEXT NOT NULL," +
                 "time TEXT NOT NULL," +
                 "purpose TEXT," +
                 "FOREIGN KEY(member_id) REFERENCES members(user_id) ON DELETE CASCADE," +
-                "FOREIGN KEY(trainer_id) REFERENCES trainers(user_id) ON DELETE SET NULL," +
-                "FOREIGN KEY(fitness_class_id) REFERENCES fitness_classes(id) ON DELETE SET NULL" +
+                "FOREIGN KEY(trainer_id) REFERENCES trainers(user_id) ON DELETE CASCADE," +
+                "FOREIGN KEY(fitness_class_id) REFERENCES fitness_classes(id) ON DELETE CASCADE" +
                 ");";
 
         String sqlTimeSlots = "CREATE TABLE IF NOT EXISTS time_slots (" +

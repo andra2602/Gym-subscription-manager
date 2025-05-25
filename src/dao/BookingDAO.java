@@ -244,24 +244,38 @@ public class BookingDAO {
 
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, trainerId);
             stmt.setString(2, date.toString());
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Booking booking = new Booking();
-                booking.setTrainer(new Trainer(trainerId));
-                booking.setDate(date);
-                booking.setTimeSlot(LocalTime.parse(rs.getString("time")));
+                LocalTime time = LocalTime.parse(rs.getString("time"));
+                String purpose = rs.getString("purpose");
+
+
+                Trainer trainer = new Trainer(); // dummy trainer, doar cu ID
+                trainer.setId(trainerId);
+
+                Booking booking = new Booking(
+                        trainer,
+                        null, // member optional (poate fi adăugat dacă vrei)
+                        date,
+                        time,
+                        purpose
+                );
+
                 bookings.add(booking);
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error fetching bookings: " + e.getMessage());
+            System.out.println("❌ Error loading bookings: " + e.getMessage());
         }
 
         return bookings;
     }
+
+
 
     public List<Booking> getBookingsForTrainerByMember(int trainerId, int memberId) {
         List<Booking> bookings = new ArrayList<>();
@@ -288,17 +302,27 @@ public class BookingDAO {
     }
 
 
-    public void deleteBookingsForClass(int classId) {
-        String sql = "DELETE FROM bookings WHERE fitness_class_id = ?";
+    public void deleteBookingsForClass(FitnessClass fitnessClass) {
+        String sql = "DELETE FROM bookings WHERE fitness_class_id = ? " +
+                "OR (fitness_class_id = 0 AND trainer_id = ? AND date = ? AND purpose = ?)";
 
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, classId);
-            stmt.executeUpdate();
+
+            stmt.setInt(1, fitnessClass.getId());
+            stmt.setInt(2, fitnessClass.getTrainer().getId());
+            stmt.setString(3, fitnessClass.getDate().toString());
+            stmt.setString(4, fitnessClass.getName());
+
+            int deleted = stmt.executeUpdate();
+            System.out.println("🧹 Booking-uri șterse: " + deleted);
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("❌ Eroare la ștergerea booking-urilor pentru clasă: " + e.getMessage());
         }
     }
+
+
 
 
 }

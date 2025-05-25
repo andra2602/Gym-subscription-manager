@@ -748,18 +748,42 @@ public class TrainerService {
             start = next;
         }
 
+        // Obține toate clasele și rezervările pentru azi
+        List<FitnessClass> classes = fitnessClassDAO.getClassesForTrainerByDate(trainer.getId(), date);
+        List<Booking> bookings = bookingDAO.getBookingsForTrainerByDate(trainer.getId(), date);
+
         // Sortează doar ca să fim siguri
         slots.sort(Comparator.comparing(TimeSlot::getStartTime));
 
         for (TimeSlot slot : slots) {
-            boolean isBooked = bookingDAO.isSlotBooked(trainer.getId(), slot.getStartTime(), date);
+            LocalTime slotStart = slot.getStartTime();
+            LocalTime slotEnd = slotStart.plusHours(1);
 
-            if (isBooked) {
-                Booking booking = bookingDAO.getBookingForSlot(trainer.getId(), slot.getStartTime(), date);
-                if (booking.getFitnessClass() != null) {
-                    System.out.println(slot + " - CLASS: " + booking.getFitnessClass().getName());
+            // Verifică dacă o clasă se suprapune cu acest slot
+            Optional<FitnessClass> classInSlot = classes.stream()
+                    .filter(c -> {
+                        LocalTime classStart = c.getHour();
+                        LocalTime classEnd = classStart.plusMinutes(c.getDuration());
+                        return slotStart.isBefore(classEnd) && slotEnd.isAfter(classStart);
+                    })
+                    .findFirst();
+
+            if (classInSlot.isPresent()) {
+                System.out.println(slot + " - CLASS: " + classInSlot.get().getName());
+                continue;
+            }
+
+            // Verifică dacă există un booking "manual"
+            Optional<Booking> bookingInSlot = bookings.stream()
+                    .filter(b -> b.getTimeSlot().equals(slotStart) && b.getFitnessClass() == null)
+                    .findFirst();
+
+            if (bookingInSlot.isPresent()) {
+                Booking b = bookingInSlot.get();
+                if (b.getMember() != null) {
+                    System.out.println(slot + " - BOOKED BY: " + b.getMember().getName());
                 } else {
-                    System.out.println(slot + " - BOOKED BY: " + booking.getMember().getName());
+                    System.out.println(slot + " - BOOKED");
                 }
             } else {
                 System.out.println(slot + " - FREE");
@@ -802,8 +826,16 @@ public class TrainerService {
 
             // Dacă e clasă planificată la acel moment
             Optional<FitnessClass> classAtThisSlot = classes.stream()
-                    .filter(c -> c.getHour().equals(slotTime))
+                    .filter(c -> {
+                        LocalTime classStart = c.getHour();
+                        LocalTime classEnd = classStart.plusMinutes(c.getDuration());
+                        LocalTime slotEnd = slotTime.plusHours(1);
+
+                        return slotTime.isBefore(classEnd) && slotEnd.isAfter(classStart);
+                    })
+
                     .findFirst();
+
 
             if (classAtThisSlot.isPresent()) {
                 System.out.println(slot + " - CLASS: " + classAtThisSlot.get().getName());
@@ -811,9 +843,11 @@ public class TrainerService {
             }
 
             // Dacă e rezervare la acel moment
+
             Optional<Booking> bookingAtThisSlot = bookings.stream()
-                    .filter(b -> b.getTimeSlot().equals(slotTime))
+                    .filter(b -> b.getTimeSlot().equals(slotTime) && b.getFitnessClass() == null)
                     .findFirst();
+
 
             if (bookingAtThisSlot.isPresent()) {
                 Booking booking = bookingAtThisSlot.get();
@@ -980,6 +1014,18 @@ public class TrainerService {
                 new ArrayList<>(), date, startHour, maxParticipants);
 
         fitnessClassDAO.addFitnessClass(fitnessClass);
+        // Adăugăm toate sloturile ocupate pentru această clasă în bookings
+        LocalTime classEnd = startHour.plusMinutes(duration);
+        LocalTime slotStart = startHour;
+
+        while (slotStart.isBefore(classEnd)) {
+            Booking booking = new Booking(fitnessClass, null, date, slotStart);
+            bookingDAO.addBooking(booking);
+
+            // Treci la următorul slot (1h)
+            slotStart = slotStart.plusHours(1);
+        }
+
 
         System.out.println("✅ Class created and schedule updated.");
     }
@@ -1042,7 +1088,7 @@ public class TrainerService {
         }
 
         //  Ștergem toate booking-urile asociate clasei
-        bookingDAO.deleteBookingsForClass(toDelete.getId());
+        bookingDAO.deleteBookingsForClass(toDelete);
 
         // Ștergem participanții din tabela de legătură
         classParticipantsDAO.removeParticipantsForClass(toDelete.getId());
