@@ -896,7 +896,7 @@ public class StartUp {
         Manager manager = managerService.findByUsernameAndPassword(username, password);
         if (manager != null) {
             System.out.println("Welcome back manager: " + manager.getName());
-            managerMenu(scanner, memberService, trainerService, promotionService);
+            managerMenu(scanner, memberService, trainerService, promotionService, managerService);
             return;
         }
 
@@ -1044,7 +1044,10 @@ public class StartUp {
             System.out.println("2. Fitness classes you coordinate");
             System.out.println("3. Your schedule");
             System.out.println("4. Your rating");
-            System.out.println("5. LOG OUT");
+            System.out.println("5. Update your price");
+            System.out.println("6. Delete your account");
+            System.out.println("7. LOG OUT");
+
 
             System.out.print("Enter your choice: ");
             int option = scanner.nextInt();
@@ -1143,6 +1146,22 @@ public class StartUp {
                     trainerService.showReviewStats(trainer);
                     break;
                 case 5:
+                    System.out.print("Enter your new price per hour (RON): ");
+                    double newPrice = scanner.nextDouble();
+                    scanner.nextLine();
+
+                    trainer.setPricePerHour(newPrice);
+                    trainerService.updateTrainerPrice(trainer);
+
+                    System.out.println("✅ Your price has been updated to " + newPrice + " RON/hour.");
+                    AuditService.getInstance().log("Trainer " + trainer.getUsername() + " updated their price to " + newPrice + " RON");
+                    break;
+                case 6:
+                    if (trainerService.deleteTrainerAccount(trainer)) {
+                        exit = true;
+                    }
+                    break;
+                case 7:
                     // Exit the trainer menu
                     exit = true;
                     break;
@@ -1153,7 +1172,7 @@ public class StartUp {
     }
 
     // Meniu pentru Manager
-    private static void managerMenu(Scanner scanner, MemberService memberService, TrainerService trainerService, PromotionService promotionService) {
+    private static void managerMenu(Scanner scanner, MemberService memberService, TrainerService trainerService, PromotionService promotionService, ManagerService managerService) {
         boolean exit = false;
         while (!exit) {
             System.out.println("\n MENU");
@@ -1204,11 +1223,20 @@ public class StartUp {
                     break;
                 case 4:
                     // Calculate revenue generated in a specific period
-
+                    managerService.calculateRevenue(scanner);
                     break;
                 case 5:
                     // Audit important actions (e.g., additions, payments, deletions) in a CSV file
-
+                    System.out.println("a) Full audit");
+                    System.out.println("b) Filter by date");
+                    String auditChoice = scanner.nextLine();
+                    if (auditChoice.equalsIgnoreCase("a")) {
+                        managerService.viewFullAuditLog();
+                    } else if (auditChoice.equalsIgnoreCase("b")) {
+                        managerService.viewAuditLogForDate(scanner);
+                    } else {
+                        System.out.println("❌ Invalid option.");
+                    }
                     break;
                 case 6:
                     exit = true;

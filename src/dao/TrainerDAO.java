@@ -304,5 +304,34 @@ public class TrainerDAO {
         return null;
     }
 
+    public void updatePrice(int trainerId, double newPrice) {
+        String sql = "UPDATE trainers SET price_per_hour = ? WHERE user_id = ?";
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setDouble(1, newPrice);
+            stmt.setInt(2, trainerId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("❌ Failed to update trainer price: " + e.getMessage());
+        }
+    }
+
+    public boolean delete(int id) {
+        String sql = "DELETE FROM users WHERE id = ?";
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Eroare la ștergerea trainerului: " + e.getMessage());
+        }
+
+        return false;
+    }
 
 }

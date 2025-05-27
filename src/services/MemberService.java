@@ -633,7 +633,6 @@ import models.*;
 import dao.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -673,19 +672,8 @@ public class MemberService {
             throw new IllegalArgumentException("Username already taken! Please choose a different one.");
         }
         memberDAO.addMember(newMember);
+        AuditService.getInstance().log("Member registered: " + newMember.getUsername());
     }
-
-    public void removeMember(Member member) {
-        int userId = member.getId();
-        userDAO.deleteUserById(userId);
-        System.out.println("✅ Your account and all related data have been deleted.");
-    }
-
-
-    public boolean isMemberExists(Member member) {
-        return memberDAO.readById(member.getId()) != null;
-    }
-
 
     public boolean deleteMemberAccount(Member member) {
         Scanner scanner = new Scanner(System.in);
@@ -703,6 +691,7 @@ public class MemberService {
         userDAO.deleteUserById(userId);
 
         System.out.println("✅ Your account and all related data have been deleted successfully.");
+        AuditService.getInstance().log("Member deleted account: " + member.getUsername());
         return true;
     }
 
@@ -770,6 +759,7 @@ public class MemberService {
             }
 
             System.out.println("✅ " + selectedTrainer.getName() + " is now your personal trainer!");
+            AuditService.getInstance().log("Assigned trainer " + selectedTrainer.getName() + " to member " + member.getUsername());
         } else {
             System.out.println("❌ Assignment cancelled.");
         }
@@ -830,6 +820,7 @@ public class MemberService {
             memberDAO.removeTrainerFromMember(member.getId());
             member.setTrainer(null); // update local
             System.out.println("✅ Your trainer has been removed.");
+            AuditService.getInstance().log("Removed trainer " + trainer.getName() + " from member " + member.getUsername());
         } else {
             System.out.println("❌ Removal cancelled.");
         }
@@ -935,6 +926,7 @@ public class MemberService {
 
         System.out.println("✅ Subscription created successfully!");
         System.out.printf("📅 Type: %s | Start: %s | Price: %.2f RON\n", type, newSub.getStartDate(), finalPrice);
+        AuditService.getInstance().log("New subscription created for member: " + member.getUsername());
     }
 
     public void editSubscription(Member member, Scanner scanner) {
@@ -1024,6 +1016,7 @@ public class MemberService {
         subscriptionDAO.updateSubscription(subscription); // UPDATE în DB
 
         System.out.printf("✔ Subscription changed to %s. New price: %.2f\n", newType, newPrice);
+        AuditService.getInstance().log("Member " + member.getUsername() + " changed subscription to: " + newType);
 
         Subscription updated = subscriptionDAO.findActiveByMemberId(member.getId());
         member.setSubscription(updated);
@@ -1091,6 +1084,8 @@ public class MemberService {
 
         System.out.println("✅ Subscription extended by " + months + " months.");
 
+        AuditService.getInstance().log("Member " + member.getUsername() + " extended subscription by " + months + " months");
+
         System.out.print("Select payment method (CARD, CASH, ONLINE): ");
         PaymentMethod method = PaymentMethod.valueOf(scanner.nextLine().trim().toUpperCase());
 
@@ -1110,6 +1105,8 @@ public class MemberService {
         subscriptionDAO.updateSubscription(subscription);
 
         System.out.println("Subscription status updated: " + (newStatus ? "Active" : "Inactive"));
+        AuditService.getInstance().log("A member toggled its subscription status: " + (subscription.isActive() ? "Active" : "Inactive"));
+
     }
 
     public void deleteSubscription(Member member, Scanner scanner) {
@@ -1132,9 +1129,9 @@ public class MemberService {
         member.setSubscription(null);
 
         System.out.println("✅ Your subscription has been successfully deleted.");
+        AuditService.getInstance().log("Member " + member.getUsername() + " deleted their subscription");
+
     }
-
-
 
     /// Payments
     public void viewSubscriptionPayments(Member member) {

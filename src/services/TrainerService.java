@@ -601,9 +601,7 @@ package services;
 import models.*;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -658,6 +656,7 @@ public class TrainerService {
         }
 
         System.out.println("✅ Trainer successfully added!");
+        AuditService.getInstance().log("Trainer added: " + newTrainer.getUsername());
     }
 
     public List<Trainer> getTrainers() {
@@ -678,34 +677,6 @@ public class TrainerService {
             System.out.println("------------------------------------");
         }
     }
-
-    public void listAllTrainersDetailed() {
-        List<Trainer> trainers = trainerDAO.readAll();
-        if (trainers.isEmpty()) {
-            System.out.println("No trainers available.");
-            return;
-        }
-
-        System.out.println("\n--- Available Trainers ---");
-        for (int i = 0; i < trainers.size(); i++) {
-            Trainer t = trainers.get(i);
-            double averageRating = t.getReviewScores().stream()
-                    .mapToInt(Integer::intValue)
-                    .average()
-                    .orElse(0.0);
-
-            System.out.printf(
-                    "%d. %s | Specialization: %s | Experience: %.1f yrs | Price: %.2f RON/hour | Rating: %.1f/5\n",
-                    i + 1,
-                    t.getName(),
-                    t.getSpecialization(),
-                    t.getYearsOfExperience(),
-                    t.getPricePerHour(),
-                    averageRating
-            );
-        }
-    }
-
 
     public List<TimeSlot> generateWeeklyTimeSlotsForTrainer(Trainer trainer) {
         List<TimeSlot> slots = new ArrayList<>();
@@ -791,7 +762,6 @@ public class TrainerService {
         }
     }
 
-
     public void showScheduleForDate(Trainer trainer, LocalDate date) {
         DayOfWeek day = date.getDayOfWeek();
 
@@ -862,11 +832,6 @@ public class TrainerService {
         }
     }
 
-
-    public Booking getBookingForSlot(TimeSlot slot, Trainer trainer, LocalDate date) {
-        return bookingDAO.getBookingForSlot(trainer.getId(), slot.getStartTime(), date);
-    }
-
     public void listTrainedMembersFilteredByLevel(Trainer trainer, String experienceLevel) {
         List<Member> trainedMembers = memberDAO.getMembersByTrainerId(trainer.getId());
 
@@ -900,8 +865,6 @@ public class TrainerService {
 
         return newStart.isBefore(bookedEnd) && bookedStart.isBefore(newEnd);
     }
-
-
 
     public void showFitnessClasses(Trainer trainer) {
         List<FitnessClass> classes = fitnessClassDAO.getClassesByTrainerId(trainer.getId());
@@ -1028,6 +991,7 @@ public class TrainerService {
 
 
         System.out.println("✅ Class created and schedule updated.");
+        AuditService.getInstance().log("Trainer " + trainer.getUsername() + " added class: " + name + " on " + date + " at " + startHour);
     }
 
 
@@ -1100,6 +1064,7 @@ public class TrainerService {
         }
 
         System.out.println("✅ Class \"" + toDelete.getName() + "\" deleted successfully.");
+        AuditService.getInstance().log("Trainer " + trainer.getUsername() + " deleted class: " + toDelete.getName());
     }
 
 
@@ -1244,6 +1209,9 @@ public class TrainerService {
 
         // Optional: update trainer's trained members in app (DB already are connected)
         System.out.println("✅ Session booked with " + selectedTrainer.getName() + " on " + date + " at " + hour);
+        AuditService.getInstance().log("Member " + member.getUsername() + " booked session with trainer " + selectedTrainer.getUsername() +
+                " on " + date + " at " + hour);
+
     }
 
 
@@ -1306,6 +1274,7 @@ public class TrainerService {
         reviewDAO.addReview(member.getId(), selectedTrainer.getId(), rating, LocalDate.now());
 
         System.out.println("✅ Review submitted successfully for " + selectedTrainer.getName() + "!");
+        AuditService.getInstance().log("Member " + member.getUsername() + " rated trainer " + selectedTrainer.getUsername() + " with " + rating + " stars");
     }
 
     public void showReviewStats(Trainer trainer) {
@@ -1324,6 +1293,31 @@ public class TrainerService {
         double average = reviews.stream().mapToInt(Integer::intValue).average().orElse(0);
         System.out.printf("⭐ Average Rating: %.2f out of 5\n", average);
     }
+
+    public void updateTrainerPrice(Trainer trainer) {
+        trainerDAO.updatePrice(trainer.getId(), trainer.getPricePerHour());
+    }
+
+    public boolean deleteTrainerAccount(Trainer trainer) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Are you sure you want to delete your account?");
+        System.out.println("This action is permanent and cannot be undone.");
+        System.out.println("Type 'yes' to confirm or 'no' to cancel.");
+        String confirmation = scanner.nextLine();
+
+        if (!confirmation.trim().equalsIgnoreCase("yes")) {
+            System.out.println("Account deletion has been canceled.");
+            return false;
+        }
+
+        int userId = trainer.getId();
+        userDAO.deleteUserById(userId);
+
+        System.out.println("✅ Your account and all related data have been deleted successfully.");
+        AuditService.getInstance().log("Trainer deleted account: " + trainer.getUsername());
+        return true;
+    }
+
 
 
 }

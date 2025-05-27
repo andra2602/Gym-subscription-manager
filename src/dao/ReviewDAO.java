@@ -109,6 +109,7 @@ public class ReviewDAO {
         return ratings;
     }
 
+
     public List<Integer> getReviewsForTrainer(int trainerId) {
         List<Integer> scores = new ArrayList<>();
         String sql = "SELECT rating FROM reviews WHERE trainer_id = ?";

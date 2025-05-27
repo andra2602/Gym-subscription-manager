@@ -216,56 +216,112 @@ public class MemberDAO {
 
 
 
+//    public Member readById(int id) {
+//        String sql = "SELECT u.id, u.name, u.username, u.email, u.phone, u.password, " +
+//                "m.registration_date, m.weight, m.height, m.experience_level, m.trainer_id, m.is_student, " +
+//                "t.name AS trainer_name " +
+//                "FROM users u " +
+//                "JOIN members m ON u.id = m.user_id " +
+//                "LEFT JOIN users t ON m.trainer_id = t.id " +
+//                "WHERE u.id = ?";
+//
+//        try (Connection conn = DBConnection.getInstance().getConnection();
+//             PreparedStatement stmt = conn.prepareStatement(sql)) {
+//
+//            stmt.setInt(1, id);
+//            ResultSet rs = stmt.executeQuery();
+//
+//            if (rs.next()) {
+//                Member member = new Member(
+//                        rs.getString("name"),
+//                        rs.getString("username"),
+//                        rs.getString("email"),
+//                        rs.getString("phone"),
+//                        rs.getString("password"),
+//                        LocalDate.parse(rs.getString("registration_date")),
+//                        rs.getFloat("weight"),
+//                        rs.getFloat("height"),
+//                        rs.getString("experience_level"),
+//                        null,
+//                        null,
+//                        rs.getInt("is_student") == 1
+//                );
+//                member.setId(rs.getInt("id"));
+//                member.setPayments(new ArrayList<>());
+//
+//                int trainerId = rs.getInt("trainer_id");
+//                if (!rs.wasNull() && trainerDAO != null) {
+//                    Trainer trainer = trainerDAO.findById(trainerId);
+//                    member.setTrainer(trainer);
+//                }
+//
+//                Subscription subscription = subscriptionDAO.readByMemberId(member.getId());
+//                member.setSubscription(subscription);
+//
+//                return member;
+//            }
+//
+//        } catch (SQLException e) {
+//            System.out.println("Eroare la citirea membrului: " + e.getMessage());
+//        }
+//
+//        return null;
+//    }
+
     public Member readById(int id) {
         String sql = "SELECT u.id, u.name, u.username, u.email, u.phone, u.password, " +
-                "m.registration_date, m.weight, m.height, m.experience_level, m.trainer_id, m.is_student, " +
-                "t.name AS trainer_name " +
+                "m.registration_date, m.weight, m.height, m.experience_level, m.trainer_id, m.is_student " +
                 "FROM users u " +
                 "JOIN members m ON u.id = m.user_id " +
-                "LEFT JOIN users t ON m.trainer_id = t.id " +
                 "WHERE u.id = ?";
+
+        Member member = null;
+        Integer trainerId = null;
 
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                Member member = new Member(
-                        rs.getString("name"),
-                        rs.getString("username"),
-                        rs.getString("email"),
-                        rs.getString("phone"),
-                        rs.getString("password"),
-                        LocalDate.parse(rs.getString("registration_date")),
-                        rs.getFloat("weight"),
-                        rs.getFloat("height"),
-                        rs.getString("experience_level"),
-                        null,
-                        null,
-                        rs.getInt("is_student") == 1
-                );
-                member.setId(rs.getInt("id"));
-                member.setPayments(new ArrayList<>());
-
-                int trainerId = rs.getInt("trainer_id");
-                if (!rs.wasNull() && trainerDAO != null) {
-                    Trainer trainer = trainerDAO.findById(trainerId);
-                    member.setTrainer(trainer);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    member = new Member(
+                            rs.getString("name"),
+                            rs.getString("username"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            rs.getString("password"),
+                            LocalDate.parse(rs.getString("registration_date")),
+                            rs.getFloat("weight"),
+                            rs.getFloat("height"),
+                            rs.getString("experience_level"),
+                            null,
+                            null,
+                            rs.getInt("is_student") == 1
+                    );
+                    member.setId(rs.getInt("id"));
+                    member.setPayments(new ArrayList<>());
+                    trainerId = rs.getInt("trainer_id");
+                    if (rs.wasNull()) trainerId = null;
                 }
-
-                Subscription subscription = subscriptionDAO.readByMemberId(member.getId());
-                member.setSubscription(subscription);
-
-                return member;
             }
 
         } catch (SQLException e) {
             System.out.println("Eroare la citirea membrului: " + e.getMessage());
+            return null;
         }
 
-        return null;
+        // După ce s-a închis ResultSetul și Statementul
+        if (member != null) {
+            if (trainerId != null && trainerDAO != null) {
+                Trainer trainer = trainerDAO.findById(trainerId);
+                member.setTrainer(trainer);
+            }
+
+            Subscription subscription = subscriptionDAO.readByMemberId(member.getId());
+            member.setSubscription(subscription);
+        }
+
+        return member;
     }
 
 
@@ -550,8 +606,6 @@ public class MemberDAO {
             System.out.println("❌ Error updating trainer for member: " + e.getMessage());
         }
     }
-
-
 
 
 }

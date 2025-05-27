@@ -136,5 +136,35 @@ public class PaymentDAO {
         return payments;
     }
 
+    public List<Payment> getPaymentsBetweenDates(LocalDate start, LocalDate end) {
+        List<Payment> payments = new ArrayList<>();
+
+        String sql = "SELECT * FROM payments WHERE payment_date BETWEEN ? AND ?";
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, start.toString());
+            stmt.setString(2, end.toString());
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Payment payment = new Payment(
+                        rs.getFloat("amount"),
+                        LocalDate.parse(rs.getString("payment_date")),
+                        PaymentMethod.valueOf(rs.getString("payment_method")),
+                        null,
+                        rs.getString("purpose")
+                );
+                payments.add(payment);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error loading payments: " + e.getMessage());
+        }
+
+        return payments;
+    }
+
 
 }

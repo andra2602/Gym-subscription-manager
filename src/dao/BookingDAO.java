@@ -12,7 +12,7 @@ import java.util.List;
 public class BookingDAO {
 
     private final Connection connection;
-
+    private final MemberDAO memberDAO = new MemberDAO();
     public BookingDAO() {
         this.connection = DBConnection.getInstance().getConnection();
     }
@@ -248,29 +248,37 @@ public class BookingDAO {
             stmt.setInt(1, trainerId);
             stmt.setString(2, date.toString());
 
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                LocalTime time = LocalTime.parse(rs.getString("time"));
-                String purpose = rs.getString("purpose");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    LocalTime time = LocalTime.parse(rs.getString("time"));
+                    String purpose = rs.getString("purpose");
 
+                    Trainer trainer = new Trainer();
+                    trainer.setId(trainerId);
 
-                Trainer trainer = new Trainer(); // dummy trainer, doar cu ID
-                trainer.setId(trainerId);
+                    int memberId = rs.getInt("member_id");
+                    Member member = null;
+                    if (!rs.wasNull()) {
+                        member = memberDAO.readById(memberId);
+                    }
 
-                Booking booking = new Booking(
-                        trainer,
-                        null, // member optional (poate fi adăugat dacă vrei)
-                        date,
-                        time,
-                        purpose
-                );
+                    Booking booking = new Booking(
+                            trainer,
+                            member,
+                            date,
+                            time,
+                            purpose
+                    );
 
-                bookings.add(booking);
+                    bookings.add(booking);
+                }
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Error loading bookings: " + e.getMessage());
+            //System.out.println("❌ Error loading bookings: " + e.getMessage());
+            System.out.println("");
         }
+
 
         return bookings;
     }

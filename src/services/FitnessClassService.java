@@ -139,7 +139,6 @@ import dao.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class FitnessClassService {
 

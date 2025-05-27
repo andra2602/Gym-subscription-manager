@@ -412,9 +412,7 @@ import models.*;
 import dao.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.Scanner;
 
 
@@ -438,7 +436,6 @@ public class PromotionService {
             }
         }
     }
-
 
 
     public void listActivePromotions() {
@@ -582,6 +579,8 @@ public class PromotionService {
             promotionDAO.create(promo);
 
             System.out.println("✅ Promotion added successfully!");
+            AuditService.getInstance().log("Added promotion: " + promo.getName() + " (" + discount + "%)");
+
 
         } catch (Exception e) {
             System.out.println("⚠ Unexpected error while adding promotion: " + e.getMessage());
@@ -699,6 +698,7 @@ public class PromotionService {
 
                 promotionDAO.update(promo);
                 System.out.println("Changes saved to database!");
+                AuditService.getInstance().log("Edited promotion: " + promo.getName());
 
             } catch (Exception e) {
                 System.out.println("⚠ Error: " + e.getMessage());
@@ -736,6 +736,7 @@ public class PromotionService {
         boolean deleted = promotionDAO.delete(selected.getId());
 
         if (deleted) {
+            AuditService.getInstance().log("Removed promotion: " + selected.getName());
             System.out.println("✅ Removed promotion: " + selected.getName());
         } else {
             System.out.println("❌ Failed to remove promotion from database.");
@@ -775,6 +776,7 @@ public class PromotionService {
 
         if (updated) {
             System.out.println("✅ Promotion \"" + selected.getName() + "\" has been deactivated.");
+            AuditService.getInstance().log("Deactivated promotion: " + selected.getName());
         } else {
             System.out.println("❌ Failed to deactivate promotion in database.");
         }
@@ -840,6 +842,7 @@ public class PromotionService {
 
         if (updated) {
             System.out.println("✅ Promotion \"" + selected.getName() + "\" has been reactivated and saved to the database.");
+            AuditService.getInstance().log("Reactivated promotion: " + selected.getName() + " (" + newStart + " → " + newEnd + ")");
         } else {
             System.out.println("❌ Failed to update promotion in the database.");
         }
