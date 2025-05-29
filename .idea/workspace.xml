@@ -5,27 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="99df6786-c36c-47c5-9466-dc4120821e6c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/services/AuditService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GYM.db" beforeDir="false" afterPath="$PROJECT_DIR$/GYM.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/StartUp.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/StartUp.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/BookingDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/BookingDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/PaymentDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/PaymentDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/Payment.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/Payment.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/ManagerService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/ManagerService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/TrainerService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/TrainerService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/StartUp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/StartUp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/BookingDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/BookingDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/MemberDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/MemberDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/PaymentDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/PaymentDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/ReviewDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/ReviewDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/TrainerDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/TrainerDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/Payment.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Payment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/FitnessClassService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/FitnessClassService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/ManagerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/ManagerService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/MemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/MemberService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/PromotionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/PromotionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/TrainerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/TrainerService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,7 +114,9 @@
       <workItem from="1747985610103" duration="6658000" />
       <workItem from="1748076526727" duration="8270000" />
       <workItem from="1748162595619" duration="4061000" />
-      <workItem from="1748334439634" duration="10049000" />
+      <workItem from="1748334439634" duration="10228000" />
+      <workItem from="1748417581303" duration="109000" />
+      <workItem from="1748417732410" duration="95000" />
     </task>
     <servers />
   </component>
