@@ -743,8 +743,6 @@ public class PromotionService {
         }
     }
 
-
-
     public void deactivatePromotion(Scanner scanner) {
         List<Promotion> activePromos = promotionDAO.readAll().stream()
                 .filter(Promotion::isActive)
@@ -784,7 +782,7 @@ public class PromotionService {
 
     public void reactivatePromotion(Scanner scanner) {
         List<Promotion> inactivePromos = promotionDAO.readAll().stream()
-                .filter(p -> !p.isActive()) // mai corect decât !p.isValidNow()
+                .filter(p -> !p.isActive())
                 .toList();
 
         if (inactivePromos.isEmpty()) {

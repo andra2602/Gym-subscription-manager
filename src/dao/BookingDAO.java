@@ -85,7 +85,7 @@ public class BookingDAO {
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("❌ Error inserting booking: " + e.getMessage());
+            System.out.println("Error inserting booking: " + e.getMessage());
         }
     }
 
@@ -108,49 +108,13 @@ public class BookingDAO {
         return bookings;
     }
 
-    public List<Booking> readByMember(int memberId) {
-        List<Booking> bookings = new ArrayList<>();
-        String sql = "SELECT * FROM bookings WHERE member_id = ?";
-
-        try (Connection conn = DBConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, memberId);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                bookings.add(extractBooking(rs));
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Eroare la citirea rezervărilor membrului: " + e.getMessage());
-        }
-
-        return bookings;
-    }
-
-    public boolean deleteById(int bookingId) {
-        String sql = "DELETE FROM bookings WHERE id = ?";
-
-        try (Connection conn = DBConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, bookingId);
-            int rows = stmt.executeUpdate();
-            return rows > 0;
-
-        } catch (SQLException e) {
-            System.out.println("Eroare la ștergerea booking-ului: " + e.getMessage());
-            return false;
-        }
-    }
-
     private Booking extractBooking(ResultSet rs) throws SQLException {
-        // Construim obiectul Booking parțial (fără Member, Trainer complet încă)
+        // Construim obiectul Booking partial (fără Member, Trainer)
         Booking booking = new Booking();
         booking.setDate(LocalDate.parse(rs.getString("date")));
         booking.setTimeSlot(LocalTime.parse(rs.getString("time")));
         booking.setPurpose(rs.getString("purpose"));
 
-        // Minimalist - doar setăm ID-uri. Dacă vrei detalii complete, folosește DAO-uri pentru member/trainer
         Member member = new Member();
         member.setId(rs.getInt("member_id"));
         booking.setMember(member);
@@ -191,55 +155,12 @@ public class BookingDAO {
         return false;
     }
 
-    public Booking getBookingForSlot(int trainerId, LocalTime time, LocalDate date) {
-        String sql = "SELECT * FROM bookings WHERE trainer_id = ? AND time = ? AND date = ?";
-
-        try (Connection conn = DBConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, trainerId);
-            stmt.setString(2, time.toString());
-            stmt.setString(3, date.toString());
-
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                int memberId = rs.getInt("member_id");
-                int classId = rs.getInt("fitness_class_id");
-                String purpose = rs.getString("purpose");
-
-                Member member = null;
-                if (!rs.wasNull()) {
-                    member = new Member();
-                    member.setId(memberId); // sau folosește memberDAO dacă vrei obiect complet
-                }
-
-                FitnessClass fitnessClass = null;
-                if (classId != 0) {
-                    fitnessClass = new FitnessClass();
-                    fitnessClass.setId(classId); // opțional: poți folosi FitnessClassDAO
-                }
-
-                Trainer trainer = new Trainer(trainerId);
-
-                Booking booking = new Booking();
-                booking.setTrainer(trainer);
-                booking.setDate(date);
-                booking.setTimeSlot(time);
-                booking.setPurpose(purpose);
-                booking.setMember(member);
-                booking.setFitnessClass(fitnessClass);
-
-                return booking;
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
     public List<Booking> getBookingsForTrainerByDate(int trainerId, LocalDate date) {
         List<Booking> bookings = new ArrayList<>();
+        List<Integer> memberIds = new ArrayList<>();
+        List<LocalTime> times = new ArrayList<>();
+        List<String> purposes = new ArrayList<>();
+
         String sql = "SELECT * FROM bookings WHERE trainer_id = ? AND date = ?";
 
         try (Connection conn = DBConnection.getInstance().getConnection();
@@ -253,37 +174,38 @@ public class BookingDAO {
                     LocalTime time = LocalTime.parse(rs.getString("time"));
                     String purpose = rs.getString("purpose");
 
-                    Trainer trainer = new Trainer();
-                    trainer.setId(trainerId);
-
                     int memberId = rs.getInt("member_id");
-                    Member member = null;
-                    if (!rs.wasNull()) {
-                        member = memberDAO.readById(memberId);
-                    }
+                    if (rs.wasNull()) memberId = -1;
 
-                    Booking booking = new Booking(
-                            trainer,
-                            member,
-                            date,
-                            time,
-                            purpose
-                    );
-
-                    bookings.add(booking);
+                    times.add(time);
+                    purposes.add(purpose);
+                    memberIds.add(memberId);
                 }
             }
 
-        } catch (SQLException e) {
-            //System.out.println("❌ Error loading bookings: " + e.getMessage());
-            System.out.println("");
-        }
+            for (int i = 0; i < times.size(); i++) {
+                Member member = null;
+                if (memberIds.get(i) != -1) {
+                    member = memberDAO.readById(memberIds.get(i));
+                }
 
+                Booking booking = new Booking(
+                        new Trainer(trainerId),
+                        member,
+                        date,
+                        times.get(i),
+                        purposes.get(i)
+                );
+
+                bookings.add(booking);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error loading bookings: " + e.getMessage());
+        }
 
         return bookings;
     }
-
-
 
     public List<Booking> getBookingsForTrainerByMember(int trainerId, int memberId) {
         List<Booking> bookings = new ArrayList<>();
@@ -303,12 +225,11 @@ public class BookingDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Eroare la getBookingsForTrainerByMember: " + e.getMessage());
+            System.out.println("Eroare la getBookingsForTrainerByMember: " + e.getMessage());
         }
 
         return bookings;
     }
-
 
     public void deleteBookingsForClass(FitnessClass fitnessClass) {
         String sql = "DELETE FROM bookings WHERE fitness_class_id = ? " +
@@ -323,10 +244,10 @@ public class BookingDAO {
             stmt.setString(4, fitnessClass.getName());
 
             int deleted = stmt.executeUpdate();
-            System.out.println("🧹 Booking-uri șterse: " + deleted);
+            System.out.println("Booking-uri șterse: " + deleted);
 
         } catch (SQLException e) {
-            System.out.println("❌ Eroare la ștergerea booking-urilor pentru clasă: " + e.getMessage());
+            System.out.println("Eroare la ștergerea booking-urilor pentru clasă: " + e.getMessage());
         }
     }
 

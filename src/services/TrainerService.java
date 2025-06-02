@@ -646,7 +646,7 @@ public class TrainerService {
             throw new IllegalArgumentException("Username already taken! Please choose a different one.");
         }
 
-        trainerDAO.addTrainer(newTrainer); // inserează și în users și în trainers
+        trainerDAO.addTrainer(newTrainer);
 
         List<TimeSlot> generatedSlots = generateWeeklyTimeSlotsForTrainer(newTrainer);
         newTrainer.setAvailableSlots(generatedSlots);
@@ -654,8 +654,6 @@ public class TrainerService {
         for (TimeSlot slot : generatedSlots) {
             timeSlotDAO.addTimeSlot(slot);
         }
-
-        System.out.println("✅ Trainer successfully added!");
         AuditService.getInstance().log("Trainer added: " + newTrainer.getUsername());
     }
 
@@ -712,7 +710,7 @@ public class TrainerService {
 
             // Adaugă în baza de date dacă nu există deja
             if (!timeSlotDAO.exists(trainer.getId(), start, today)) {
-                timeSlotDAO.create(slot);  // vezi mai jos funcția `create`
+                timeSlotDAO.create(slot);
             }
 
             slots.add(slot);
@@ -723,7 +721,6 @@ public class TrainerService {
         List<FitnessClass> classes = fitnessClassDAO.getClassesForTrainerByDate(trainer.getId(), date);
         List<Booking> bookings = bookingDAO.getBookingsForTrainerByDate(trainer.getId(), date);
 
-        // Sortează doar ca să fim siguri
         slots.sort(Comparator.comparing(TimeSlot::getStartTime));
 
         for (TimeSlot slot : slots) {
@@ -744,7 +741,6 @@ public class TrainerService {
                 continue;
             }
 
-            // Verifică dacă există un booking "manual"
             Optional<Booking> bookingInSlot = bookings.stream()
                     .filter(b -> b.getTimeSlot().equals(slotStart) && b.getFitnessClass() == null)
                     .findFirst();
@@ -1202,18 +1198,12 @@ public class TrainerService {
         );
 
         paymentDAO.addPayment(payment);
-        // după ce faci booking și payment
-        member.setTrainer(selectedTrainer);
-        memberDAO.updateTrainerForMember(member.getId(), selectedTrainer.getId());
 
-
-        // Optional: update trainer's trained members in app (DB already are connected)
         System.out.println("✅ Session booked with " + selectedTrainer.getName() + " on " + date + " at " + hour);
         AuditService.getInstance().log("Member " + member.getUsername() + " booked session with trainer " + selectedTrainer.getUsername() +
                 " on " + date + " at " + hour);
 
     }
-
 
 
     public void addReviewForTrainer(Scanner scanner, Member member) {
@@ -1242,7 +1232,6 @@ public class TrainerService {
             return;
         }
 
-        // 3. Alegem trainerul
         List<Trainer> trainerList = new ArrayList<>(eligibleTrainers);
         System.out.println("You can leave a review for the following trainers:");
 
@@ -1261,7 +1250,6 @@ public class TrainerService {
 
         Trainer selectedTrainer = trainerList.get(choice - 1);
 
-        // 4. Alegem ratingul
         System.out.print("Please enter your rating for " + selectedTrainer.getName() + " (1-5): ");
         int rating = scanner.nextInt();
         scanner.nextLine();
@@ -1317,7 +1305,5 @@ public class TrainerService {
         AuditService.getInstance().log("Trainer deleted account: " + trainer.getUsername());
         return true;
     }
-
-
 
 }

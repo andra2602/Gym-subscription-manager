@@ -8,11 +8,9 @@ import java.sql.*;
 import java.time.LocalDate;
 
 public class SubscriptionDAO {
-    //private final Connection connection;
     private PromotionDAO promotionDAO;
 
     public SubscriptionDAO(PromotionDAO promotionDAO) {
-        //this.connection = DBConnection.getInstance().getConnection();
         this.promotionDAO = promotionDAO;
     }
 
@@ -42,8 +40,6 @@ public class SubscriptionDAO {
             ResultSet generatedKeys = stmt.getGeneratedKeys();
             if (generatedKeys.next()) {
                 int id = generatedKeys.getInt(1);
-                // Dacă vrei să salvezi id-ul în Subscription, adaugă un field id în model
-                // subscription.setId(id);
             }
             System.out.println("Subscription created successfully for member ID " + memberId);
 
@@ -98,11 +94,11 @@ public class SubscriptionDAO {
                     promotion = new Promotion(
                             promoId,
                             rs.getString("promotion_name"),
-                            rs.getString("description"),          // adaugă și descrierea
+                            rs.getString("description"),
                             rs.getFloat("discount_percent"),
                             LocalDate.parse(rs.getString("promo_start")),
                             LocalDate.parse(rs.getString("promo_end")),
-                            rs.getInt("active") == 1              // presupunem că active e stocat ca int 0/1
+                            rs.getInt("active") == 1
                     );
                 }
 
@@ -114,9 +110,6 @@ public class SubscriptionDAO {
                         rs.getInt("is_active") == 1,
                         promotion
                 );
-
-                // setează extendedMonths dacă ai getter/setter în Subscription
-                // subscription.setExtendedMonths(rs.getInt("extended_months"));
 
                 return subscription;
             }
@@ -142,9 +135,9 @@ public class SubscriptionDAO {
                         LocalDate.parse(rs.getString("start_date")),
                         rs.getFloat("price"),
                         rs.getBoolean("is_active"),
-                        null );// promotion — poți seta ulterior dacă e cazul
+                        null );
 
-                subscription.setId(rs.getInt("id")); // ⚠️ FOARTE IMPORTANT
+                subscription.setId(rs.getInt("id"));
                 subscription.setExtendedMonths(rs.getInt("extended_months"));
 
                 return subscription;
@@ -163,24 +156,34 @@ public class SubscriptionDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, memberId);
-            ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                Promotion promo = null;
-                int promoId = rs.getInt("promotion_id");
-                if (!rs.wasNull()) {
-                    promo = promotionDAO.findById(promoId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("id");
+                    String type = rs.getString("type");
+                    LocalDate startDate = LocalDate.parse(rs.getString("start_date"));
+                    float price = rs.getFloat("price");
+                    boolean isActive = rs.getBoolean("is_active");
+                    int extendedMonths = rs.getInt("extended_months");
+
+                    int promoId = rs.getInt("promotion_id");
+                    boolean hasPromo = !rs.wasNull();
+
+                    Promotion promo = null;
+                    if (hasPromo) {
+                        promo = promotionDAO.findById(promoId);
+                    }
+
+                    return new Subscription(
+                            id,
+                            type,
+                            startDate,
+                            price,
+                            isActive,
+                            promo,
+                            extendedMonths
+                    );
                 }
-
-                return new Subscription(
-                        rs.getInt("id"),
-                        rs.getString("type"),
-                        LocalDate.parse(rs.getString("start_date")),
-                        rs.getFloat("price"),
-                        rs.getBoolean("is_active"),
-                        promo,
-                        rs.getInt("extended_months")
-                );
             }
 
         } catch (SQLException e) {
@@ -189,6 +192,7 @@ public class SubscriptionDAO {
 
         return null;
     }
+
 
     public void deleteSubscription(int subscriptionId) {
         String sql = "DELETE FROM subscriptions WHERE id = ?";

@@ -15,7 +15,6 @@ public class DatabaseSeeder {
         PromotionDAO promotionDAO = new PromotionDAO();
         SubscriptionDAO subscriptionDAO = new SubscriptionDAO(promotionDAO);
 
-        // Setezi dependențele după ce le-ai creat
         trainerDAO.setMemberDAO(memberDAO);
         memberDAO.setTrainerDAO(trainerDAO);
 
@@ -44,16 +43,9 @@ public class DatabaseSeeder {
         Member m3 = new Member("Test Member", "testmember", "test@example.com", "0723123456", "Parola123!",
                 LocalDate.now(), 70.5f, 175f, "beginner", null, null, true);
 
-        // Abonament activ pt Ana
-        LocalDate startDateAna = LocalDate.now().minusDays(27);
-        Subscription anaSub = new Subscription("monthly", startDateAna, 100f, true, null);
-        m1.setSubscription(anaSub);
-
         memberDAO.create(m1);
         memberDAO.create(m2);
         memberDAO.create(m3);
-
-        subscriptionDAO.create(anaSub, m1.getId());
 
         // === Promoții ===
         LocalDate today = LocalDate.now();
@@ -81,7 +73,6 @@ public class DatabaseSeeder {
         if (!promotionDAO.existsByNameAndStartDate(comingSoon.getName(), comingSoon.getStartDate())) {
             promotionDAO.create(comingSoon);
         }
-
 
         System.out.println("Baza de date a fost populată cu date de test.");
     }

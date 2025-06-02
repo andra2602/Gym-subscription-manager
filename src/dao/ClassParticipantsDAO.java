@@ -2,7 +2,6 @@ package dao;
 
 import database.DBConnection;
 import models.Member;
-import models.FitnessClass;
 
 import java.sql.*;
 import java.util.ArrayList;

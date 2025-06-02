@@ -52,10 +52,10 @@ public class ManagerService {
 
         double netTotal = totalRevenue + totalRefunds;
 
-        System.out.println("\n📊 Revenue Report from " + start + " to " + end);
-        System.out.printf("✅ Total income: %.2f RON\n", totalRevenue);
-        System.out.printf("🔁 Total refunds: %.2f RON\n", totalRefunds);
-        System.out.printf("💰 Net revenue: %.2f RON\n", netTotal);
+        System.out.println("\nRevenue Report from " + start + " to " + end);
+        System.out.printf("Total income: %.2f RON\n", totalRevenue);
+        System.out.printf("Total refunds: %.2f RON\n", totalRefunds);
+        System.out.printf("Net revenue: %.2f RON\n", netTotal);
     }
 
     public void viewFullAuditLog() {
@@ -66,7 +66,7 @@ public class ManagerService {
                 System.out.println(line);
             }
         } catch (IOException e) {
-            System.out.println("❌ Failed to read audit file: " + e.getMessage());
+            System.out.println("Failed to read audit file: " + e.getMessage());
         }
     }
 
@@ -83,7 +83,7 @@ public class ManagerService {
                 }
             }
         } catch (IOException e) {
-            System.out.println("❌ Failed to filter audit log: " + e.getMessage());
+            System.out.println("Failed to filter audit log: " + e.getMessage());
         }
     }
 

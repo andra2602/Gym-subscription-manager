@@ -14,6 +14,42 @@ The app allows:
 - Promotion creation and management
 - Leaving and viewing trainer reviews (anonymous)
 
+## ℹ️ Interactive Usage Only – No Code Modification Required
+
+All application features are available **exclusively through the interactive console menus**, structured by user roles (Member, Trainer, Manager).
+
+You can:
+- Register or log in
+- Create/update/delete subscriptions, trainers, classes, reviews, payments, and more
+- All actions are **menu-driven**, guided by clear prompts
+- **No manual code editing** is needed to create or test data
+- All modifications are reflected in real-time in the SQLite database
+
+
+## 🗂️ Database Details
+Type: SQLite
+
+Driver: sqlite-jdbc (v3.49.1.0)
+
+Database file: GYMFinalDatabase.db (auto-generated in project root)
+
+All tables are created programmatically using SQL statements in **DatabaseSetup.java**.
+
+Run **DatabaseSetup.java** manually once before first use to initialize the schema.
+
+## 🌱 Test Data (Seeder)
+The app includes automatic test data insertion via **DatabaseSeeder.java**, which runs automatically at startup if the database is empty.
+
+Preloaded content:
+
+✔️ 3 Trainers
+
+✔️ 3 Members (some already assigned to trainers)
+
+✔️ 2 Promotions:
+- 1 active
+- 1 upcoming
+
 ---
 
 ## 👥 User Roles and Main Features
@@ -26,7 +62,6 @@ The app allows:
     - Optionally apply promotion codes
     - Students benefit from a built-in 30% discount
 
-   
 2. **Fitness Classes**
    - View available fitness classes
    - Book a class if spots are available
@@ -81,6 +116,13 @@ The app allows:
 
 4. **Your Rating**
     - View individual reviews and your overall average score
+    - 
+5. **Update Hourly Rate**
+    - Trainers can update their price per hour directly from the menu
+    - All changes are logged in the audit system
+
+6. **Account Deletion**
+    - Fully deletes trainer profile and related data
 
 ---
 
@@ -93,9 +135,12 @@ The app allows:
     - Add new promotions (with validations for dates and content)
     - Edit, deactivate, reactivate, or delete promotions
 
-3. **Finance (future extension)**
+3. **Finance**
     - View earnings in a selected time frame
-    - Export data to `.csv` for audit or analysis
+    
+4. **Audit**
+    - View a .csv log of key actions: deletions, payments, reviews, bookings
+    - You can select to view full audit or for a period of time.
 
 ---
 
@@ -112,24 +157,20 @@ The app allows:
 
 ---
 
-## 🧪 Test Data Loaded on Startup
-
-- [x] 3 Trainers
-- [x] 3 Members (assigned to trainers)
-- [x] 3 Promotions:
-   - 1 Active
-   - 1 Upcoming
-   - 1 Expired
-- [x] One member has a subscription expiring in 3 days
-
----
-
 ## 🔧 Technical Overview
 
-- `StartUp.java`: main entry point, manages menus, login, and registration
-- Service classes (`MemberService`, `TrainerService`, `ManagerService`, etc.) handle business logic
-- `Validator.java`: enforces strict input validation
-- Console-based UI with structured menus per user type
+- `StartUp.java`: Main entry point — launches the interactive console, manages login, registration, and role-based menus
+- `DBConnection.java`: Singleton class for managing SQLite database connections
+- `DatabaseSetup.java`: Creates all tables (users, subscriptions, trainers, payments, etc.) using SQL — must be run manually once at the beginning
+- `DatabaseSeeder.java`: Populates test data (trainers, members, promotions) — runs automatically at startup if the DB is empty
+- `AuditService.java`: Logs important user actions to `audit.csv` (account deletions, reviews, bookings, payments...)
+- `Validator.java`: Strict format validation for email, phone, password, dates, and time
+- `DAO Layer`: Handles direct SQL interaction with each table
+- `Service Layer`: Contains all business logic, grouped by role (MemberService, TrainerService, etc.)
+- UI: Console-only interface, menu-driven with user prompts and validations  
+  
+**No code editing required** — all operations are accessible through guided menus
+
 
 ---
 
@@ -145,11 +186,35 @@ The app allows:
 
 ## 💡 Future Improvements
 
-- Add data persistence (file storage, JSON, or database integration)
-- Implement full audit logging
-
+- Full GUI interface (JavaFX or Swing)
+- Email notifications for class changes
 
 ---
+## 🧭 How to Run the Application
+
+### Follow these simple steps to get started:
+
+- ✅ Run DatabaseSetup.java (only once)
+
+This will automatically create all required tables in the GYMFinalDatabase.db SQLite file.
+
+- 🚀 Run StartUp.java
+
+The application launches into the interactive console.
+
+If the database is empty, it will automatically run DatabaseSeeder.java to load test data:
+
+→ Trainers, Members, Promotions, etc.
+
+- 🎮 Use the console menus
+
+All actions (registration, login, bookings, payments, reviews, etc.) are performed entirely from the menu system
+
+No code editing is needed to insert or modify data
+
+All changes are stored and reflected live in the database
+
+___
 
 🎓 This project was created as part of the Object-Oriented Programming Laboratory in Java.
 

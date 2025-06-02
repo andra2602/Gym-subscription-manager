@@ -690,7 +690,7 @@ public class MemberService {
         int userId = member.getId();
         userDAO.deleteUserById(userId);
 
-        System.out.println("✅ Your account and all related data have been deleted successfully.");
+        System.out.println("Your account and all related data have been deleted successfully.");
         AuditService.getInstance().log("Member deleted account: " + member.getUsername());
         return true;
     }
@@ -749,7 +749,6 @@ public class MemberService {
             // actualizăm în DB: membrul primește trainerul
             memberDAO.assignTrainer(member.getId(), selectedTrainer.getId());
 
-            // Refreshează datele membrului, dacă folosești un meniu persistent
             Member updated = memberDAO.readById(member.getId());
             if (updated == null) {
                 System.out.println("⚠ Unable to reload updated member from database.");
@@ -761,7 +760,7 @@ public class MemberService {
             System.out.println("✅ " + selectedTrainer.getName() + " is now your personal trainer!");
             AuditService.getInstance().log("Assigned trainer " + selectedTrainer.getName() + " to member " + member.getUsername());
         } else {
-            System.out.println("❌ Assignment cancelled.");
+            System.out.println("Assignment cancelled.");
         }
     }
 
@@ -841,7 +840,6 @@ public class MemberService {
         System.out.println("Start Date: " + subscription.getStartDate());
         System.out.println("End Date: " + subscription.getEndDate());
         System.out.println("Status: " + (subscription.isActive() ? "Active" : "Inactive"));
-        System.out.println("Final Price: " + subscription.getFinalPriceForMember(member));
         System.out.println("Remaining days: " + ChronoUnit.DAYS.between(LocalDate.now(), subscription.getEndDate()));
 
         if (subscription.getPromotion() != null) {
@@ -858,8 +856,7 @@ public class MemberService {
             return;
         }
 
-        // dacă are una inactivă
-        Subscription existing = subscriptionDAO.findMostRecentByMemberId(member.getId()); // nouă metodă
+        Subscription existing = subscriptionDAO.findMostRecentByMemberId(member.getId());
         if (existing != null && !existing.isActive()) {
             System.out.println("You currently have an inactive subscription.");
             System.out.println("Would you like to edit or delete it?");
@@ -870,7 +867,7 @@ public class MemberService {
             int opt = scanner.nextInt(); scanner.nextLine();
             switch (opt) {
                 case 1 -> { editSubscription(member, scanner); return; }
-                case 2 -> subscriptionDAO.deleteSubscription(existing.getId()); // nouă metodă
+                case 2 -> subscriptionDAO.deleteSubscription(existing.getId());
                 case 3 -> { System.out.println("Returning to menu..."); return; }
                 default -> System.out.println("Invalid option.");
             }
@@ -925,7 +922,7 @@ public class MemberService {
         paymentDAO.addPayment(payment);
 
         System.out.println("✅ Subscription created successfully!");
-        System.out.printf("📅 Type: %s | Start: %s | Price: %.2f RON\n", type, newSub.getStartDate(), finalPrice);
+        System.out.printf("Type: %s | Start: %s | Price: %.2f RON\n", type, newSub.getStartDate(), finalPrice);
         AuditService.getInstance().log("New subscription created for member: " + member.getUsername());
     }
 
@@ -1007,7 +1004,7 @@ public class MemberService {
             float discount = subscription.getPromotion().getDiscountPercent();
             newPrice -= newPrice * (discount / 100);
             difference = newPrice - oldPrice;
-            System.out.println("🎁 Promotion applied: " + discount + "% off.");
+            System.out.println("Promotion applied: " + discount + "% off.");
         }
 
         subscription.setType(newType);
@@ -1186,5 +1183,31 @@ public class MemberService {
         System.out.printf("💰 Overall total: %.2f RON\n", (totalSubscription + totalOthers));
 
     }
+
+    public void updateWeight(Scanner scanner, Member member) {
+        System.out.print("Enter your new weight (kg): ");
+        float newWeight;
+
+        try {
+            newWeight = Float.parseFloat(scanner.nextLine());
+            if (newWeight <= 0 || newWeight > 400) {
+                System.out.println("Invalid weight. Please enter a realistic value.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a number.");
+            return;
+        }
+
+        boolean success = memberDAO.updateWeight(member.getId(), newWeight);
+        if (success) {
+            member.setWeight(newWeight);
+            System.out.println("Weight updated successfully to " + newWeight + " kg.");
+            AuditService.getInstance().log("Member " + member.getUsername() + " updated weight to " + newWeight);
+        } else {
+            System.out.println("Failed to update weight.");
+        }
+    }
+
 
 }

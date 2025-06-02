@@ -174,18 +174,6 @@ public class FitnessClassService {
             System.out.println("------------------------------------");
         }
     }
-    public void addFitnessClass(FitnessClass fitnessClass) {
-        fitnessClassDAO.create(fitnessClass);
-    }
-    public void removeFitnessClass(FitnessClass fitnessClass) {
-        boolean success = fitnessClassDAO.delete(fitnessClass.getId());
-        if (success) {
-            System.out.println("✅ Fitness class deleted successfully from the database.");
-        } else {
-            System.out.println("❌ Failed to delete fitness class.");
-        }
-    }
-
 
     public void scheduleFitnessClass(Scanner scanner, Member member, PromotionService promotionService) {
         List<FitnessClass> allClasses = fitnessClassDAO.readAllAvailable();
@@ -252,7 +240,7 @@ public class FitnessClassService {
                 finalPrice -= basePrice * (discount / 100);
                 System.out.println("Promotion applied: " + promotion.getName() + " (" + discount + "% off)");
             } else if (promoChoice != 0) {
-                System.out.println("❌ Invalid choice. No promotion applied.");
+                System.out.println("Invalid choice. No promotion applied.");
             }
         } else {
             System.out.println("No active promotions available at the moment.");
@@ -278,7 +266,7 @@ public class FitnessClassService {
         );
         paymentDAO.addPayment(payment);
 
-        System.out.println("✅ You have successfully joined the class: " + selectedClass.getName());
+        System.out.println("You have successfully joined the class: " + selectedClass.getName());
         System.out.println("Final price paid: " + finalPrice + " RON");
     }
 

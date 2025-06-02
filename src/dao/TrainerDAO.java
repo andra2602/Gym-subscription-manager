@@ -24,7 +24,6 @@ public class TrainerDAO {
     }
 
     public void create(Trainer trainer) {
-        // 1. Inserăm în users
         String userSql = "INSERT INTO users (name, username, email, phone, password) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement userStmt = connection.prepareStatement(userSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             userStmt.setString(1, trainer.getName());
@@ -35,11 +34,10 @@ public class TrainerDAO {
 
             userStmt.executeUpdate();
 
-            // 2. Obținem ID-ul generat
             ResultSet generatedKeys = userStmt.getGeneratedKeys();
             if (generatedKeys.next()) {
                 int generatedId = generatedKeys.getInt(1);
-                trainer.setId(generatedId); // setăm în obiectul Trainer
+                trainer.setId(generatedId);
             } else {
                 throw new SQLException("Crearea userului a eșuat, nu s-a returnat niciun ID.");
             }
@@ -49,7 +47,6 @@ public class TrainerDAO {
             return;
         }
 
-        // 3. Inserăm în trainers
         String trainerSql = "INSERT INTO trainers (user_id, specialization, years_of_experience, price_per_hour) VALUES (?, ?, ?, ?)";
         try (PreparedStatement trainerStmt = connection.prepareStatement(trainerSql)) {
             trainerStmt.setInt(1, trainer.getId());
@@ -75,9 +72,8 @@ public class TrainerDAO {
 
         try {
             conn = DBConnection.getInstance().getConnection();
-            conn.setAutoCommit(false); // pornim tranzacția
+            conn.setAutoCommit(false);
 
-            // Inserăm în users
             userStmt = conn.prepareStatement(userSql, Statement.RETURN_GENERATED_KEYS);
             userStmt.setString(1, trainer.getName());
             userStmt.setString(2, trainer.getUsername());
@@ -89,9 +85,8 @@ public class TrainerDAO {
             ResultSet generatedKeys = userStmt.getGeneratedKeys();
             if (generatedKeys.next()) {
                 int userId = generatedKeys.getInt(1);
-                trainer.setId(userId); // salvăm ID-ul în obiectul Java
+                trainer.setId(userId);
 
-                // Inserăm în trainers
                 trainerStmt = conn.prepareStatement(trainerSql);
                 trainerStmt.setInt(1, userId);
                 trainerStmt.setString(2, trainer.getSpecialization());
@@ -99,14 +94,14 @@ public class TrainerDAO {
                 trainerStmt.setDouble(4, trainer.getPricePerHour());
                 trainerStmt.executeUpdate();
 
-                conn.commit(); // totul a mers OK!
+                conn.commit();
             } else {
                 throw new SQLException("Failed to retrieve user ID after insert.");
             }
 
         } catch (SQLException e) {
             try {
-                if (conn != null) conn.rollback(); // rollback dacă ceva merge prost
+                if (conn != null) conn.rollback();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -121,6 +116,7 @@ public class TrainerDAO {
             }
         }
     }
+
 
     public List<Trainer> readAll() {
         List<Trainer> trainers = new ArrayList<>();
@@ -158,10 +154,9 @@ public class TrainerDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Eroare la citirea trainerilor: " + e.getMessage());
+            System.out.println("Eroare la citirea trainerilor: " + e.getMessage());
         }
 
-        // PAS 2: completăm detalii extra acum, cu stmt închis
         for (Trainer trainer : trainers) {
             int trainerId = trainerIdMap.get(trainer);
             trainer.setTrainedMembers(new HashSet<>(memberDAO.getMembersByTrainerId(trainerId)));
@@ -211,8 +206,9 @@ public class TrainerDAO {
             System.out.println("Eroare la citirea trainerului: " + e.getMessage());
         }
 
-        return null; // dacă nu a fost găsit
+        return null;
     }
+
 
     public Trainer findById(int id) {
         String sql = "SELECT * FROM users u JOIN trainers t ON u.id = t.user_id WHERE u.id = ?";
@@ -239,7 +235,6 @@ public class TrainerDAO {
                 );
                 trainer.setId(id);
 
-                // 💡 Completează review-urile!
                 List<Integer> reviews = reviewDAO.readRatingsByTrainerId(id);
                 trainer.setReviewScores(reviews);
 
@@ -247,7 +242,7 @@ public class TrainerDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("❌ Eroare la citirea trainerului: " + e.getMessage());
+            System.out.println("Eroare la citirea trainerului: " + e.getMessage());
         }
         return null;
     }
@@ -280,18 +275,14 @@ public class TrainerDAO {
                         new ArrayList<>()
                 );
 
-                // 🟢 Setăm ID-ul în mod explicit (deși deja îl trimiți prin constructor, îl las aici ca redundanță safe)
                 trainer.setId(rs.getInt("user_id"));
 
-                // ✅ Aducem review-urile
                 trainer.setReviewScores(reviewDAO.readRatingsByTrainerId(trainer.getId()));
 
-                // ✅ Dacă vrei, și membrii antrenați
                 if (memberDAO != null) {
                     trainer.setTrainedMembers(new HashSet<>(memberDAO.getMembersByTrainerId(trainer.getId())));
                 }
 
-                // ✅ Inițializăm alte câmpuri ca să nu fie null
                 trainer.setCoordinatedClasses(new HashMap<>());
 
                 return trainer;
@@ -314,7 +305,7 @@ public class TrainerDAO {
             stmt.setInt(2, trainerId);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("❌ Failed to update trainer price: " + e.getMessage());
+            System.out.println("Failed to update trainer price: " + e.getMessage());
         }
     }
 

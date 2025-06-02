@@ -903,7 +903,7 @@ public class StartUp {
         System.out.println("Login failed! Please try again.");
     }
 
-    // Meniu pentru Membru
+    // Menu for member
     private static void memberMenu(Scanner scanner, MemberService memberService, Member member, FitnessClassService fitnessClassService,
                                    TrainerService trainerService, PromotionService promotionService) {
         boolean exit = false;
@@ -918,10 +918,11 @@ public class StartUp {
             System.out.println("7. List of trainers");
             System.out.println("8. Personal trainer menu");
             System.out.println("9. Add review for trainer");
-            System.out.println("10. View and manage payments");
-            System.out.println("11. View active promotions");
-            System.out.println("12. Delete my account");
-            System.out.println("13. LOG OUT");
+            System.out.println("10. Update weight");
+            System.out.println("11. View and manage payments");
+            System.out.println("12. View active promotions");
+            System.out.println("13. Delete my account");
+            System.out.println("14. LOG OUT");
 
             System.out.print("Enter your choice: ");
             int option = scanner.nextInt();
@@ -956,6 +957,9 @@ public class StartUp {
                     trainerService.addReviewForTrainer(scanner, member);
                     break;
                 case 10:
+                    memberService.updateWeight(scanner, member);
+                    break;
+                case 11:
                     boolean back = false;
                     while (!back) {
                         System.out.println("\n--- Payment History ---");
@@ -976,17 +980,17 @@ public class StartUp {
                         }
                     }
                     break;
-                case 11:
+                case 12:
                     promotionService.listActivePromotions();
                     break;
-                case 12:
+                case 13:
                     boolean deleted = memberService.deleteMemberAccount(member);
                     if (deleted) {
                         System.out.println("Account deleted. Returning to main menu...");
                         return;
                     }
                     break;
-                case 13:
+                case 14:
                     exit = true;
                     break;
                 default:
@@ -1035,7 +1039,7 @@ public class StartUp {
     }
 
 
-    // Meniu pentru Antrenor
+    // Menu for trainer
     private static void trainerMenu(Scanner scanner,Trainer trainer, TrainerService trainerService, FitnessClassService fitnessClassService) {
         boolean exit = false;
         while (!exit) {
@@ -1171,7 +1175,7 @@ public class StartUp {
         }
     }
 
-    // Meniu pentru Manager
+    // Menu for manager
     private static void managerMenu(Scanner scanner, MemberService memberService, TrainerService trainerService, PromotionService promotionService, ManagerService managerService) {
         boolean exit = false;
         while (!exit) {

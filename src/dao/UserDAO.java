@@ -14,7 +14,6 @@ public class UserDAO {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
-    // INSERT - creare user în baza de date
     public void create(User user) {
         String sql = "INSERT INTO users (name, username, email, phone, password) VALUES (?, ?, ?, ?, ?)";
 
@@ -27,11 +26,11 @@ public class UserDAO {
 
             stmt.executeUpdate();
 
-            // obținem ID-ul generat și îl setăm în obiectul user
+
             ResultSet generatedKeys = stmt.getGeneratedKeys();
             if (generatedKeys.next()) {
                 int generatedId = generatedKeys.getInt(1);
-                user.setId(generatedId); // metoda setId pe care ai adăugat-o
+                user.setId(generatedId);
             }
 
         } catch (SQLException e) {
@@ -39,7 +38,6 @@ public class UserDAO {
         }
     }
 
-    // SELECT - citire toți userii
     public List<User> readAll() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
@@ -49,7 +47,7 @@ public class UserDAO {
 
             while (rs.next()) {
                 User user = new User();
-                // folosim setterele pt a evita incrementarea aiurea a id-ului
+
                 user.setId(rs.getInt("id"));
                 user.setName(rs.getString("name"));
                 user.setUsername(rs.getString("username"));
@@ -57,8 +55,6 @@ public class UserDAO {
                 user.setPhoneNumber(rs.getString("phone"));
                 user.setPassword(rs.getString("password"));
 
-                // setăm manual ID-ul (fără să incrementăm cu nextId++)
-                // dacă vrei să păstrezi consistența, poți adăuga un setId() în User temporar
                 users.add(user);
             }
         } catch (SQLException e) {
@@ -103,21 +99,6 @@ public class UserDAO {
         return false;
     }
 
-
-    public boolean isEmailTaken(String email) {
-        String sql = "SELECT COUNT(*) FROM users WHERE email = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            System.out.println("Eroare la verificarea emailului: " + e.getMessage());
-        }
-        return false;
-    }
-
     public boolean isUsernameTaken(String username) {
         String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
         try (Connection conn = DBConnection.getInstance().getConnection();
@@ -148,7 +129,5 @@ public class UserDAO {
             e.printStackTrace();
         }
     }
-
-
 
 }

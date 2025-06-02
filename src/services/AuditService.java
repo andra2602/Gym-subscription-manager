@@ -11,12 +11,12 @@ public class AuditService {
 
     private AuditService() {
         try (FileWriter writer = new FileWriter(FILE_NAME, true)) {
-            // Scrie antetul dacă fișierul e nou
+
             if (new java.io.File(FILE_NAME).length() == 0) {
                 writer.write("action,timestamp\n");
             }
         } catch (IOException e) {
-            System.out.println("❌ Failed to initialize audit log: " + e.getMessage());
+            System.out.println("Failed to initialize audit log: " + e.getMessage());
         }
     }
     public static AuditService getInstance() {
@@ -30,7 +30,7 @@ public class AuditService {
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             writer.write(action.trim() + "," + timestamp + "\n");
         } catch (IOException e) {
-            System.out.println("❌ Failed to write audit log: " + e.getMessage());
+            System.out.println("Failed to write audit log: " + e.getMessage());
         }
     }
 }

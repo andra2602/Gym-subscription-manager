@@ -46,42 +46,12 @@ public class PromotionDAO {
             stmt.setBoolean(6, promotion.isActive());
 
             stmt.executeUpdate();
-            System.out.println("✅ Promotion added: " + promotion.getName());
+            System.out.println("Promotion added: " + promotion.getName());
 
         } catch (SQLException e) {
-            System.out.println("❌ Eroare la inserarea promoției: " + e.getMessage());
+            System.out.println("Eroare la inserarea promoției: " + e.getMessage());
         }
     }
-
-
-//    public List<Promotion> readAll() {
-//        List<Promotion> promotions = new ArrayList<>();
-//        String sql = "SELECT * FROM promotions";
-//
-//        try (PreparedStatement stmt = connection.prepareStatement(sql);
-//             ResultSet rs = stmt.executeQuery()) {
-//
-//            while (rs.next()) {
-//                Promotion promotion = new Promotion(
-//                        rs.getInt("id"),
-//                        rs.getString("name"),
-//                        rs.getString("description"),
-//                        rs.getFloat("discount_percent"),
-//                        LocalDate.parse(rs.getString("start_date")),
-//                        LocalDate.parse(rs.getString("end_date")),
-//                        rs.getInt("active") == 1
-//                );
-//
-//                promotions.add(promotion);
-//            }
-//
-//        } catch (SQLException e) {
-//            System.out.println("Eroare la citirea promoțiilor: " + e.getMessage());
-//        }
-//
-//        return promotions;
-//    }
-
 
     public List<Promotion> readAll() {
         List<Promotion> promotions = new ArrayList<>();
@@ -111,7 +81,6 @@ public class PromotionDAO {
         return promotions;
     }
 
-
     public boolean update(Promotion promotion) {
         String sql = "UPDATE promotions SET name = ?, description = ?, discount_percent = ?, start_date = ?, end_date = ?, active = ? WHERE id = ?";
 
@@ -136,7 +105,6 @@ public class PromotionDAO {
         return false;
     }
 
-
     public boolean delete(int id) {
         String sql = "DELETE FROM promotions WHERE id = ?";
 
@@ -153,7 +121,6 @@ public class PromotionDAO {
 
         return false;
     }
-
 
     public Promotion findById(int id) {
         String sql = "SELECT * FROM promotions WHERE id = ?";
