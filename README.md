@@ -50,8 +50,6 @@ Preloaded content:
 - 1 active
 - 1 upcoming
 
----
-
 ## 👥 User Roles and Main Features
 
 ### 👤 Member
@@ -97,7 +95,6 @@ Preloaded content:
       - Class bookings
       - Personal trainer & trainer slots
 
----
 
 ### 💪 Trainer
 
@@ -124,7 +121,6 @@ Preloaded content:
 6. **Account Deletion**
     - Fully deletes trainer profile and related data
 
----
 
 ### 👨‍💼 Manager
 
@@ -142,7 +138,6 @@ Preloaded content:
     - View a .csv log of key actions: deletions, payments, reviews, bookings
     - You can select to view full audit or for a period of time.
 
----
 
 ## ✅ Input Validations
 
@@ -155,7 +150,6 @@ Preloaded content:
     - Fitness classes must be scheduled 7–30 days in advance
     - Time slots are restricted to 06:00–23:00
 
----
 
 ## 🔧 Technical Overview
 
@@ -172,8 +166,6 @@ Preloaded content:
 **No code editing required** — all operations are accessible through guided menus
 
 
----
-
 ## 🚀 Technologies
 
 - Java 21
@@ -182,14 +174,12 @@ Preloaded content:
 - `Scanner` for input
 - Clear menu-driven interface in console
 
----
 
 ## 💡 Future Improvements
 
 - Full GUI interface (JavaFX or Swing)
 - Email notifications for class changes
 
----
 ## 🧭 How to Run the Application
 
 ### Follow these simple steps to get started:
