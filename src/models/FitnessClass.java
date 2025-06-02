@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 public class FitnessClass {
+    private int id;
     private String name;
     private int duration; // în minute
     private String difficulty;
@@ -14,7 +15,6 @@ public class FitnessClass {
     private LocalDate date;
     private LocalTime hour;
     private int maxParticipants;
-
 
     public FitnessClass(String name, int duration, String difficulty, double price,
                         Trainer trainer, List<Member> participants,
@@ -30,6 +30,7 @@ public class FitnessClass {
         this.hour = hour;
         this.maxParticipants = maxParticipants;
     }
+    public FitnessClass(){}
 
     /// validari
     private void validateDifficulty(String difficulty) {
@@ -52,6 +53,7 @@ public class FitnessClass {
 
 
     /// getters
+    public int getId(){return id;}
     public double getPrice() {
         return price;
     }
@@ -89,6 +91,7 @@ public class FitnessClass {
     }
 
     /// setters
+    public void setId(int id) {this.id = id;}
     public void setPrice(double price) {
         this.price = price;
     }
@@ -121,16 +124,17 @@ public class FitnessClass {
         this.hour = hour;
     }
 
+    public void setMaxParticipants(int maxParticipants) {this.maxParticipants = maxParticipants;}
+
     @Override
     public String toString() {
         return "Fitness Class: " + name + "\n" +
                 "Duration: " + duration + " minutes\n" +
                 "Difficulty: " + difficulty + "\n" +
                 "Price: " + price + "\n" +
-                "Trainer: " + trainer.getName() + "\n" +
+                "Trainer: " + (trainer != null ? trainer.getName() : "Not assigned") + "\n" +
                 "Date: " + date + "\n" +
                 "Time: " + hour + "\n" +
-                "Max Participants: " + maxParticipants + "\n" +
-                "Current number of participants: " + participants.size();
+                "Max Participants: " + maxParticipants + "\n" ;
     }
 }

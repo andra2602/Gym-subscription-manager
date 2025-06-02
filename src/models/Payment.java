@@ -15,6 +15,14 @@ public class Payment {
         this.member = member;
         this.purpose = purpose;
     }
+    public Payment(float amount, LocalDate date, PaymentMethod method, String purpose) {
+        this.amount = amount;
+        this.paymentDate = date;
+        this.paymentMethod = method;
+        this.member = null;
+        this.purpose = purpose;
+    }
+
 
 
     /// getters

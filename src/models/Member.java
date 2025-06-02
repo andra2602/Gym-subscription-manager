@@ -31,6 +31,7 @@ public class Member extends User{
         this.isStudent = isStudent;
     }
 
+    public Member(){}
     //validari beginner, intermediate, advanced
     private void validateExperienceLevel(String level) {
         if (level == null || !(level.equalsIgnoreCase("beginner") ||

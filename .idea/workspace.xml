@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="99df6786-c36c-47c5-9466-dc4120821e6c" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GYM.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/audit.csv" beforeDir="false" afterPath="$PROJECT_DIR$/audit.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/StartUp.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/StartUp.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/BookingDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/BookingDAO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/ClassParticipantsDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/ClassParticipantsDAO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/FitnessClassDAO$1ClassTempData.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/FitnessClassDAO$1ClassTempData.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/FitnessClassDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/FitnessClassDAO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/MemberDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/MemberDAO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/PaymentDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/PaymentDAO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/PromotionDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/PromotionDAO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/ReviewDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/ReviewDAO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/SubscriptionDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/SubscriptionDAO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/TimeSlotDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/TimeSlotDAO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/TrainerDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/TrainerDAO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/UserDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/UserDAO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/database/DBConnection.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/database/DBConnection.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/database/DatabaseSeeder.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/database/DatabaseSeeder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/Booking.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/Booking.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/AuditService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/AuditService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/FitnessClassService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/FitnessClassService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/ManagerService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/ManagerService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/MemberService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/MemberService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/PromotionService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/PromotionService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/TimeSlotService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/TimeSlotService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/TrainerService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/TrainerService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/tests/TestMemberDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/tests/TestTrainerDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/tests/TestUserDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/StartUp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/StartUp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/BookingDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/BookingDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/ClassParticipantsDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/ClassParticipantsDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/FitnessClassDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/FitnessClassDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/MemberDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/MemberDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/PaymentDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/PaymentDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/PromotionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/PromotionDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/ReviewDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/ReviewDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/SubscriptionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/SubscriptionDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/TimeSlotDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/TimeSlotDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/TrainerDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/TrainerDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/UserDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/UserDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/database/DBConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/DBConnection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/database/DatabaseSeeder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/DatabaseSeeder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/Booking.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Booking.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/AuditService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/AuditService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/FitnessClassService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/FitnessClassService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/ManagerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/ManagerService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/MemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/MemberService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/PromotionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/PromotionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/TimeSlotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/TimeSlotService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/TrainerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/TrainerService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tests/TestMemberDAO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tests/TestTrainerDAO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tests/TestUserDAO.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2uzSnykzG1iEubIcxie8n8YP5Uu" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Application.DatabaseSetup.executor": "Run",
+    "Application.StartUp.executor": "Run",
+    "Application.TestMemberDAO.executor": "Run",
+    "Application.TestTrainerDAO.executor": "Run",
+    "Application.TestUserDAO.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "Stage2",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/andra/Downloads/sqlite-jdbc-3.49.1.0.jar",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "sqlite"
+    ]
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.25659.39" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.25659.39" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="99df6786-c36c-47c5-9466-dc4120821e6c" name="Changes" comment="" />
+      <created>1743250080411</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1743250080411</updated>
+      <workItem from="1743250081694" duration="8592000" />
+      <workItem from="1743259737647" duration="3000" />
+      <workItem from="1743335669837" duration="8117000" />
+      <workItem from="1743347188269" duration="145000" />
+      <workItem from="1743406090526" duration="4293000" />
+      <workItem from="1743418655126" duration="4254000" />
+      <workItem from="1743496176892" duration="12801000" />
+      <workItem from="1743517745765" duration="216000" />
+      <workItem from="1743852266014" duration="16446000" />
+      <workItem from="1744359634752" duration="137000" />
+      <workItem from="1744465852768" duration="9856000" />
+      <workItem from="1744476062080" duration="652000" />
+      <workItem from="1744531979939" duration="9558000" />
+      <workItem from="1744564347822" duration="1798000" />
+      <workItem from="1744612836363" duration="5434000" />
+      <workItem from="1745824536493" duration="59000" />
+      <workItem from="1747481014939" duration="1641000" />
+      <workItem from="1747482684871" duration="12495000" />
+      <workItem from="1747567681772" duration="5564000" />
+      <workItem from="1747639621845" duration="124000" />
+      <workItem from="1747644396320" duration="364000" />
+      <workItem from="1747738714088" duration="14883000" />
+      <workItem from="1747755911697" duration="5000" />
+      <workItem from="1747756131477" duration="64000" />
+      <workItem from="1747817973815" duration="20000" />
+      <workItem from="1747828432976" duration="985000" />
+      <workItem from="1747833996608" duration="681000" />
+      <workItem from="1747896632529" duration="8216000" />
+      <workItem from="1747912583888" duration="136000" />
+      <workItem from="1747985610103" duration="6658000" />
+      <workItem from="1748076526727" duration="8270000" />
+      <workItem from="1748162595619" duration="4061000" />
+      <workItem from="1748334439634" duration="10228000" />
+      <workItem from="1748417581303" duration="109000" />
+      <workItem from="1748417732410" duration="95000" />
+      <workItem from="1748848107812" duration="6075000" />
+      <workItem from="1748854255584" duration="96000" />
+      <workItem from="1748868055924" duration="6437000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/dao/ClassParticipantsDAO.java</url>
+          <line>18</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

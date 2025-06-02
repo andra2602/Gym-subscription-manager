@@ -78,6 +78,15 @@ public class User {
     }
 
 
+    // Doar pentru DAO-uri (nu folosi în cod normal)
+    public void setId(int id) {
+        this.id = id;
+        if (id >= nextId) {
+            nextId = id + 1;
+        }
+    }
+
+
     /// setters cu validare
     public void setName(String name) {
         validateName(name);

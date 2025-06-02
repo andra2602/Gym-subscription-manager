@@ -1,6 +1,7 @@
 package models;
 import java.time.LocalDate;
 public class Promotion {
+    private int id;
     private String name;
     private String description;
     private float discountPercent;
@@ -38,6 +39,28 @@ public class Promotion {
         this.endDate = endDate;
         this.active = true;
     }
+    public Promotion(int id, String name, String description, float discountPercent, LocalDate startDate, LocalDate endDate, boolean active) {
+        validateDescription(description);
+        validateStartDate(startDate);
+        validateEndDate(startDate, endDate);
+        validateDiscount(discountPercent);
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.discountPercent = discountPercent;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.active = active;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
 
     ///  validari
 
@@ -47,8 +70,8 @@ public class Promotion {
         }
     }
     private void validateStartDate(LocalDate startDate) {
-        if (startDate == null || startDate.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Data de început trebuie să fie cel puțin data curentă.");
+        if (startDate == null) {
+            throw new IllegalArgumentException("Data de început nu poate fi null.");
         }
     }
     private void validateEndDate(LocalDate startDate, LocalDate endDate) {

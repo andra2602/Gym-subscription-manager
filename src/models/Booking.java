@@ -25,9 +25,15 @@ public class Booking {
         this.member = member;
         this.date = date;
         this.timeSlot = timeSlot;
-        this.purpose = fitnessClass.getName(); // Scopul rezervării este numele clasei
-        this.trainer = fitnessClass.getTrainer(); // Trainerul clasei de fitness
+        if (fitnessClass != null) {
+            this.purpose = fitnessClass.getName();
+            this.trainer = fitnessClass.getTrainer();
+        } else {
+            this.purpose = "Personal training";
+            this.trainer = null;
+        }
     }
+    public Booking(){}
 
     /// getters
     public Trainer getTrainer() {

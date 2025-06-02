@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.*;
 
 public class Trainer extends User {
     private String specialization;
     private double yearsOfExperience;
     private double pricePerHour;
+    private int id;
 
     private Set<Member> trainedMembers;
     private List<TimeSlot> availableSlots;
@@ -31,6 +33,40 @@ public class Trainer extends User {
         this.reviewScores = reviewScores;
         this.coordinatedClasses = new HashMap<>();
     }
+
+    public Trainer(int id,String name, String username, String email, String phoneNumber,String password,
+                   String specialization, double yearsOfExperience, double pricePerHour,
+                   Set<Member> trainedMembers, List<TimeSlot> availableSlots, List<Booking> bookings,
+                   List<Integer> reviewScores) {
+        super(name, username, email, phoneNumber, password);
+        this.id = id;
+        this.specialization = specialization;
+        this.yearsOfExperience = yearsOfExperience;
+        this.pricePerHour = pricePerHour;
+        this.trainedMembers = trainedMembers;
+        this.availableSlots = availableSlots;
+        this.bookings = bookings;
+        this.reviewScores = (reviewScores != null) ? reviewScores : new ArrayList<>();
+        this.coordinatedClasses = new HashMap<>();
+    }
+    public Trainer(String name, String username, String email, String phoneNumber, String password,
+                   String specialization, double yearsOfExperience, double pricePerHour) {
+        super(name, username, email, phoneNumber, password);
+        this.specialization = specialization;
+        this.yearsOfExperience = yearsOfExperience;
+        this.pricePerHour = pricePerHour;
+        this.trainedMembers = new HashSet<>();
+        this.availableSlots = new ArrayList<>();
+        this.bookings = new ArrayList<>();
+        this.reviewScores = new ArrayList<>();
+        this.coordinatedClasses = new HashMap<>();
+    }
+
+    public Trainer(int id) {
+        this.setId(id);
+    }
+
+    public Trainer(){}
 
     /// getters
     public String getSpecialization() {
