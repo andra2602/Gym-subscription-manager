@@ -247,6 +247,42 @@ public class TrainerDAO {
         return null;
     }
 
+
+    public Trainer getTrainerById(int id, Connection conn) {
+        String sql = "SELECT * FROM users u JOIN trainers t ON u.id = t.user_id WHERE u.id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Trainer trainer = new Trainer(
+                        rs.getString("name"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        rs.getString("password"),
+                        rs.getString("specialization"),
+                        rs.getFloat("years_of_experience"),
+                        rs.getFloat("price_per_hour"),
+                        new HashSet<>(),        // trainedMembers
+                        new ArrayList<>(),      // availableSlots
+                        new ArrayList<>(),      // bookings
+                        new ArrayList<>()       // reviewScores
+                );
+                trainer.setId(id);
+
+
+                return trainer;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Eroare la getTrainerById: " + e.getMessage());
+        }
+
+        return null;
+    }
+
     public Trainer findByUsernameAndPassword(String username, String password) {
         String sql = "SELECT * FROM users u JOIN trainers t ON u.id = t.user_id WHERE u.username = ? AND u.password = ?";
 

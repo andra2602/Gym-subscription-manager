@@ -973,6 +973,11 @@ public class TrainerService {
                 new ArrayList<>(), date, startHour, maxParticipants);
 
         fitnessClassDAO.addFitnessClass(fitnessClass);
+        // Verifică dacă fitnessClass are ID setat
+        if (fitnessClass.getId() == 0) {
+            System.out.println("❌ Error: Class ID not set after insertion. Bookings not created.");
+            return;
+        }
         // Adăugăm toate sloturile ocupate pentru această clasă în bookings
         LocalTime classEnd = startHour.plusMinutes(duration);
         LocalTime slotStart = startHour;

@@ -996,21 +996,30 @@ public class MemberService {
                 return;
         }
 
-
-        float oldPrice = subscription.getPrice();
-        float difference = newPrice - oldPrice;
-
+        // Aplică promoția (dacă mai e activă)
+        float discount = 0f;
         if (subscription.getPromotion() != null && subscription.getPromotion().isValidNow()) {
-            float discount = subscription.getPromotion().getDiscountPercent();
+            discount = subscription.getPromotion().getDiscountPercent();
             newPrice -= newPrice * (discount / 100);
-            difference = newPrice - oldPrice;
             System.out.println("Promotion applied: " + discount + "% off.");
         }
 
+        // Caută cât a plătit efectiv utilizatorul pentru abonamentul anterior
+        float oldPaidAmount = 0f;
+        Payment lastPayment = paymentDAO.getLastSubscriptionPaymentForMember(member.getId());
+        if (lastPayment != null) {
+            oldPaidAmount = lastPayment.getAmount();
+        } else {
+            oldPaidAmount = subscription.getPrice();  // fallback, în caz că nu găsește
+        }
+
+        float difference = newPrice - oldPaidAmount;
+
+        // Update abonament
         subscription.setType(newType);
         subscription.setStartDate(LocalDate.now());
         subscription.setPrice(newPrice);
-        subscriptionDAO.updateSubscription(subscription); // UPDATE în DB
+        subscriptionDAO.updateSubscription(subscription);
 
         System.out.printf("✔ Subscription changed to %s. New price: %.2f\n", newType, newPrice);
         AuditService.getInstance().log("Member " + member.getUsername() + " changed subscription to: " + newType);
@@ -1041,6 +1050,7 @@ public class MemberService {
             System.out.println("No price difference. No payment necessary.");
         }
     }
+
 
     private void extendSubscription(Member member, Subscription subscription, Scanner scanner) {
         LocalDate today = LocalDate.now();

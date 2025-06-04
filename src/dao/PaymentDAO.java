@@ -137,6 +137,32 @@ public class PaymentDAO {
 
         return payments;
     }
+    public Payment getLastSubscriptionPaymentForMember(int memberId) {
+        String sql = "SELECT * FROM payments WHERE member_id = ? AND purpose LIKE 'New Subscription%' ORDER BY payment_date DESC LIMIT 1";
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, memberId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new Payment(
+                        rs.getFloat("amount"),
+                        LocalDate.parse(rs.getString("payment_date")),
+                        PaymentMethod.valueOf(rs.getString("payment_method")),
+                        null,
+                        rs.getString("purpose")
+                );
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error retrieving last subscription payment: " + e.getMessage());
+        }
+
+        return null;
+    }
+
 
 
 }
