@@ -50,27 +50,38 @@ public class FitnessClassDAO {
         }
     }
 
-    public void addFitnessClass(FitnessClass fc) {
+    public void addFitnessClass(FitnessClass fitnessClass) {
         String sql = "INSERT INTO fitness_classes (name, duration, difficulty, price, trainer_id, date, hour, max_participants) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, fc.getName());
-            stmt.setInt(2, fc.getDuration());
-            stmt.setString(3, fc.getDifficulty());
-            stmt.setDouble(4, fc.getPrice());
-            stmt.setInt(5, fc.getTrainer().getId());
-            stmt.setString(6, fc.getDate().toString());
-            stmt.setString(7, fc.getHour().toString());
-            stmt.setInt(8, fc.getMaxParticipants());
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, fitnessClass.getName());
+            stmt.setInt(2, fitnessClass.getDuration());
+            stmt.setString(3, fitnessClass.getDifficulty());
+            stmt.setDouble(4, fitnessClass.getPrice());
+            stmt.setInt(5, fitnessClass.getTrainer().getId());
+            stmt.setString(6, fitnessClass.getDate().toString());
+            stmt.setString(7, fitnessClass.getHour().toString());
+            stmt.setInt(8, fitnessClass.getMaxParticipants());
 
             stmt.executeUpdate();
+
+            // Obține ID-ul generat și setează-l în obiectul Java
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                int id = rs.getInt(1);
+                fitnessClass.setId(id); // <- ESSENTIAL!
+            } else {
+                System.out.println("❌ Could not retrieve generated ID for fitness class.");
+            }
 
         } catch (SQLException e) {
             System.out.println("Error inserting fitness class: " + e.getMessage());
         }
     }
+
 
     public List<FitnessClass> readAllAvailable() {
         List<FitnessClass> classes = new ArrayList<>();
@@ -209,14 +220,15 @@ public class FitnessClassDAO {
             stmt.setInt(1, trainerId);
             ResultSet rs = stmt.executeQuery();
 
+            Trainer trainer = trainerDAO.getTrainerById(trainerId, conn);
             while (rs.next()) {
                 FitnessClass fc = new FitnessClass(
                         rs.getString("name"),
                         rs.getInt("duration"),
                         rs.getString("difficulty"),
                         rs.getDouble("price"),
-                        new Trainer(trainerId), // doar ID
-                        new ArrayList<>(), // participanți – opțional, dacă vrei să-i aduci separat
+                        trainer,
+                        new ArrayList<>(),
                         LocalDate.parse(rs.getString("date")),
                         LocalTime.parse(rs.getString("hour")),
                         rs.getInt("max_participants")

@@ -5,63 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="99df6786-c36c-47c5-9466-dc4120821e6c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GYM.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GYMFinalDatabase.db" beforeDir="false" afterPath="$PROJECT_DIR$/GYMFinalDatabase.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/audit.csv" beforeDir="false" afterPath="$PROJECT_DIR$/audit.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/StartUp.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/StartUp.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/BookingDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/BookingDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/ClassParticipantsDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/ClassParticipantsDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/FitnessClassDAO$1ClassTempData.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/FitnessClassDAO$1ClassTempData.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/FitnessClassDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/FitnessClassDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/MemberDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/MemberDAO.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/PaymentDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/PaymentDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/PromotionDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/PromotionDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/ReviewDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/ReviewDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/SubscriptionDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/SubscriptionDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/TimeSlotDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/TimeSlotDAO.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/TrainerDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/TrainerDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/UserDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/UserDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/database/DBConnection.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/database/DBConnection.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/database/DatabaseSeeder.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/database/DatabaseSeeder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/Booking.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/models/Booking.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/AuditService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/AuditService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/FitnessClassService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/FitnessClassService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/ManagerService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/ManagerService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/MemberService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/MemberService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/PromotionService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/PromotionService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/TimeSlotService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/TimeSlotService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/TrainerService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/TrainerService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/tests/TestMemberDAO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/tests/TestTrainerDAO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/tests/TestUserDAO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/StartUp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/StartUp.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/dao/BookingDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/BookingDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/ClassParticipantsDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/ClassParticipantsDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/dao/FitnessClassDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/FitnessClassDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/MemberDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/MemberDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/dao/PaymentDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/PaymentDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/PromotionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/PromotionDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/ReviewDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/ReviewDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/SubscriptionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/SubscriptionDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/TimeSlotDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/TimeSlotDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/dao/TrainerDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/TrainerDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/UserDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/UserDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/database/DBConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/DBConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/database/DatabaseSeeder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/DatabaseSeeder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/Booking.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Booking.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/AuditService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/AuditService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/FitnessClassService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/FitnessClassService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/ManagerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/ManagerService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/services/MemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/MemberService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/PromotionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/PromotionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/TimeSlotService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/TimeSlotService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/services/TrainerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/TrainerService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tests/TestMemberDAO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tests/TestTrainerDAO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tests/TestUserDAO.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,37 +44,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Application.DatabaseSetup.executor": "Run",
-    "Application.StartUp.executor": "Run",
-    "Application.TestMemberDAO.executor": "Run",
-    "Application.TestTrainerDAO.executor": "Run",
-    "Application.TestUserDAO.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "Stage2",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/andra/Downloads/sqlite-jdbc-3.49.1.0.jar",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Application.DatabaseSetup.executor&quot;: &quot;Run&quot;,
+    &quot;Application.StartUp.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestMemberDAO.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestTrainerDAO.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestUserDAO.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Stage2&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/andra/Downloads/sqlite-jdbc-3.49.1.0.jar&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "sqlite"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;sqlite&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration default="true" type="JetRunConfigurationType">
       <method v="2">
@@ -181,7 +139,8 @@
       <workItem from="1748417732410" duration="95000" />
       <workItem from="1748848107812" duration="6075000" />
       <workItem from="1748854255584" duration="96000" />
-      <workItem from="1748868055924" duration="6437000" />
+      <workItem from="1748868055924" duration="6846000" />
+      <workItem from="1749056885719" duration="4019000" />
     </task>
     <servers />
   </component>

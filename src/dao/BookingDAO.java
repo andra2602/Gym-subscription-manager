@@ -64,7 +64,12 @@ public class BookingDAO {
             }
 
             // trainer_id
-            stmt.setInt(2, booking.getTrainer().getId());
+            if (booking.getTrainer() != null) {
+                stmt.setInt(2, booking.getTrainer().getId());
+            } else {
+                stmt.setNull(2, Types.INTEGER);
+            }
+
 
             // fitness_class_id (poate fi null)
             if (booking.getFitnessClass() != null) {
