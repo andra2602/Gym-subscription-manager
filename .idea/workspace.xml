@@ -8,18 +8,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GYMFinalDatabase.db" beforeDir="false" afterPath="$PROJECT_DIR$/GYMFinalDatabase.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/audit.csv" beforeDir="false" afterPath="$PROJECT_DIR$/audit.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/BookingDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/BookingDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/FitnessClassDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/FitnessClassDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/PaymentDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/PaymentDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/TrainerDAO.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/dao/TrainerDAO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/MemberService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/MemberService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/TrainerService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Gym-subscription-manager/services/TrainerService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/BookingDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/BookingDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/FitnessClassDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/FitnessClassDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/PaymentDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/PaymentDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/dao/TrainerDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/TrainerDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/MemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/MemberService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/TrainerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/TrainerService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,7 +128,8 @@
       <workItem from="1748848107812" duration="6075000" />
       <workItem from="1748854255584" duration="96000" />
       <workItem from="1748868055924" duration="6846000" />
-      <workItem from="1749056885719" duration="4019000" />
+      <workItem from="1749056885719" duration="4090000" />
+      <workItem from="1749105473151" duration="1466000" />
     </task>
     <servers />
   </component>
