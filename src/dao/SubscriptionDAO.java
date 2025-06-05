@@ -106,8 +106,34 @@ public class SubscriptionDAO extends BaseDAO<Subscription, Integer> {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
 
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String type = rs.getString("type");
+                    LocalDate startDate = rs.getDate("start_date").toLocalDate();
+                    float price = rs.getFloat("price");
+                    boolean isActive = rs.getBoolean("is_active");
+                    int extendedMonths = rs.getInt("extended_months");
+                    int promotionId = rs.getInt("promotion_id");
+
+                    Promotion promotion = null;
+                    if (!rs.wasNull()) {
+                        promotion = promotionDAO.findById(promotionId);
+                    }
+
+                    Subscription subscription = new Subscription(
+                            id,
+                            type,
+                            startDate,
+                            price,
+                            isActive,
+                            promotion,
+                            extendedMonths
+                    );
+
+                    return Optional.of(subscription);
+                }
+            }
 
         } catch (SQLException e) {
             System.out.println("❌ Error reading subscription: " + e.getMessage());
@@ -115,7 +141,6 @@ public class SubscriptionDAO extends BaseDAO<Subscription, Integer> {
 
         return Optional.empty();
     }
-
 
     // Citește abonamentul activ al unui membru după ID-ul membrului
     public Subscription readByMemberId(int memberId) {
