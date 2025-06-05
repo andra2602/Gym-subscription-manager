@@ -37,7 +37,7 @@ All tables are created programmatically using SQL statements in **DatabaseSetup.
 
 Run **DatabaseSetup.java** manually once before first use to initialize the schema.
 
-#### ⚙️ Setup Instructions (Creating the Database)
+## ⚙️ Setup Instructions (Creating the Database)
 
 To create the SQLite database and all necessary tables, please follow these steps:
 
@@ -176,6 +176,30 @@ Preloaded content:
   
 **No code editing required** — all operations are accessible through guided menus
 
+## 📟 Core Functionality
+
+- Full CRUD operations for Members, Trainers, Promotions, Subscriptions, Payments, Fitness Classes, and more
+- Interactive, role-based menu UI (Member, Trainer, Manager)
+- Booking system with seat validation and refund mechanism
+- Personal trainer scheduling and session booking
+- Anonymous reviews with post-session validation and star-rating system
+- Dynamic trainer assignment/removal with checks
+- Subscription extension with date validations and discount rules
+- Promotion system with date and usage validation
+- Account deletion with cascading cleanup
+- Audit logging system to track sensitive actions to CSV
+
+## 📄 Database Integration
+
+- SQLite relational database with normalized schema
+- Version: sqlite-jdbc v3.49.1.0
+- All tables created in `DatabaseSetup.java` (programmatically)
+- DAO pattern used per entity, with clear separation of concerns
+- `BaseDAO` utility for shared DB logic
+- Singleton pattern across DAO and Service layers
+- Service Layer encapsulates validation and coordination logic
+- All data inserted and read using JDBC
+- No `.sql` files required — schema and seed handled 100% in Java
 
 ## 🚀 Technologies
 
