@@ -37,6 +37,17 @@ All tables are created programmatically using SQL statements in **DatabaseSetup.
 
 Run **DatabaseSetup.java** manually once before first use to initialize the schema.
 
+#### ⚙️ Setup Instructions (Creating the Database)
+
+To create the SQLite database and all necessary tables, please follow these steps:
+
+1. Run `DatabaseSetup.java` once.  
+   This will automatically create all required tables using `CREATE TABLE` SQL statements embedded in the code.  
+   ❗ There is no need to run external `.sql` files — everything is handled programmatically.
+
+2. Then run `StartUp.java`.  
+   At startup, the app checks if the database is empty and automatically populates it with test data by running `DatabaseSeeder.java`.
+
 ## 🌱 Test Data (Seeder)
 The app includes automatic test data insertion via **DatabaseSeeder.java**, which runs automatically at startup if the database is empty.
 
