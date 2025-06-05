@@ -5,9 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="99df6786-c36c-47c5-9466-dc4120821e6c" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/dao/BaseDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GYMFinalDatabase.db" beforeDir="false" afterPath="$PROJECT_DIR$/GYMFinalDatabase.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/audit.csv" beforeDir="false" afterPath="$PROJECT_DIR$/audit.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/StartUp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/StartUp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/BookingDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/BookingDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/ClassParticipantsDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/ClassParticipantsDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/FitnessClassDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/FitnessClassDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/MemberDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/MemberDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/PaymentDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/PaymentDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/PromotionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/PromotionDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/SubscriptionDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/SubscriptionDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/TimeSlotDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/TimeSlotDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/TrainerDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/TrainerDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dao/UserDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/UserDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/database/DatabaseSeeder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/DatabaseSeeder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/ManagerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/ManagerService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/MemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/MemberService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -130,6 +145,9 @@
       <workItem from="1748868055924" duration="6846000" />
       <workItem from="1749056885719" duration="4090000" />
       <workItem from="1749105473151" duration="1466000" />
+      <workItem from="1749107699622" duration="52000" />
+      <workItem from="1749107960947" duration="826000" />
+      <workItem from="1749109492692" duration="5263000" />
     </task>
     <servers />
   </component>
@@ -141,8 +159,13 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/dao/ClassParticipantsDAO.java</url>
-          <line>18</line>
+          <line>23</line>
           <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/dao/FitnessClassDAO.java</url>
+          <line>246</line>
+          <option name="timeStamp" value="12" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

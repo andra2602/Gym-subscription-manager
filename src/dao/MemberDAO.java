@@ -5,22 +5,33 @@ import models.*;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class MemberDAO {
-    private final PromotionDAO promotionDAO = new PromotionDAO();
-    private final SubscriptionDAO subscriptionDAO = new SubscriptionDAO(promotionDAO);
+public class MemberDAO extends BaseDAO<Member, Integer>{
+
+    private static MemberDAO instance;
+
+    private final PromotionDAO promotionDAO = PromotionDAO.getInstance();
+    private final SubscriptionDAO subscriptionDAO = SubscriptionDAO.getInstance(promotionDAO);
     private TrainerDAO trainerDAO ;
 
+    private MemberDAO() {
+        // constructor privat pt singleton
+    }
+
+    public static MemberDAO getInstance() {
+        if (instance == null) {
+            instance = new MemberDAO();
+        }
+        return instance;
+    }
 
     public void setTrainerDAO(TrainerDAO trainerDAO) {
         this.trainerDAO = trainerDAO;
     }
-    public MemberDAO() {}
 
+
+    @Override
     public void create(Member member) {
         // 1. Inserare în users
         String userSql = "INSERT INTO users (name, username, email, phone, password) VALUES (?, ?, ?, ?, ?)";
@@ -74,6 +85,11 @@ public class MemberDAO {
         } catch (SQLException e) {
             System.out.println("Eroare la inserarea în members: " + e.getMessage());
         }
+    }
+    @Override
+    public Optional<Member> read(Integer id) {
+        Member member = readById(id);
+        return Optional.ofNullable(member);
     }
 
     public void addMember(Member member) {

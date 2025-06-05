@@ -6,47 +6,57 @@ import models.Subscription;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.Optional;
 
-public class SubscriptionDAO {
+public class SubscriptionDAO extends BaseDAO<Subscription, Integer> {
+    private static SubscriptionDAO instance;
     private PromotionDAO promotionDAO;
 
-    public SubscriptionDAO(PromotionDAO promotionDAO) {
+    private SubscriptionDAO(PromotionDAO promotionDAO) {
         this.promotionDAO = promotionDAO;
     }
 
-    // Creează un abonament nou pentru un membru
-    public void create(Subscription subscription, int memberId) {
-        String sql = "INSERT INTO subscriptions (member_id, type, start_date, price, is_active, promotion_id, extended_months) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        try (Connection conn = DBConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            stmt.setInt(1, memberId);
-            stmt.setString(2, subscription.getType());
-            stmt.setString(3, subscription.getStartDate().toString());
-            stmt.setFloat(4, subscription.getPrice());
-            stmt.setInt(5, subscription.isActive() ? 1 : 0);
-
-            if (subscription.getPromotion() != null) {
-                stmt.setInt(6, subscription.getPromotion().getId());
-            } else {
-                stmt.setNull(6, Types.INTEGER);
-            }
-
-            stmt.setInt(7, subscription.getExtendedMonths());
-
-            stmt.executeUpdate();
-
-            ResultSet generatedKeys = stmt.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                int id = generatedKeys.getInt(1);
-            }
-            System.out.println("Subscription created successfully for member ID " + memberId);
-
-        } catch (SQLException e) {
-            System.out.println("Error creating subscription: " + e.getMessage());
+    public static SubscriptionDAO getInstance(PromotionDAO promotionDAO) {
+        if (instance == null) {
+            instance = new SubscriptionDAO(promotionDAO);
         }
+        return instance;
     }
+
+
+    // Creează un abonament nou pentru un membru
+//    public void create(Subscription subscription, int memberId) {
+//        String sql = "INSERT INTO subscriptions (member_id, type, start_date, price, is_active, promotion_id, extended_months) " +
+//                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+//
+//        try (Connection conn = DBConnection.getInstance().getConnection();
+//             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+//            stmt.setInt(1, memberId);
+//            stmt.setString(2, subscription.getType());
+//            stmt.setString(3, subscription.getStartDate().toString());
+//            stmt.setFloat(4, subscription.getPrice());
+//            stmt.setInt(5, subscription.isActive() ? 1 : 0);
+//
+//            if (subscription.getPromotion() != null) {
+//                stmt.setInt(6, subscription.getPromotion().getId());
+//            } else {
+//                stmt.setNull(6, Types.INTEGER);
+//            }
+//
+//            stmt.setInt(7, subscription.getExtendedMonths());
+//
+//            stmt.executeUpdate();
+//
+//            ResultSet generatedKeys = stmt.getGeneratedKeys();
+//            if (generatedKeys.next()) {
+//                int id = generatedKeys.getInt(1);
+//            }
+//            System.out.println("Subscription created successfully for member ID " + memberId);
+//
+//        } catch (SQLException e) {
+//            System.out.println("Error creating subscription: " + e.getMessage());
+//        }
+//    }
 
     public void addSubscription(Subscription sub, int memberId) {
         String sql = "INSERT INTO subscriptions (member_id, type, start_date, price, is_active, promotion_id, extended_months) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -74,6 +84,38 @@ public class SubscriptionDAO {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void create(Subscription subscription) {
+
+        String sql = "INSERT INTO subscriptions (member_id, type, start_date, price, is_active, promotion_id, extended_months) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error creating subscription: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public Optional<Subscription> read(Integer id) {
+        String sql = "SELECT * FROM subscriptions WHERE id = ?";
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error reading subscription: " + e.getMessage());
+        }
+
+        return Optional.empty();
+    }
+
 
     // Citește abonamentul activ al unui membru după ID-ul membrului
     public Subscription readByMemberId(int memberId) {

@@ -8,15 +8,23 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class BookingDAO {
+public class BookingDAO extends BaseDAO<Booking, Integer> {
 
-    private final Connection connection;
-    private final MemberDAO memberDAO = new MemberDAO();
-    public BookingDAO() {
-        this.connection = DBConnection.getInstance().getConnection();
+    private static BookingDAO instance;
+    private final MemberDAO memberDAO = MemberDAO.getInstance();
+    private BookingDAO() {}
+
+    public static BookingDAO getInstance() {
+        if (instance == null) {
+            instance = new BookingDAO();
+        }
+        return instance;
     }
 
+
+    @Override
     public void create(Booking booking) {
         String sql = "INSERT INTO bookings (member_id, trainer_id, fitness_class_id, date, time, purpose) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
@@ -94,24 +102,32 @@ public class BookingDAO {
         }
     }
 
-    public List<Booking> readAll() {
-        List<Booking> bookings = new ArrayList<>();
-        String sql = "SELECT * FROM bookings";
+    @Override
+    public Optional<Booking> read(Integer id) {
+        // Presupunem că vrem să citim un booking după ID
+        String sql = "SELECT * FROM bookings WHERE id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            while (rs.next()) {
-                Booking booking = extractBooking(rs);
-                bookings.add(booking);
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                // Aici ar trebui să reconstruiești un Booking complet (inclusiv cu Member și Trainer dacă vrei)
+                Booking booking = new Booking();
+                booking.setDate(LocalDate.parse(rs.getString("date")));
+                booking.setTimeSlot(LocalTime.parse(rs.getString("time")));
+                booking.setPurpose(rs.getString("purpose"));
+                return Optional.of(booking);
             }
 
         } catch (SQLException e) {
-            System.out.println("Eroare la citirea booking-urilor: " + e.getMessage());
+            System.out.println("Error reading booking: " + e.getMessage());
         }
-
-        return bookings;
+        return Optional.empty();
     }
+
 
     private Booking extractBooking(ResultSet rs) throws SQLException {
         // Construim obiectul Booking partial (fără Member, Trainer)

@@ -767,17 +767,18 @@ public class StartUp {
         showWelcomePrompt(scanner);
 
         // === DAO Initialization ===
-        UserDAO userDAO = new UserDAO();
-        PromotionDAO promotionDAO = new PromotionDAO();
-        SubscriptionDAO subscriptionDAO = new SubscriptionDAO(promotionDAO);
-        MemberDAO memberDAO = new MemberDAO();
-        TrainerDAO trainerDAO = new TrainerDAO();
-        TimeSlotDAO timeSlotDAO = new TimeSlotDAO();
-        BookingDAO bookingDAO = new BookingDAO();
-        PaymentDAO paymentDAO = new PaymentDAO();
+        // === DAO Initialization ===
+        UserDAO userDAO = UserDAO.getInstance();
+        PromotionDAO promotionDAO = PromotionDAO.getInstance();
+        SubscriptionDAO subscriptionDAO = SubscriptionDAO.getInstance(promotionDAO);
+        MemberDAO memberDAO = MemberDAO.getInstance();
+        TrainerDAO trainerDAO = TrainerDAO.getInstance();
+        TimeSlotDAO timeSlotDAO = TimeSlotDAO.getInstance();
+        BookingDAO bookingDAO = BookingDAO.getInstance();
+        PaymentDAO paymentDAO = PaymentDAO.getInstance();
         ReviewDAO reviewDAO = new ReviewDAO();
-        FitnessClassDAO fitnessClassDAO = new FitnessClassDAO();
-        ClassParticipantsDAO classParticipantsDAO = new ClassParticipantsDAO();
+        FitnessClassDAO fitnessClassDAO = FitnessClassDAO.getInstance();
+        ClassParticipantsDAO classParticipantsDAO = ClassParticipantsDAO.getInstance();
 
         memberDAO.setTrainerDAO(trainerDAO);
         trainerDAO.setMemberDAO(memberDAO);

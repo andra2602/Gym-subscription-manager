@@ -753,9 +753,10 @@ public class MemberService {
             if (updated == null) {
                 System.out.println("⚠ Unable to reload updated member from database.");
             } else {
-                System.out.println("✔ Reloaded member successfully: Trainer = " +
-                        (updated.getTrainer() != null ? updated.getTrainer().getName() : "null"));
+                member = updated;
+                System.out.println("✔ Trainer successfully assigned: " + member.getTrainer().getName());
             }
+
 
             System.out.println("✅ " + selectedTrainer.getName() + " is now your personal trainer!");
             AuditService.getInstance().log("Assigned trainer " + selectedTrainer.getName() + " to member " + member.getUsername());
