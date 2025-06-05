@@ -826,6 +826,10 @@ public class MemberService {
         }
     }
 
+    public Member refreshMemberData(int id) {
+        return memberDAO.readById(id);
+    }
+
 
     ///  Subscription
     public void viewSubscriptionDetails(Member member) {

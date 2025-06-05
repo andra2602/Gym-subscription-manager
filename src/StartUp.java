@@ -1020,6 +1020,7 @@ public class StartUp {
             switch (choice) {
                 case 1:
                     memberService.assignPersonalTrainer(scanner, member);
+                    member = memberService.refreshMemberData(member.getId());
                     break;
                 case 2:
                     memberService.viewCurrentPersonalTrainer(member);

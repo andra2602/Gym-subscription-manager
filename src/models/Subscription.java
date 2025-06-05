@@ -22,7 +22,7 @@ public class Subscription {
     }
     public Subscription(int id, String type, LocalDate startDate, float price,
                         boolean isActive, Promotion promotion, int extendedMonths) {
-        this(type, startDate, price, isActive, promotion); // apelează constructorul tău actual
+        this(type, startDate, price, isActive, promotion);
         this.extendedMonths = extendedMonths;
         this.id = id;
     }
