@@ -7,22 +7,30 @@ import java.sql.*;
 
 import java.util.*;
 
-public class TrainerDAO {
+public class TrainerDAO extends BaseDAO<Trainer, Integer> {
+
+    private static TrainerDAO instance;
 
     private final Connection connection;
     private MemberDAO memberDAO;
     private final ReviewDAO reviewDAO;
 
-
-    public void setMemberDAO(MemberDAO memberDAO) {
-        this.memberDAO = memberDAO;
-    }
-
-    public TrainerDAO() {
+    private TrainerDAO() {
         this.connection = DBConnection.getInstance().getConnection();
         this.reviewDAO = new ReviewDAO();
     }
 
+    public static TrainerDAO getInstance() {
+        if (instance == null) {
+            instance = new TrainerDAO();
+        }
+        return instance;
+    }
+    public void setMemberDAO(MemberDAO memberDAO) {
+        this.memberDAO = memberDAO;
+    }
+
+    @Override
     public void create(Trainer trainer) {
         String userSql = "INSERT INTO users (name, username, email, phone, password) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement userStmt = connection.prepareStatement(userSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -166,6 +174,7 @@ public class TrainerDAO {
         return trainers;
     }
 
+
     public Trainer readById(int id) {
         String sql = "SELECT u.id, u.name, u.username, u.email, u.phone, u.password, " +
                 "t.specialization, t.years_of_experience, t.price_per_hour " +
@@ -209,6 +218,10 @@ public class TrainerDAO {
         return null;
     }
 
+    @Override
+    public Optional<Trainer> read(Integer id) {
+        return Optional.ofNullable(readById(id));
+    }
 
     public Trainer findById(int id) {
         String sql = "SELECT * FROM users u JOIN trainers t ON u.id = t.user_id WHERE u.id = ?";

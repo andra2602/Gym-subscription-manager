@@ -10,10 +10,10 @@ import java.util.HashSet;
 public class DatabaseSeeder {
 
     public static void seed() {
-        TrainerDAO trainerDAO = new TrainerDAO();
-        MemberDAO memberDAO = new MemberDAO();
-        PromotionDAO promotionDAO = new PromotionDAO();
-        SubscriptionDAO subscriptionDAO = new SubscriptionDAO(promotionDAO);
+        TrainerDAO trainerDAO = TrainerDAO.getInstance();
+        MemberDAO memberDAO = MemberDAO.getInstance();
+        PromotionDAO promotionDAO = PromotionDAO.getInstance();
+        SubscriptionDAO subscriptionDAO = SubscriptionDAO.getInstance(promotionDAO);
 
         trainerDAO.setMemberDAO(memberDAO);
         memberDAO.setTrainerDAO(trainerDAO);

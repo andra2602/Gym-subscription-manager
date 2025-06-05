@@ -9,16 +9,24 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class TimeSlotDAO {
+public class TimeSlotDAO extends BaseDAO<TimeSlot, Integer> {
 
-    private final Connection connection;
+    private static TimeSlotDAO instance;
 
-    public TimeSlotDAO() {
-        this.connection = DBConnection.getInstance().getConnection();
+    private TimeSlotDAO() {
+    }
+
+    public static TimeSlotDAO getInstance() {
+        if (instance == null) {
+            instance = new TimeSlotDAO();
+        }
+        return instance;
     }
 
     // Creează un nou time slot pentru un trainer
+    @Override
     public void create(TimeSlot slot) {
         String sql = "INSERT INTO time_slots (start_time, end_time, day, trainer_id) VALUES (?, ?, ?, ?)";
 
@@ -37,6 +45,30 @@ public class TimeSlotDAO {
         }
     }
 
+    @Override
+    public Optional<TimeSlot> read(Integer id) {
+        String sql = "SELECT * FROM time_slots WHERE id = ?";
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                TimeSlot slot = new TimeSlot(
+                        LocalTime.parse(rs.getString("start_time")),
+                        LocalTime.parse(rs.getString("end_time")),
+                        DayOfWeek.valueOf(rs.getString("day")),
+                        new Trainer(rs.getInt("trainer_id"))
+                );
+                return Optional.of(slot);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error reading time slot: " + e.getMessage());
+        }
+
+        return Optional.empty();
+    }
     // Șterge un slot după ID
     public boolean delete(int id) {
         String sql = "DELETE FROM time_slots WHERE id = ?";

@@ -9,19 +9,26 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
-public class FitnessClassDAO {
+public class FitnessClassDAO extends BaseDAO<FitnessClass, Integer> {
 
-    private final Connection connection;
-    private final ClassParticipantsDAO classParticipantsDAO = new ClassParticipantsDAO();
+    private static FitnessClassDAO instance;
+
+    private final ClassParticipantsDAO classParticipantsDAO = ClassParticipantsDAO.getInstance();
     private TrainerDAO trainerDAO;
+    private FitnessClassDAO() {
+    }
+
+    public static FitnessClassDAO getInstance() {
+        if (instance == null) {
+            instance = new FitnessClassDAO();
+        }
+        return instance;
+    }
     public void setTrainerDAO(TrainerDAO trainerDAO) {
         this.trainerDAO = trainerDAO;
     }
 
-    public FitnessClassDAO() {
-        this.connection = DBConnection.getInstance().getConnection();
-    }
-    // Creează o nouă clasă
+    @Override
     public void create(FitnessClass fitnessClass) {
         String sql = "INSERT INTO fitness_classes (name, duration, difficulty, price, trainer_id, date, hour, max_participants) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -49,6 +56,46 @@ public class FitnessClassDAO {
             System.out.println("Eroare la crearea clasei fitness: " + e.getMessage());
         }
     }
+
+    @Override
+    public Optional<FitnessClass> read(Integer id) {
+        String sql = "SELECT * FROM fitness_classes WHERE id = ?";
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                // Ia trainerul asociat
+                int trainerId = rs.getInt("trainer_id");
+                Trainer trainer = trainerDAO.findById(trainerId);
+
+                FitnessClass fc = new FitnessClass(
+                        rs.getString("name"),
+                        rs.getInt("duration"),
+                        rs.getString("difficulty"),
+                        rs.getDouble("price"),
+                        trainer,
+                        new ArrayList<>(),  // participanții pot fi încărcați separat
+                        LocalDate.parse(rs.getString("date")),
+                        LocalTime.parse(rs.getString("hour")),
+                        rs.getInt("max_participants")
+                );
+
+                fc.setId(rs.getInt("id"));
+                return Optional.of(fc);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Eroare la citirea clasei fitness cu ID " + id + ": " + e.getMessage());
+        }
+
+        return Optional.empty();
+    }
+
+
 
     public void addFitnessClass(FitnessClass fitnessClass) {
         String sql = "INSERT INTO fitness_classes (name, duration, difficulty, price, trainer_id, date, hour, max_participants) " +
@@ -194,6 +241,7 @@ public class FitnessClassDAO {
 
         return classes;
     }
+
 
     public boolean delete(int id) {
         String sql = "DELETE FROM fitness_classes WHERE id = ?";

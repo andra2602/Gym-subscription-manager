@@ -6,14 +6,24 @@ import models.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class UserDAO {
+public class UserDAO extends BaseDAO<User, Integer> {
+    private static UserDAO instance;
     private final Connection connection;
 
-    public UserDAO() {
+    private UserDAO() {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
+    public static UserDAO getInstance() {
+        if (instance == null) {
+            instance = new UserDAO();
+        }
+        return instance;
+    }
+
+    @Override
     public void create(User user) {
         String sql = "INSERT INTO users (name, username, email, phone, password) VALUES (?, ?, ?, ?, ?)";
 
@@ -38,6 +48,31 @@ public class UserDAO {
         }
     }
 
+    @Override
+    public Optional<User> read(Integer id) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setName(rs.getString("name"));
+                user.setUsername(rs.getString("username"));
+                user.setEmail(rs.getString("email"));
+                user.setPhoneNumber(rs.getString("phone"));
+                user.setPassword(rs.getString("password"));
+                return Optional.of(user);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Eroare la citirea userului: " + e.getMessage());
+        }
+
+        return Optional.empty();
+    }
     public List<User> readAll() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";

@@ -9,10 +9,15 @@ import java.util.List;
 
 public class ClassParticipantsDAO {
 
-    private final Connection connection;
+    private static ClassParticipantsDAO instance;
 
-    public ClassParticipantsDAO() {
-        this.connection = DBConnection.getInstance().getConnection();
+    private ClassParticipantsDAO() {}
+
+    public static ClassParticipantsDAO getInstance() {
+        if (instance == null) {
+            instance = new ClassParticipantsDAO();
+        }
+        return instance;
     }
 
     public void removeParticipantsForClass(int classId) {

@@ -10,7 +10,7 @@ import java.util.*;
 public class ManagerService {
 
     private List<Manager> managers;
-    private PaymentDAO paymentDAO = new PaymentDAO();
+    private PaymentDAO paymentDAO = PaymentDAO.getInstance();
 
     public ManagerService() {
         this.managers = new ArrayList<>();

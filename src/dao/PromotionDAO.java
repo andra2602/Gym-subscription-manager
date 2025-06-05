@@ -7,13 +7,22 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class PromotionDAO {
+public class PromotionDAO extends BaseDAO<Promotion, Integer> {
 
-    private final Connection connection;
+    private static PromotionDAO instance;
 
-    public PromotionDAO() {
-        this.connection = DBConnection.getInstance().getConnection();
+
+    private PromotionDAO() {
+        // singleton private constructor
+    }
+
+    public static PromotionDAO getInstance() {
+        if (instance == null) {
+            instance = new PromotionDAO();
+        }
+        return instance;
     }
     public boolean existsByNameAndStartDate(String name, LocalDate startDate) {
         String sql = "SELECT COUNT(*) FROM promotions WHERE name = ? AND start_date = ?";
@@ -33,6 +42,7 @@ public class PromotionDAO {
         return false;
     }
 
+    @Override
     public void create(Promotion promotion) {
         String sql = "INSERT INTO promotions (name, description, discount_percent, start_date, end_date, active) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getInstance().getConnection();
@@ -51,6 +61,36 @@ public class PromotionDAO {
         } catch (SQLException e) {
             System.out.println("Eroare la inserarea promoției: " + e.getMessage());
         }
+    }
+
+    @Override
+    public Optional<Promotion> read(Integer id) {
+        String sql = "SELECT * FROM promotions WHERE id = ?";
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Promotion promotion = new Promotion(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getFloat("discount_percent"),
+                        LocalDate.parse(rs.getString("start_date")),
+                        LocalDate.parse(rs.getString("end_date")),
+                        rs.getBoolean("active")
+                );
+                return Optional.of(promotion);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Error reading promotion: " + e.getMessage());
+        }
+
+        return Optional.empty();
     }
 
     public List<Promotion> readAll() {

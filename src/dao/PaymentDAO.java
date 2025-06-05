@@ -8,14 +8,24 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class PaymentDAO {
+public class PaymentDAO extends BaseDAO<Payment, Integer> {
+
+    private static PaymentDAO instance;
     private final Connection connection;
 
-    public PaymentDAO() {
+    private PaymentDAO() {
         this.connection = DBConnection.getInstance().getConnection();
     }
 
+    public static PaymentDAO getInstance() {
+        if (instance == null) {
+            instance = new PaymentDAO();
+        }
+        return instance;
+    }
+    @Override
     public void create(Payment payment) {
         String sql = "INSERT INTO payments (amount, payment_date, payment_method, member_id, purpose) VALUES (?, ?, ?, ?, ?)";
 
@@ -32,6 +42,33 @@ public class PaymentDAO {
         } catch (SQLException e) {
             System.out.println("Error inserting payment: " + e.getMessage());
         }
+    }
+    @Override
+    public Optional<Payment> read(Integer id) {
+        String sql = "SELECT * FROM payments WHERE id = ?";
+
+        try (Connection conn = DBConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Payment p = new Payment(
+                        rs.getFloat("amount"),
+                        LocalDate.parse(rs.getString("payment_date")),
+                        PaymentMethod.valueOf(rs.getString("payment_method")),
+                        null,
+                        rs.getString("purpose")
+                );
+                return Optional.of(p);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error reading payment: " + e.getMessage());
+        }
+
+        return Optional.empty();
     }
 
     public void addPayment(Payment payment) {
