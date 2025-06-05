@@ -48,7 +48,7 @@ To create the SQLite database and all necessary tables, please follow these step
 2. Then run `StartUp.java`.  
    At startup, the app checks if the database is empty and automatically populates it with test data by running `DatabaseSeeder.java`.
 
-## 🌱 Test Data (Seeder)
+## Test Data (Seeder)
 The app includes automatic test data insertion via **DatabaseSeeder.java**, which runs automatically at startup if the database is empty.
 
 Preloaded content:
@@ -201,7 +201,22 @@ Preloaded content:
 - All data inserted and read using JDBC
 - No `.sql` files required — schema and seed handled 100% in Java
 
-## 🚀 Technologies
+## Optional Tools Used
+
+To **inspect and validate database changes in real time**, I used:
+
+ **DB Browser for SQLite**  
+A lightweight GUI that allowed me to monitor inserts, updates, and deletes as they occurred — no SQL queries required.
+
+This made it easy to:
+- Track class bookings or subscription changes instantly
+- Debug database issues quickly
+- Confirm integrity of cascading deletions
+
+> Highly recommended for anyone reviewing or testing this project.
+
+
+## Technologies
 
 - Java 21
 - IntelliJ IDEA
@@ -222,7 +237,7 @@ Preloaded content:
 
 This will automatically create all required tables in the GYMFinalDatabase.db SQLite file.
 
-- 🚀 Run StartUp.java
+- Run StartUp.java
 
 The application launches into the interactive console.
 
