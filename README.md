@@ -204,11 +204,10 @@ Preloaded content:
 ## 🚀 Technologies
 
 - Java 21
+- IntelliJ IDEA
+- JDBC
+- SQLite
 - Full Object-Oriented Design 
-- Use of Java Collections (`List`, `Set`, `Map`)
-- `Scanner` for input
-- Clear menu-driven interface in console
-
 
 ## 💡 Future Improvements
 
